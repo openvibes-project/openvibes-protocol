@@ -6,16 +6,16 @@ OpenVIBES Platform's **collector service**, and the synced plan both sides
 build against.
 
 ```
-Online:      Agent  --- HTTPS + mTLS, port 18423 --->  Collector service
-Local-only:  Agent  --- export file --- (import) --->  Collector service
-
-Collector service  --->  platform internals: storage, correlation,
-                         third-party/CMDB sync, web interface (443)
+Online:      Agent --- HTTPS + mTLS, port 18423 --->  Collector --> platform storage
+Local-only:  Agent --- export file ---- (import) --->  Collector --> platform storage
 ```
 
-Only the agent ↔ collector boundary is specified here. The platform's other
-modules (correlation, third-party and CMDB integration, the web interface on
-443) talk to each other internally and are out of scope.
+The collector service only receives data from agents and stores it. It does
+not process, correlate, or forward anything. The platform's other modules
+(correlation, third-party and CMDB integration, the web interface on 443) work
+from platform storage on their own and never talk to agents. Only the agent ↔
+collector boundary is specified here; everything behind storage is out of
+scope.
 
 - [`spec/contracts-v1.md`](spec/contracts-v1.md): the authoritative wire
   contracts, HTTP API, and resource limits.
