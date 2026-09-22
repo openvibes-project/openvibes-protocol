@@ -11,10 +11,11 @@ Local-only:  Agent --- export file ---- (import) --->  Collector --> platform st
 ```
 
 The collector service only receives data from agents and stores it. It does
-not process, correlate, or forward anything. The platform's other modules
+not process, correlate, or forward anything. Rule bundles reach agents from a separate
+**distribution service** (planned), so the collector stays receive-only. The platform's other modules
 (correlation, third-party and CMDB integration, the web interface on 443) work
-from platform storage on their own and never talk to agents. Only the agent ↔
-collector boundary is specified here; everything behind storage is out of
+from platform storage on their own and never talk to agents. Only the agent's boundaries
+with the collector and the distribution service are specified here; everything behind storage is out of
 scope.
 
 - [`spec/contracts-v1.md`](spec/contracts-v1.md): the authoritative wire

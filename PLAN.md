@@ -1,7 +1,11 @@
 # Synced Agent–Collector Plan
 
+The collector service is receive-only: it accepts agent data and stores it.
+Anything sent to agents beyond replies to their own requests (rule bundles)
+comes from a separate distribution service.
+
 What crosses the boundary between the OpenVIBES Agent and the platform's
-collector service, what each side has built, and the order both sides deliver
+collector and distribution services, what each side has built, and the order both sides deliver
 in. Update this file in the same change as any contract change.
 
 Status: **done** (implemented and tested), **todo** (specified, not built),
@@ -26,7 +30,7 @@ Status: **done** (implemented and tested), **todo** (specified, not built),
 | 3 | `Heartbeat` | agent → collector | online | `/v1/heartbeat`, mTLS | done | todo |
 | 4 | `FindingBatch` → `DeliveryAcknowledgement` | agent → collector | online | `/v1/findings`, mTLS | done | todo |
 | 5 | `PlatformError` (`identity_revoked`) | collector → agent | online | 401/403 body on any mTLS call | done | todo |
-| 6 | `SignedRuleEnvelope` (rule bundles) | collector → agent | online | not yet specified | design (loader and store done) | design |
+| 6 | `SignedRuleEnvelope` (rule bundles) | distribution service → agent | online | separate service, not yet specified | design (loader and store done) | n/a (distribution service: design) |
 | 7 | Finding export file | agent → file → collector | local-only | file import | design | design |
 | 8 | Enrollment token | operator → agent | out of band | token file | done | todo (issuance) |
 | 9 | Platform CA bundle | operator → agent | out of band | config file | done | todo (PKI) |
@@ -104,8 +108,9 @@ a real agent passes against a real collector, not only against mocks.
 - [ ] Specify how agents fetch signed rule bundles (endpoint, polling, what the
   agent sends about its current versions).
 - [ ] Agent: fetch, verify, persist through the existing `RuleStore`.
-- [ ] Collector: serve bundles signed offline; the collector never holds the
-  signing key.
+- [ ] Distribution service: a separate platform service, not the collector,
+  serves bundles signed offline and never holds the signing key. The agent
+  pulls from it over mTLS with the same client identity.
 
 ## Open Questions
 
@@ -120,5 +125,7 @@ a real agent passes against a real collector, not only against mocks.
    privacy limits?
 4. **Rule-set assignment.** How does the collector decide which rule sets an
    agent receives, and does the agent report which ones it runs?
-5. **Trust-root rotation.** How rule-signing keys and the platform CA are
+5. **Distribution service address.** Its own port or host next to the
+   collector's 18423, and whether agents discover it or configure it.
+6. **Trust-root rotation.** How rule-signing keys and the platform CA are
    rotated without reinstalling agents.
