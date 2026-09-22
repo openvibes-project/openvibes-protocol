@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/signed-rule-envelope.schema.json",
+  "title": "SignedRuleEnvelope",
+  "description": "Ed25519-signed rule bundle. Closed: unknown fields are rejected because the signature covers a fixed field set. Not expressible here: expires_at_unix_ms > created_at_unix_ms, the payload digest, and the signature itself.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "rule_set_id",
+    "rule_set_version",
+    "issuer_key_id",
+    "created_at_unix_ms",
+    "expires_at_unix_ms",
+    "payload_encoding",
+    "payload",
+    "payload_sha256_hex",
+    "signature_base64url"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "rule_set_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "rule_set_version": {
+      "$ref": "common.schema.json#/$defs/positiveVersion"
+    },
+    "issuer_key_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "created_at_unix_ms": {
+      "$ref": "common.schema.json#/$defs/unixMs"
+    },
+    "expires_at_unix_ms": {
+      "$ref": "common.schema.json#/$defs/unixMs"
+    },
+    "payload_encoding": {
+      "enum": [
+        "json",
+        "yaml"
+      ]
+    },
+    "payload": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1048576
+    },
+    "payload_sha256_hex": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "signature_base64url": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{86}$"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/common.schema.json",
+  "title": "OpenVIBES v1 shared definitions",
+  "description": "Byte limits in spec/contracts-v1.md are authoritative. maxLength counts characters, so it bounds ASCII fields exactly and non-ASCII fields only loosely; implementations must also check UTF-8 byte length.",
+  "$defs": {
+    "schemaVersion": {
+      "const": 1,
+      "description": "Wire schema version; readers reject any other value."
+    },
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]{1,128}$",
+      "description": "1 to 128 ASCII letters, digits, dots, underscores, colons, or hyphens."
+    },
+    "boundedString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "description": "Non-empty; at most 4096 UTF-8 bytes."
+    },
+    "unixMs": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9223372036854775807,
+      "description": "Milliseconds since the Unix epoch."
+    },
+    "positiveVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 18446744073709551615
+    },
+    "severity": {
+      "enum": [
+        "info",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "confidence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "csrPem": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/boundedString"
+        }
+      ],
+      "description": "PEM PKCS#10 request signed by the key being certified."
+    }
+  }
+}

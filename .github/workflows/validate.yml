@@ -1,0 +1,29 @@
+name: Validate schemas and fixtures
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install pinned validator
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install --no-deps -r tools/requirements.txt
+
+      - name: Every fixture matches its schema
+        run: .venv/bin/python tools/validate.py

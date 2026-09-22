@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/delivery-acknowledgement.schema.json",
+  "title": "DeliveryAcknowledgement",
+  "description": "Response to /v1/findings: IDs durably stored, including earlier duplicates.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "accepted_finding_ids",
+    "acknowledged_at_unix_ms"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "accepted_finding_ids": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "$ref": "common.schema.json#/$defs/identifier"
+      }
+    },
+    "acknowledged_at_unix_ms": {
+      "$ref": "common.schema.json#/$defs/unixMs"
+    }
+  }
+}

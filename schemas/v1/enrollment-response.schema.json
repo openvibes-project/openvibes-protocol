@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/enrollment-response.schema.json",
+  "title": "EnrollmentResponse",
+  "description": "Response to /v1/enroll and /v1/renew.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "agent_id",
+    "certificate_chain_pem",
+    "expires_at_unix_ms"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "agent_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "certificate_chain_pem": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1024,
+      "items": {
+        "$ref": "common.schema.json#/$defs/boundedString"
+      },
+      "description": "PEM certificates, leaf first."
+    },
+    "expires_at_unix_ms": {
+      "$ref": "common.schema.json#/$defs/unixMs"
+    }
+  }
+}

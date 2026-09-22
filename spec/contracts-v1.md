@@ -135,6 +135,14 @@ whose rule access is immutable. It proves authentication and contract validity
 at load time; it does not prove CEL syntax, types, or evaluation budgets.
 `Evaluator` accepts only this type and rechecks expiry throughout evaluation.
 
+## Machine-Readable Schemas
+
+`schemas/v1/` holds a JSON Schema for every message below, and
+`fixtures/v1/` holds valid and invalid examples of each. Where this document
+and a schema disagree, this document wins and the schema is a bug. Rules no
+schema can state (byte limits on non-ASCII text, cross-field comparisons,
+unique rule IDs, digests, signatures) are defined only here.
+
 ## Platform HTTP API
 
 All requests are `POST` with a JSON body of the named contract, sent over

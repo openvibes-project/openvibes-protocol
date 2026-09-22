@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/enrollment-request.schema.json",
+  "title": "EnrollmentRequest",
+  "description": "POST /v1/enroll, no client certificate. Exchanges a single-use token for an identity.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "token",
+    "csr_pem"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "token": {
+      "allOf": [
+        {
+          "$ref": "common.schema.json#/$defs/boundedString"
+        }
+      ],
+      "description": "Single-use enrollment token. Secret: never log it."
+    },
+    "csr_pem": {
+      "$ref": "common.schema.json#/$defs/csrPem"
+    }
+  }
+}

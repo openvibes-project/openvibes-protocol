@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/heartbeat.schema.json",
+  "title": "Heartbeat",
+  "description": "POST /v1/heartbeat over mTLS. Any 2xx answers it.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "agent_id",
+    "scanner_version",
+    "observed_at_unix_ms",
+    "capabilities"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "agent_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "scanner_version": {
+      "$ref": "common.schema.json#/$defs/boundedString"
+    },
+    "observed_at_unix_ms": {
+      "$ref": "common.schema.json#/$defs/unixMs"
+    },
+    "capabilities": {
+      "type": "array",
+      "maxItems": 1024,
+      "items": {
+        "$ref": "common.schema.json#/$defs/identifier"
+      }
+    }
+  }
+}

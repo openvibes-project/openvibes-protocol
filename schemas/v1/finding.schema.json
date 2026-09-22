@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/finding.schema.json",
+  "title": "Finding",
+  "description": "One finding produced by a matching rule. finding_id is the idempotency key.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "finding_id",
+    "scan_id",
+    "rule_id",
+    "rule_version",
+    "observed_at_unix_ms",
+    "severity",
+    "confidence",
+    "message",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "finding_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "scan_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "rule_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "rule_version": {
+      "$ref": "common.schema.json#/$defs/positiveVersion"
+    },
+    "observed_at_unix_ms": {
+      "$ref": "common.schema.json#/$defs/unixMs"
+    },
+    "severity": {
+      "$ref": "common.schema.json#/$defs/severity"
+    },
+    "confidence": {
+      "$ref": "common.schema.json#/$defs/confidence"
+    },
+    "message": {
+      "$ref": "common.schema.json#/$defs/boundedString"
+    },
+    "evidence": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "$ref": "common.schema.json#/$defs/identifier"
+      },
+      "description": "Fact keys supporting the finding."
+    }
+  }
+}

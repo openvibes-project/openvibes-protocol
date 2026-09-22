@@ -23,8 +23,21 @@ modules (correlation, third-party and CMDB integration, the web interface on
   each side, and the paired milestones.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md): how contract changes are made.
 
+- [`schemas/v1/`](schemas/v1): JSON Schema (draft 2020-12) for every message.
+- [`fixtures/v1/`](fixtures/v1): valid and invalid examples per message, for
+  both implementations' tests. `valid*` files must pass, `invalid*` must fail.
+
 The spec is language-neutral. The agent's Rust types in `openvibes-core` are a
-reference implementation, not the definition; JSON Schemas and shared fixtures
-for other implementations are the next milestone.
+reference implementation, not the definition. Schemas cannot express every
+rule: UTF-8 byte limits (`maxLength` counts characters), cross-field rules
+such as expiry after creation, unique rule IDs, digests, and signatures remain
+implementation checks defined by the spec.
+
+Check the fixtures locally:
+
+```sh
+python3 -m venv .venv && .venv/bin/pip install --no-deps -r tools/requirements.txt
+.venv/bin/python tools/validate.py
+```
 
 Licensed under the [MIT License](LICENSE).

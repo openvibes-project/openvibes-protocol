@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "rule_set_id": "baseline",
+  "rule_set_version": 1,
+  "issuer_key_id": "org.rules",
+  "created_at_unix_ms": 1000,
+  "expires_at_unix_ms": 3000,
+  "payload_encoding": "json",
+  "payload": "{\"schema_version\":1,\"rules\":[{\"id\":\"process.ssh.running\",\"version\":1,\"title\":\"SSH server is running\",\"severity\":\"medium\",\"confidence\":100,\"expression\":\"'sshd' in facts['process.names']\",\"finding_message\":\"An SSH server process was observed\"}]}",
+  "payload_sha256_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+  "signature_base64url": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+}

@@ -1,0 +1,4 @@
+{
+  "schema_version": 1,
+  "csr_pem": "-----BEGIN CERTIFICATE REQUEST-----\nMIHCMGoCAQAwADBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABPlaceholderOnly\n-----END CERTIFICATE REQUEST-----\n"
+}

@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "agent_id": "agent.1",
+  "certificate_chain_pem": [],
+  "expires_at_unix_ms": 1790086400000
+}

@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "agent_id": "agent.1",
+  "certificate_chain_pem": [
+    "-----BEGIN CERTIFICATE-----\nMIIBPlaceholderOnly\n-----END CERTIFICATE-----\n"
+  ],
+  "expires_at_unix_ms": 1790086400000
+}

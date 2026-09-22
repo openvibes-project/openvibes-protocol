@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/renewal-request.schema.json",
+  "title": "RenewalRequest",
+  "description": "POST /v1/renew over mTLS: a CSR for a new host key.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "csr_pem"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "csr_pem": {
+      "$ref": "common.schema.json#/$defs/csrPem"
+    }
+  }
+}

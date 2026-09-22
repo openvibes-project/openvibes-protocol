@@ -1,0 +1,5 @@
+{
+  "schema_version": 2,
+  "token": "one-time-token",
+  "csr_pem": "-----BEGIN CERTIFICATE REQUEST-----\nMIHCMGoCAQAwADBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABPlaceholderOnly\n-----END CERTIFICATE REQUEST-----\n"
+}

@@ -63,10 +63,17 @@ a real agent passes against a real collector, not only against mocks.
 ### P0: Contract source (this repository)
 
 - [x] Move the wire contracts from the agent repository into `spec/`.
-- [ ] JSON Schema for every message in the inventory.
-- [ ] Shared fixtures: at least one valid and one invalid example per message,
-  used by the agent's tests and the collector's tests.
-- [ ] Agent CI checks its serialization against the shared fixtures.
+- [x] JSON Schema (draft 2020-12) for every specified message
+  (`schemas/v1/`).
+- [x] Shared fixtures: valid and invalid examples per message
+  (`fixtures/v1/`), checked against the schemas by `tools/validate.py` in CI.
+- [x] One-off cross-check: the agent's Rust types accept every valid fixture
+  and reject every invalid one. It found and fixed one gap (`rule_version: 0`
+  was accepted in findings).
+- [ ] Agent CI runs that cross-check on every change. Blocked on how the
+  private agent CI reads this private repository (git submodule with a
+  read token, or making the repositories public).
+- [ ] Collector tests use the same fixtures.
 
 ### P1: Online ingest
 
