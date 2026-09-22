@@ -70,9 +70,9 @@ a real agent passes against a real collector, not only against mocks.
 - [x] One-off cross-check: the agent's Rust types accept every valid fixture
   and reject every invalid one. It found and fixed one gap (`rule_version: 0`
   was accepted in findings).
-- [ ] Agent CI runs that cross-check on every change. Blocked on how the
-  private agent CI reads this private repository (git submodule with a
-  read token, or making the repositories public).
+- [x] Agent CI runs that cross-check on every change: the agent pins this
+  repository as its `protocol/` submodule and tests every fixture against its
+  contract types.
 - [ ] Collector tests use the same fixtures.
 
 ### P1: Online ingest
