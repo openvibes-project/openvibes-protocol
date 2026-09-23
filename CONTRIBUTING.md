@@ -15,7 +15,7 @@ AI coding tools may be used to prepare contributions, under these conditions:
    every line you submit. "The tool wrote it" is not a justification in review,
    and AI-assisted changes meet the same review bar as any other change.
 3. **Contract changes are paired.** A change to anything that crosses the
-   agent–collector boundary lands here first, updates [`PLAN.md`](PLAN.md) for
+   agent–platform boundary lands here first, updates [`PLAN.md`](PLAN.md) for
    both sides, and states whether it is compatible within schema version 1.
    Security-sensitive changes (authentication, enrollment, rule signing,
    ingestion) must specify their failure behaviour, not only the success path.

@@ -1,11 +1,11 @@
-# Synced Agent–Collector Plan
+# Synced Agent–Platform Plan
 
-The collector service is receive-only: it accepts agent data and stores it.
+The ingest service is receive-only: it accepts agent data and stores it.
 Anything sent to agents beyond replies to their own requests (rule bundles)
 comes from a separate distribution service.
 
 What crosses the boundary between the OpenVIBES Agent and the platform's
-collector and distribution services, what each side has built, and the order both sides deliver
+ingest and distribution services, what each side has built, and the order both sides deliver
 in. Update this file in the same change as any contract change.
 
 Status: **done** (implemented and tested), **todo** (specified, not built),
@@ -13,36 +13,36 @@ Status: **done** (implemented and tested), **todo** (specified, not built),
 
 ## Routes
 
-1. **Online.** The agent connects to the collector over HTTPS with mutual TLS
+1. **Online.** The agent connects to the ingest service over HTTPS with mutual TLS
    on port 18423 (explicit port overrides it). Only the agent initiates
-   connections; the collector never calls the agent.
+   connections; the ingest service never calls the agent.
 2. **Local-only.** An agent without a configured platform never touches the
    network. It keeps findings in its own state and exports them to a file on
-   request. The collector may later import such files, for example from
+   request. The ingest service may later import such files, for example from
    air-gapped hosts.
 
 ## Message Inventory
 
-| # | Message | Direction | Route | Endpoint | Agent | Collector |
+| # | Message | Direction | Route | Endpoint | Agent | Ingest |
 |---|---|---|---|---|---|---|
-| 1 | `EnrollmentRequest` → `EnrollmentResponse` | agent → collector | online | `/v1/enroll`, no client cert | done | todo |
-| 2 | `RenewalRequest` → `EnrollmentResponse` | agent → collector | online | `/v1/renew`, mTLS | done | todo |
-| 3 | `Heartbeat` | agent → collector | online | `/v1/heartbeat`, mTLS | done | todo |
-| 4 | `FindingBatch` → `DeliveryAcknowledgement` | agent → collector | online | `/v1/findings`, mTLS | done | todo |
-| 5 | `PlatformError` (`identity_revoked`) | collector → agent | online | 401/403 body on any mTLS call | done | todo |
+| 1 | `EnrollmentRequest` → `EnrollmentResponse` | agent → ingest | online | `/v1/enroll`, no client cert | done | todo |
+| 2 | `RenewalRequest` → `EnrollmentResponse` | agent → ingest | online | `/v1/renew`, mTLS | done | todo |
+| 3 | `Heartbeat` | agent → ingest | online | `/v1/heartbeat`, mTLS | done | todo |
+| 4 | `FindingBatch` → `DeliveryAcknowledgement` | agent → ingest | online | `/v1/findings`, mTLS | done | todo |
+| 5 | `PlatformError` (`identity_revoked`) | ingest → agent | online | 401/403 body on any mTLS call | done | todo |
 | 6 | `SignedRuleEnvelope` (rule bundles) | distribution service → agent | online | separate service, not yet specified | design (loader and store done) | n/a (distribution service: design) |
-| 7 | `FindingExport` file | agent → file → collector | local-only | file import | todo | todo |
+| 7 | `FindingExport` file | agent → file → ingest | local-only | file import | todo | todo |
 | 8 | Enrollment token | operator → agent | out of band | token file | done | todo (issuance) |
 | 9 | Platform CA bundle | operator → agent | out of band | config file | done | todo (PKI) |
 | 10 | Rule-signing trust keys | operator → agent | out of band | agent config | design | n/a |
 
 Items 8–10 never travel over the agent protocol: they are provisioned at
 install time. In particular, rule-signing keys are not distributed by the
-collector, so a compromised collector cannot make agents trust new rules.
+ingest service, so a compromised ingest service cannot make agents trust new rules.
 
-## Collector Obligations Already Fixed by the Spec
+## Ingest Service Obligations Already Fixed by the Spec
 
-The agent is built and tested against these; the collector must honour them.
+The agent is built and tested against these; the ingest service must honour them.
 
 - TLS 1.3, a server certificate chaining to the CA the agent is configured
   with, and client certificates issued by the platform CA.
@@ -62,7 +62,7 @@ The agent is built and tested against these; the collector must honour them.
 ## Paired Milestones
 
 Each milestone lists both sides. It is complete when both sides are done and
-a real agent passes against a real collector, not only against mocks.
+a real agent passes against a real ingest service, not only against mocks.
 
 ### P0: Contract source (this repository)
 
@@ -77,12 +77,12 @@ a real agent passes against a real collector, not only against mocks.
 - [x] Agent CI runs that cross-check on every change: the agent pins this
   repository as its `protocol/` submodule and tests every fixture against its
   contract types.
-- [ ] Collector tests use the same fixtures.
+- [ ] Ingest service tests use the same fixtures.
 
 ### P1: Online ingest
 
 - Agent: done (enrollment, heartbeat, mTLS delivery, retries).
-- [ ] Collector: `/v1/enroll`, `/v1/heartbeat`, `/v1/findings`, durable
+- [ ] Ingest service: `/v1/enroll`, `/v1/heartbeat`, `/v1/findings`, durable
   storage before acknowledging, request limits.
 - [ ] Platform: CA and single-use token issuance.
 - [ ] Cross-repository integration test: a real agent enrolls, delivers a
@@ -91,7 +91,7 @@ a real agent passes against a real collector, not only against mocks.
 ### P2: Identity lifecycle
 
 - Agent: done (renewal at two thirds of the lifetime, revocation recovery).
-- [ ] Collector: `/v1/renew`; revoking an agent returns `identity_revoked` on
+- [ ] Ingest service: `/v1/renew`; revoking an agent returns `identity_revoked` on
   its next request.
 - [ ] Integration test: renew, revoke, re-enroll with a new token.
 
@@ -102,21 +102,21 @@ a real agent passes against a real collector, not only against mocks.
   delivery batch plus `install_id`, optional `agent_id` and `hostname`.
   Unsigned in version 1; export consumes the exported findings.
 - [ ] Agent: `export` command writing that format.
-- [ ] Collector: import path, with imported findings marked as such.
+- [ ] Ingest service: import path, with imported findings marked as such.
 
 ### P4: Rule distribution
 
 - [ ] Specify how agents fetch signed rule bundles (endpoint, polling, what the
   agent sends about its current versions).
 - [ ] Agent: fetch, verify, persist through the existing `RuleStore`.
-- [ ] Distribution service: a separate platform service, not the collector,
+- [ ] Distribution service: a separate platform service, not the ingest service,
   serves bundles signed offline and never holds the signing key. The agent
   pulls from it over mTLS with the same client identity.
 
 ## Open Questions
 
 1. ~~**Export provenance.**~~ Decided 2026-09-23: version 1 exports are
-   unsigned; the collector stores imports as imported and unauthenticated.
+   unsigned; the ingest service stores imports as imported and unauthenticated.
    Signing by enrolled agents may come in a later schema version.
 2. ~~**Local-only identity.**~~ Decided 2026-09-23: a random `install_id`
    generated once per installation, plus `agent_id` when enrolled and the OS
@@ -124,9 +124,9 @@ a real agent passes against a real collector, not only against mocks.
 3. **Inventory upload.** Correlation and CMDB matching may want host facts,
    not only findings. Do agents send fact snapshots, and under what size and
    privacy limits?
-4. **Rule-set assignment.** How does the collector decide which rule sets an
+4. **Rule-set assignment.** How does the ingest service decide which rule sets an
    agent receives, and does the agent report which ones it runs?
 5. **Distribution service address.** Its own port or host next to the
-   collector's 18423, and whether agents discover it or configure it.
+   ingest service's 18423, and whether agents discover it or configure it.
 6. **Trust-root rotation.** How rule-signing keys and the platform CA are
    rotated without reinstalling agents.

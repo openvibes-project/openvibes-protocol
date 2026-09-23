@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/finding-export.schema.json",
   "title": "FindingExport",
-  "description": "Local-only route: one export file of queued findings, imported by the collector. Unsigned in version 1.",
+  "description": "Local-only route: one export file of queued findings, imported by the ingest service. Unsigned in version 1.",
   "type": "object",
   "required": [
     "schema_version",

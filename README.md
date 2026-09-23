@@ -2,20 +2,22 @@
 
 The single source of truth for everything exchanged between the
 [OpenVIBES Agent](https://github.com/openvibes-project/openvibes-agent) and the
-OpenVIBES Platform's **collector service**, and the synced plan both sides
+OpenVIBES Platform's **ingest service**, and the synced plan both sides
 build against.
 
 ```
-Online:      Agent --- HTTPS + mTLS, port 18423 --->  Collector --> platform storage
-Local-only:  Agent --- export file ---- (import) --->  Collector --> platform storage
+Online:      Agent --- HTTPS + mTLS, port 18423 --->  Ingest service --> platform storage
+Local-only:  Agent --- export file ---- (import) --->  Ingest service --> platform storage
 ```
 
-The collector service only receives data from agents and stores it. It does
+The ingest service (formerly called the collector service; the agent's
+*collectors* are something else: they read host facts) only receives data from
+agents and stores it. It does
 not process, correlate, or forward anything. Rule bundles reach agents from a separate
-**distribution service** (planned), so the collector stays receive-only. The platform's other modules
+**distribution service** (planned), so the ingest service stays receive-only. The platform's other modules
 (correlation, third-party and CMDB integration, the web interface on 443) work
 from platform storage on their own and never talk to agents. Only the agent's boundaries
-with the collector and the distribution service are specified here; everything behind storage is out of
+with the ingest service and the distribution service are specified here; everything behind storage is out of
 scope.
 
 - [`spec/contracts-v1.md`](spec/contracts-v1.md): the authoritative wire
