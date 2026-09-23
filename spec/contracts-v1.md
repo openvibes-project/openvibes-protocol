@@ -38,7 +38,9 @@ observable.
 
 The CEL binding is a flat map named `facts`, from each canonical key to its
 unwrapped typed value. For example, `process.names` is a string-list fact and
-the example rule uses `'sshd' in facts['process.names']`. A missing fact, or one
+the example rule uses `'sshd' in facts['process.names']`. A string-list fact
+holds at most 10,000 values, sorted by byte order without duplicates; an
+evaluator refuses any other list, and `in` is a binary search over it. A missing fact, or one
 whose collector reported an error, produces an unavailable result rather than
 silently implying compliance.
 
@@ -257,6 +259,23 @@ an import update or authenticate an enrolled agent's identity. Import is
 idempotent on `finding_id` within an `install_id`. A later schema version may
 add a signature for enrolled agents.
 
+### Inventory Export
+
+The same export command also writes one `InventoryExport` file per run: a
+snapshot of the host's installed packages, taken at export time, beside the
+`FindingExport` files. It carries `install_id`, optional `agent_id` and
+`hostname`, `scanner_version`, `collected_at_unix_ms`, and up to 10,000
+`packages`, within the 1 MiB document limit. Each package names its `manager`
+(`rpm` or `dpkg`), `name`, and upstream `version`, and optionally its
+distribution `release`, `epoch`, `arch`, and the `vendor` its database
+records. Package records are copied from the package database and are
+neither verified nor normalised to CPE names.
+
+An inventory export is unsigned and stored like an imported finding export.
+It does not consume anything: every export writes a fresh snapshot. When the
+package collector fails, no inventory file is written and the export command
+reports the failure. Online inventory upload is not specified yet.
+
 ## Initial Resource Limits
 
 | Resource | Version 1 limit |
@@ -272,6 +291,7 @@ add a signature for enrolled agents.
 | YAML alias replay | 10,000 events, depth 16, 64 expansions per anchor |
 | CEL expression | 16 KiB |
 | General list | 1,024 items |
+| String-list fact | 10,000 items, sorted and unique |
 | Evidence per finding | 128 keys |
 | CEL operations per rule | 50,000 |
 | CEL expression depth | 32 |

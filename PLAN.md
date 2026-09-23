@@ -31,7 +31,8 @@ Status: **done** (implemented and tested), **todo** (specified, not built),
 | 4 | `FindingBatch` → `DeliveryAcknowledgement` | agent → ingest | online | `/v1/findings`, mTLS | done | todo |
 | 5 | `PlatformError` (`identity_revoked`) | ingest → agent | online | 401/403 body on any mTLS call | done | todo |
 | 6 | `RuleBundleRequest` → `SignedRuleEnvelope` (rule bundles) | agent → distribution | online | `/v1/rule-bundle` on the distribution service (port 18424), mTLS | done | n/a (distribution service: todo) |
-| 7 | `FindingExport` file | agent → file → ingest | local-only | file import | todo | todo |
+| 7 | `FindingExport` file | agent → file → ingest | local-only | file import | done | todo |
+| 7a | `InventoryExport` file | agent → file → ingest | local-only | file import | todo | todo |
 | 8 | Enrollment token | operator → agent | out of band | token file | done | todo (issuance) |
 | 9 | Platform CA bundle | operator → agent | out of band | config file | done | todo (PKI) |
 | 10 | Rule-signing trust keys | operator → agent | out of band | agent config | design | n/a |
@@ -123,9 +124,10 @@ a real agent passes against a real ingest service, not only against mocks.
 2. ~~**Local-only identity.**~~ Decided 2026-09-23: a random `install_id`
    generated once per installation, plus `agent_id` when enrolled and the OS
    hostname for operators. Other host facts wait for question 3.
-3. **Inventory upload.** Correlation and CMDB matching may want host facts,
-   not only findings. Do agents send fact snapshots, and under what size and
-   privacy limits?
+3. **Inventory upload.** Partly decided 2026-09-23: installed packages leave
+   the agent as an `InventoryExport` file on the local-only route (up to
+   10,000 packages, 1 MiB). Online upload to the ingest service, and any
+   other fact families, are still open.
 4. ~~**Rule-set assignment.**~~ Decided 2026-09-23: local. Each agent's
    configuration names its rule sets and their trusted keys; the agent asks
    the distribution service for exactly those.
