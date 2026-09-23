@@ -193,6 +193,38 @@ its CA issued and answer at the HTTP level, because a TLS 1.3 post-handshake
 rejection races the request write and is indistinguishable from a network
 failure. Any other status, including 3xx, is a rejected request.
 
+## Rule Distribution
+
+Signed rule bundles come from the platform's **distribution service**, never
+from the ingest service. The agent reaches it at its own configured
+`distribution_url`, which follows the same rules as the platform base URL
+except that its default port is **18424**. The agent trusts the same platform
+CA bundle and authenticates with the same client certificate as for ingest.
+
+| Path | Client certificate | Request | Success response |
+|---|---|---|---|
+| `/v1/rule-bundle` | required | `RuleBundleRequest` | `200`: `SignedRuleEnvelope`; `204`: none |
+
+`RuleBundleRequest` names one `rule_set_id` and, when the agent has accepted
+that rule set before, its `current_version`. The service answers `200` with
+the rule set's current envelope, byte for byte as signed, if its version is
+higher than `current_version` (or `current_version` is absent), and `204`
+with no body otherwise. A rule set the service does not know is `404`.
+Status handling, including revocation, is the same as for the ingest service.
+
+Assignment is local. The agent asks only for the rule sets named in its own
+configuration, each with its own trusted keys, and polls once before every
+scan. A distribution service therefore cannot add, remove, or re-scope rule
+sets, and cannot sign rules: it serves envelopes signed offline. The worst it
+can do is withhold updates or serve refused bundles.
+
+Every fetched envelope goes through the same loader and rollback floor as a
+provisioned file. A refused envelope (bad signature, untrusted issuer,
+expired, lower version, or different content under an accepted version)
+never replaces the last accepted bundle, which the agent keeps evaluating
+while it is still valid. A failed request is retried at the next scan.
+Local-only and not yet enrolled agents never contact the distribution service.
+
 ## Local-Only Export
 
 An agent with no platform configured never uses the network. Its findings stay

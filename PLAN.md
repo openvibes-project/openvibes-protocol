@@ -30,7 +30,7 @@ Status: **done** (implemented and tested), **todo** (specified, not built),
 | 3 | `Heartbeat` | agent → ingest | online | `/v1/heartbeat`, mTLS | done | todo |
 | 4 | `FindingBatch` → `DeliveryAcknowledgement` | agent → ingest | online | `/v1/findings`, mTLS | done | todo |
 | 5 | `PlatformError` (`identity_revoked`) | ingest → agent | online | 401/403 body on any mTLS call | done | todo |
-| 6 | `SignedRuleEnvelope` (rule bundles) | distribution service → agent | online | separate service, not yet specified | design (loader and store done) | n/a (distribution service: design) |
+| 6 | `RuleBundleRequest` → `SignedRuleEnvelope` (rule bundles) | agent → distribution | online | `/v1/rule-bundle` on the distribution service (port 18424), mTLS | todo (loader and store done) | n/a (distribution service: todo) |
 | 7 | `FindingExport` file | agent → file → ingest | local-only | file import | todo | todo |
 | 8 | Enrollment token | operator → agent | out of band | token file | done | todo (issuance) |
 | 9 | Platform CA bundle | operator → agent | out of band | config file | done | todo (PKI) |
@@ -106,8 +106,10 @@ a real agent passes against a real ingest service, not only against mocks.
 
 ### P4: Rule distribution
 
-- [ ] Specify how agents fetch signed rule bundles (endpoint, polling, what the
-  agent sends about its current versions).
+- [x] Specify how agents fetch signed rule bundles: `RuleBundleRequest` to
+  `/v1/rule-bundle` on the distribution service (default port 18424), one
+  request per configured rule set before each scan, `204` when nothing is
+  newer.
 - [ ] Agent: fetch, verify, persist through the existing `RuleStore`.
 - [ ] Distribution service: a separate platform service, not the ingest service,
   serves bundles signed offline and never holds the signing key. The agent
@@ -124,9 +126,11 @@ a real agent passes against a real ingest service, not only against mocks.
 3. **Inventory upload.** Correlation and CMDB matching may want host facts,
    not only findings. Do agents send fact snapshots, and under what size and
    privacy limits?
-4. **Rule-set assignment.** How does the ingest service decide which rule sets an
-   agent receives, and does the agent report which ones it runs?
-5. **Distribution service address.** Its own port or host next to the
-   ingest service's 18423, and whether agents discover it or configure it.
+4. ~~**Rule-set assignment.**~~ Decided 2026-09-23: local. Each agent's
+   configuration names its rule sets and their trusted keys; the agent asks
+   the distribution service for exactly those.
+5. ~~**Distribution service address.**~~ Decided 2026-09-23: configured as
+   `distribution_url`, default port 18424, same platform CA and client
+   certificate as ingest.
 6. **Trust-root rotation.** How rule-signing keys and the platform CA are
    rotated without reinstalling agents.

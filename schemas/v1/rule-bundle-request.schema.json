@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/rule-bundle-request.schema.json",
+  "title": "RuleBundleRequest",
+  "description": "POST /v1/rule-bundle to the distribution service over mTLS. 200 answers with the SignedRuleEnvelope exactly as signed; 204 means nothing newer than current_version.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "rule_set_id"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "rule_set_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "current_version": {
+      "$ref": "common.schema.json#/$defs/positiveVersion",
+      "description": "Version the agent last accepted; absent when it has none."
+    }
+  }
+}
