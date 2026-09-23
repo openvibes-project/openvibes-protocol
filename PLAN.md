@@ -57,6 +57,8 @@ The agent is built and tested against these; the ingest service must honour them
 - Renewals must be issued for the requesting agent's `agent_id`.
 - Findings are acknowledged per ID once durably stored, including duplicates
   of findings stored earlier; delivery is idempotent on `finding_id`.
+- A heartbeat may carry the OS-reported `hostname`; ingest stores the latest
+  present value as an operator label and never uses it for authorisation.
 - Never answer with a redirect; agents treat 3xx as a rejected request.
 - Validate every request against the V1 limits before trusting it.
 
@@ -86,6 +88,8 @@ a real agent passes against a real ingest service, not only against mocks.
 - [ ] Ingest service: `/v1/enroll`, `/v1/heartbeat`, `/v1/findings`, durable
   storage before acknowledging, request limits. In progress in
   `openvibes-platform` (sub-project 1; schema and admin CLI done).
+- [ ] Ingest service: store an optional heartbeat `hostname` as the agent's
+  latest operator label, never as identity.
 - [ ] Platform: CA and single-use token issuance.
 - [ ] Cross-repository integration test: a real agent enrolls, delivers a
   finding once, and reconnects after restart.

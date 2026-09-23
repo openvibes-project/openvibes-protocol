@@ -21,6 +21,10 @@
     "scanner_version": {
       "$ref": "common.schema.json#/$defs/boundedString"
     },
+    "hostname": {
+      "$ref": "common.schema.json#/$defs/boundedString",
+      "description": "Optional OS-reported operator label; never identity or authorization."
+    },
     "observed_at_unix_ms": {
       "$ref": "common.schema.json#/$defs/unixMs"
     },

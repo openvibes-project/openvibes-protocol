@@ -177,6 +177,12 @@ any other reuse is refused with 401.
 The platform acknowledges each finding it has durably accepted, including
 duplicates of findings it accepted before, so delivery is idempotent.
 
+`Heartbeat.hostname` is the optional, bounded host name the operating system
+reports. It is an operator-facing label only: it is spoofable, may change,
+and is never used to authenticate or authorise the agent. It is absent when
+the agent cannot obtain a non-empty UTF-8 name. When present, ingest records it
+as the latest reported hostname for the authenticated `agent_id`.
+
 Renewal: once two thirds of a certificate's lifetime has passed, measured
 from the scanner's local time when it obtained the certificate, the scanner
 sends a CSR for a new key, authenticated by the current certificate. The
