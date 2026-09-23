@@ -84,7 +84,8 @@ a real agent passes against a real ingest service, not only against mocks.
 
 - Agent: done (enrollment, heartbeat, mTLS delivery, retries).
 - [ ] Ingest service: `/v1/enroll`, `/v1/heartbeat`, `/v1/findings`, durable
-  storage before acknowledging, request limits.
+  storage before acknowledging, request limits. In progress in
+  `openvibes-platform` (sub-project 1; schema and admin CLI done).
 - [ ] Platform: CA and single-use token issuance.
 - [ ] Cross-repository integration test: a real agent enrolls, delivers a
   finding once, and reconnects after restart.
@@ -98,11 +99,11 @@ a real agent passes against a real ingest service, not only against mocks.
 
 ### P3: Local-only route
 
-- [ ] Agent: standalone mode when no platform is configured; no network use.
+- [x] Agent: standalone mode when no platform is configured; no network use.
 - [x] Specify the export file format: `FindingExport`, the findings of one
   delivery batch plus `install_id`, optional `agent_id` and `hostname`.
   Unsigned in version 1; export consumes the exported findings.
-- [ ] Agent: `export` command writing that format.
+- [x] Agent: `export` command writing that format (plus `InventoryExport`).
 - [ ] Ingest service: import path, with imported findings marked as such.
 
 ### P4: Rule distribution
