@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "install_id": "5b0e8f2c9a4d4e71b3c6a1f07d2e9b48",
+  "hostname": "db-archive-03",
+  "scanner_version": "0.1.0",
+  "exported_at_unix_ms": 1790000600000,
+  "findings": []
+}

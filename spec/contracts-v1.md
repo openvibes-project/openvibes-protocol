@@ -1,7 +1,7 @@
 # OpenVIBES Protocol Contracts, Version 1
 
 Wire contracts between the OpenVIBES Agent ("scanner") and the platform's
-collector service. Rust reference types live in the agent's
+collector service, including the local-only export file. Rust reference types live in the agent's
 `openvibes-core` crate; this document is authoritative.
 
 ## Compatibility Policy
@@ -192,6 +192,38 @@ a scanner. The platform must complete the TLS handshake for any certificate
 its CA issued and answer at the HTTP level, because a TLS 1.3 post-handshake
 rejection races the request write and is indistinguishable from a network
 failure. Any other status, including 3xx, is a rejected request.
+
+## Local-Only Export
+
+An agent with no platform configured never uses the network. Its findings stay
+in its durable queue until an operator runs the agent's export command, which
+writes them to files for the collector to import later.
+
+Each file is one `FindingExport` document: `schema_version`, `install_id`, an
+optional `agent_id`, an optional `hostname`, `scanner_version`,
+`exported_at_unix_ms`, and one to `delivery_batch_items` findings in queue
+order. The serialized document is bounded by the 1 MiB document limit.
+
+- `install_id` is a random identifier the agent generates once, on first start,
+  and keeps in its state directory. It survives enrollment and revocation,
+  so the collector can link imports from a host that enrolls later.
+- `agent_id` is present only while the agent holds a platform identity.
+- `hostname` is the name the OS reports, for operators recognising the host.
+  It is absent when unavailable and is never used for authentication.
+
+Export consumes: each file is written and flushed to disk before its findings
+are marked acknowledged in the queue, so a finding appears in exactly one
+completed file. An interrupted export leaves at most one incomplete file, which
+fails validation, and its findings stay queued for the next export. The agent
+never overwrites an existing file. Losing an exported file loses its findings.
+
+Version 1 exports are **unsigned**: a file has no mTLS channel, and a
+never-enrolled host has no key the platform trusts. The collector validates an
+import exactly like a `FindingBatch`, stores its findings marked as imported
+and unauthenticated, including the `install_id` it came from, and never lets
+an import update or authenticate an enrolled agent's identity. Import is
+idempotent on `finding_id` within an `install_id`. A later schema version may
+add a signature for enrolled agents.
 
 ## Initial Resource Limits
 

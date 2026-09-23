@@ -31,7 +31,7 @@ Status: **done** (implemented and tested), **todo** (specified, not built),
 | 4 | `FindingBatch` → `DeliveryAcknowledgement` | agent → collector | online | `/v1/findings`, mTLS | done | todo |
 | 5 | `PlatformError` (`identity_revoked`) | collector → agent | online | 401/403 body on any mTLS call | done | todo |
 | 6 | `SignedRuleEnvelope` (rule bundles) | distribution service → agent | online | separate service, not yet specified | design (loader and store done) | n/a (distribution service: design) |
-| 7 | Finding export file | agent → file → collector | local-only | file import | design | design |
+| 7 | `FindingExport` file | agent → file → collector | local-only | file import | todo | todo |
 | 8 | Enrollment token | operator → agent | out of band | token file | done | todo (issuance) |
 | 9 | Platform CA bundle | operator → agent | out of band | config file | done | todo (PKI) |
 | 10 | Rule-signing trust keys | operator → agent | out of band | agent config | design | n/a |
@@ -98,8 +98,9 @@ a real agent passes against a real collector, not only against mocks.
 ### P3: Local-only route
 
 - [ ] Agent: standalone mode when no platform is configured; no network use.
-- [ ] Specify the export file format. It reuses `FindingBatch`, wrapped with
-  export metadata (see open questions).
+- [x] Specify the export file format: `FindingExport`, the findings of one
+  delivery batch plus `install_id`, optional `agent_id` and `hostname`.
+  Unsigned in version 1; export consumes the exported findings.
 - [ ] Agent: `export` command writing that format.
 - [ ] Collector: import path, with imported findings marked as such.
 
@@ -114,12 +115,12 @@ a real agent passes against a real collector, not only against mocks.
 
 ## Open Questions
 
-1. **Export provenance.** An imported file is not authenticated by mTLS.
-   Should an enrolled agent sign its exports with its host key, and how does
-   the collector treat unsigned files from never-enrolled agents?
-2. **Local-only identity.** A never-enrolled agent has no `agent_id`. What
-   identifies the host in an export: a generated local ID, host facts, or
-   both?
+1. ~~**Export provenance.**~~ Decided 2026-09-23: version 1 exports are
+   unsigned; the collector stores imports as imported and unauthenticated.
+   Signing by enrolled agents may come in a later schema version.
+2. ~~**Local-only identity.**~~ Decided 2026-09-23: a random `install_id`
+   generated once per installation, plus `agent_id` when enrolled and the OS
+   hostname for operators. Other host facts wait for question 3.
 3. **Inventory upload.** Correlation and CMDB matching may want host facts,
    not only findings. Do agents send fact snapshots, and under what size and
    privacy limits?

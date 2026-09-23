@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "hostname": "db-archive-03",
+  "scanner_version": "0.1.0",
+  "exported_at_unix_ms": 1790000600000,
+  "findings": [
+    {
+      "schema_version": 1,
+      "finding_id": "finding.3f2a9c",
+      "scan_id": "scan.2026-09-22.1",
+      "rule_id": "process.ssh.running",
+      "rule_version": 1,
+      "observed_at_unix_ms": 1790000000000,
+      "severity": "medium",
+      "confidence": 100,
+      "message": "An SSH server process was observed",
+      "evidence": [
+        "process.names"
+      ]
+    }
+  ]
+}

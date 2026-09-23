@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/finding-export.schema.json",
+  "title": "FindingExport",
+  "description": "Local-only route: one export file of queued findings, imported by the collector. Unsigned in version 1.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "install_id",
+    "scanner_version",
+    "exported_at_unix_ms",
+    "findings"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "install_id": {
+      "$ref": "common.schema.json#/$defs/identifier",
+      "description": "Random ID generated once per agent installation; survives enrollment and revocation."
+    },
+    "agent_id": {
+      "$ref": "common.schema.json#/$defs/identifier",
+      "description": "Present only when the agent holds a platform identity."
+    },
+    "hostname": {
+      "$ref": "common.schema.json#/$defs/boundedString",
+      "description": "Host name as reported by the OS, for operators only; absent when unavailable."
+    },
+    "scanner_version": {
+      "$ref": "common.schema.json#/$defs/boundedString"
+    },
+    "exported_at_unix_ms": {
+      "$ref": "common.schema.json#/$defs/unixMs"
+    },
+    "findings": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": {
+        "$ref": "finding.schema.json"
+      }
+    }
+  }
+}
