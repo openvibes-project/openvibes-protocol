@@ -25,14 +25,14 @@ Status: **done** (implemented and tested), **todo** (specified, not built),
 
 | # | Message | Direction | Route | Endpoint | Agent | Ingest |
 |---|---|---|---|---|---|---|
-| 1 | `EnrollmentRequest` → `EnrollmentResponse` | agent → ingest | online | `/v1/enroll`, no client cert | todo (key reuse, P5) | done (multi-use tokens; revoked-key refusal todo, P5) |
-| 2 | `RenewalRequest` → `EnrollmentResponse` | agent → ingest | online | `/v1/renew`, mTLS | done (expiry fallback todo, P5) | done |
+| 1 | `EnrollmentRequest` → `EnrollmentResponse` | agent → ingest | online | `/v1/enroll`, no client cert | done (key reuse, refused token after revocation) | done (multi-use tokens, revoked-key refusal) |
+| 2 | `RenewalRequest` → `EnrollmentResponse` | agent → ingest | online | `/v1/renew`, mTLS | done (expiry re-enrollment) | done |
 | 3 | `Heartbeat` | agent → ingest | online | `/v1/heartbeat`, mTLS | done | done |
-| 4 | `FindingBatch` → `DeliveryAcknowledgement` | agent → ingest | online | `/v1/findings`, mTLS | done (`rejected_findings` todo, P5) | done (per-finding rejection todo, P5) |
+| 4 | `FindingBatch` → `DeliveryAcknowledgement` | agent → ingest | online | `/v1/findings`, mTLS | done (`rejected_findings`) | done (per-finding refusal) |
 | 5 | `PlatformError` (`identity_revoked`) | ingest → agent | online | 401/403 body on any mTLS call | done | done |
 | 6 | `RuleBundleRequest` → `SignedRuleEnvelope` (rule bundles) | agent → distribution | online | `/v1/rule-bundle` on the distribution service (port 18424), mTLS | done | n/a (distribution service: todo) |
 | 7 | `FindingExport` file | agent → file → ingest | local-only | file import | done | todo |
-| 7a | `InventoryExport` file | agent → file → ingest | local-only | file import | done (oversize handling todo, P5) | todo |
+| 7a | `InventoryExport` file | agent → file → ingest | local-only | file import | done | todo |
 | 8 | Enrollment token | operator → agent | out of band | token file | done | done (issuance, single- and multi-use) |
 | 9 | Platform CA bundle | operator → agent | out of band | config file | done | done (built-in PKI) |
 | 10 | Rule-signing trust keys | operator → agent | out of band | agent config | done (per rule set) | n/a |
@@ -132,24 +132,27 @@ a real agent passes against a real ingest service, not only against mocks.
 
 ### P5: Review follow-up (2026-09-24)
 
-Decided after the cross-repository review; the spec already says all of it.
+Decided after the cross-repository review. Done in agent `3f8fc10` and
+platform `931d365`.
 
-- [ ] Agent: store the host key before the first enrollment attempt and reuse
+- [x] Agent: store the host key before the first enrollment attempt and reuse
   it until enrollment succeeds.
-- [ ] Agent: never enroll again with the token of a revoked identity.
-- [ ] Agent: when the certificate has expired by the local clock, delete the
+- [x] Agent: never enroll again with the token of a revoked identity.
+- [x] Agent: when the certificate has expired by the local clock, delete the
   identity (keep the queue) and enroll with the token file.
-- [ ] Agent: read `rejected_findings`; remove every acknowledged finding and
+- [x] Agent: read `rejected_findings`; remove every acknowledged finding and
   count the rejected ones by reason.
-- [ ] Agent: refuse U+0000 in every text field.
-- [ ] Agent: an inventory over either limit is reported and skipped; finding
+- [x] Agent: refuse U+0000 in every text field.
+- [x] Agent: an inventory over either limit is reported and skipped; finding
   export files are written regardless.
-- [ ] Ingest: answer a batch finding by finding (`future_observation` beyond
+- [x] Ingest: answer a batch finding by finding (`future_observation` beyond
   1 hour, `retention_expired`, `out_of_range`, `unstorable`); never fail a
   batch for one finding.
-- [ ] Ingest: a same-key retry for a revoked agent is 401.
-- [ ] Integration test: expired-certificate re-enrollment, lost-response
-  retry, and a batch with a future-dated finding.
+- [x] Ingest: a same-key retry for a revoked agent is 401.
+- [x] Integration test: expired-certificate re-enrollment runs with the real
+  agent (`scripts/integration-agent.sh`). The lost-response retry and the
+  future-dated finding are covered by each side's own tests (agent
+  `tests/enrollment.rs`, platform `tests/delivery.rs`).
 
 ## Open Questions
 
