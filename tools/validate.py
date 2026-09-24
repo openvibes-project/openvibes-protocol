@@ -36,10 +36,15 @@ def main() -> int:
         validator = Draft202012Validator(schemas[directory.name], registry=registry)
         for fixture in sorted(directory.glob("*.json")):
             expect_valid = fixture.name.startswith("valid")
-            valid = validator.is_valid(json.loads(fixture.read_text()))
+            errors = list(validator.iter_errors(json.loads(fixture.read_text())))
             checked += 1
-            if valid != expect_valid:
-                print(f"FAIL {directory.name}/{fixture.name}: valid={valid}")
+            if (not errors) != expect_valid:
+                print(f"FAIL {directory.name}/{fixture.name}: valid={not errors}")
+                failures += 1
+            elif not expect_valid and len(errors) != 1:
+                # An invalid fixture shows one defect, the one its name
+                # states; a second error would hide what it tests.
+                print(f"FAIL {directory.name}/{fixture.name}: {len(errors)} errors, want 1")
                 failures += 1
     print(f"{checked} fixtures checked, {failures} failures")
     return 1 if failures else 0
