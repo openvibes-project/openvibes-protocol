@@ -154,6 +154,15 @@ platform `931d365`.
   future-dated finding are covered by each side's own tests (agent
   `tests/enrollment.rs`, platform `tests/delivery.rs`).
 
+### Review follow-up, remaining (2026-09-24)
+
+- [x] Spec: a heartbeat's `agent_id` must be the authenticated agent's (400
+  otherwise); enrollment and heartbeat cadence stated.
+- [x] `tools/validate.py`: every invalid fixture fails with exactly one
+  schema error.
+- [x] Agent: delivery batches stay under the 1 MiB document limit (sized by
+  bytes as well as count).
+
 ## Open Questions
 
 1. ~~**Export provenance.**~~ Decided 2026-09-23: version 1 exports are

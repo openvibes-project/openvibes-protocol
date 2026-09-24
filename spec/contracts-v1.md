@@ -211,6 +211,14 @@ by reason, so an operator can see them (agent health, planned).
 
 Readers ignore reasons they do not know, and still remove the finding.
 
+`Heartbeat.agent_id` must be the authenticated agent's own id; a heartbeat
+for another agent is refused with 400.
+
+The scanner attempts enrollment and sends a heartbeat once per tick (every
+60 seconds), without further backoff: at most one enrollment request per
+minute while it waits for a usable token. Finding delivery retries follow the
+queue's jittered backoff (see the limits below).
+
 `Heartbeat.hostname` is the optional, bounded host name the operating system
 reports. It is an operator-facing label only: it is spoofable, may change,
 and is never used to authenticate or authorise the agent. It is absent when
