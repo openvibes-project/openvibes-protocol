@@ -163,6 +163,14 @@ platform `931d365`.
 - [x] Agent: delivery batches stay under the 1 MiB document limit (sized by
   bytes as well as count).
 
+### P6: Findings name their rule set (user, 2026-09-24)
+
+- [x] Spec and schema: `Finding.rule_set_id` (optional in v1 for earlier
+  senders; scanners always send it).
+- [ ] Agent: set `rule_set_id` from the verified bundle that produced the
+  finding.
+- [ ] Ingest: store it; current state per agent, rule set, and rule.
+
 ## Open Questions
 
 1. ~~**Export provenance.**~~ Decided 2026-09-23: version 1 exports are
