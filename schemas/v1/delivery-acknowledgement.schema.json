@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/delivery-acknowledgement.schema.json",
   "title": "DeliveryAcknowledgement",
-  "description": "Response to /v1/findings: IDs durably stored, including earlier duplicates.",
+  "description": "Response to /v1/findings: IDs the scanner may remove from its queue (durably stored, including earlier duplicates, or permanently refused); the refused ones are also listed in rejected_findings with a reason.",
   "type": "object",
   "required": [
     "schema_version",
@@ -22,6 +22,27 @@
     },
     "acknowledged_at_unix_ms": {
       "$ref": "common.schema.json#/$defs/unixMs"
+    },
+    "rejected_findings": {
+      "type": "array",
+      "maxItems": 500,
+      "description": "Findings refused permanently. Each finding_id is also in accepted_finding_ids. Readers ignore reasons they do not know.",
+      "items": {
+        "type": "object",
+        "required": [
+          "finding_id",
+          "reason"
+        ],
+        "properties": {
+          "finding_id": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "reason": {
+            "$ref": "common.schema.json#/$defs/identifier",
+            "description": "future_observation, retention_expired, out_of_range, or unstorable; readers ignore others."
+          }
+        }
+      }
     }
   }
 }

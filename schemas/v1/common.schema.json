@@ -17,7 +17,8 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 4096,
-      "description": "Non-empty; at most 4096 UTF-8 bytes."
+      "description": "Non-empty; at most 4096 UTF-8 bytes; never contains U+0000 (NUL).",
+      "pattern": "^[^\\u0000]*$"
     },
     "unixMs": {
       "type": "integer",

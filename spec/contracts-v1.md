@@ -23,7 +23,12 @@ Identifiers contain 1 to 128 ASCII letters, digits, dots, underscores, colons,
 or hyphens. They never contain paths, whitespace, control characters, or
 user-facing text.
 
-Timestamps are signed integers containing milliseconds since the Unix epoch.
+Timestamps are non-negative integers containing milliseconds since the Unix
+epoch.
+
+Text fields never contain U+0000 (NUL). Readers refuse a document that does:
+common stores cannot hold it, and a platform must never be handed a finding
+it cannot store.
 Clock-based acceptance windows are enforced by the component consuming the
 document; structural validation additionally requires rule-envelope expiration
 to be later than creation.
@@ -54,10 +59,9 @@ is checked before execution, including branches a short circuit would skip.
 
 A rule set contains declarative CEL rules with stable IDs, positive monotonic
 versions, severity, confidence from 0 to 100, a bounded expression, and a
-finding message. JSON and YAML examples live beside the agent's contract tests
-(until they move to `fixtures/` here, see [`PLAN.md`](../PLAN.md)):
+finding message. Examples live in `fixtures/v1/rule-set/`:
 
-- `openvibes-agent/crates/openvibes-core/tests/fixtures/rule-set-v1.json`
+- `fixtures/v1/rule-set/valid.json`
 - `openvibes-agent/crates/openvibes-core/tests/fixtures/rule-set-v1.yaml`
 
 A finding records the generating scan, exact rule ID and version, severity,
@@ -167,15 +171,45 @@ serialized document of response body. Every response is validated before use.
 `EnrollmentRequest.csr_pem` is a PEM PKCS#10 request signed by a fresh
 ECDSA P-256 host key; its signature proves possession of the key being
 certified. The CSR subject is empty: the platform assigns `agent_id` and binds
-it into the issued certificate. A token is consumed when a certificate is issued
-for it. Repeating the request with the same token and a CSR for the same public
-key before the token expires returns the same identity (ECDSA CSRs are
-randomized, so a retried CSR is never byte-identical), so a lost response can be retried;
-any other reuse is refused with 401.
+it into the issued certificate.
+
+An enrollment token allows a fixed number of uses: one by default, more for
+tokens an operator creates to enroll a fleet (for example in a deployment
+package). A use is consumed when a certificate is issued for a public key
+not enrolled with that token before. The token is refused with 401 once its
+uses are spent, once it expires, or once it is revoked.
+
+Repeating the request with the same token and a CSR for the same public key
+returns the same identity without consuming a use (ECDSA CSRs are randomized,
+so a retried CSR is never byte-identical). This is how a lost response is
+retried, so the scanner stores its host key **before** its first enrollment
+attempt and reuses that key for every attempt until one succeeds. If the
+agent that key was enrolled as has since been revoked, the repeated request
+is refused with 401; it never returns a revoked identity.
 
 `FindingBatch` holds one to `delivery_batch_items` findings in queue order.
-The platform acknowledges each finding it has durably accepted, including
-duplicates of findings it accepted before, so delivery is idempotent.
+`DeliveryAcknowledgement.accepted_finding_ids` lists every finding the
+scanner may remove from its queue:
+
+- findings the platform has durably stored, including duplicates of findings
+  it stored before, so delivery is idempotent;
+- findings the platform refuses **permanently**. Each of these is also
+  listed, with a reason, in the optional `rejected_findings`.
+
+A single finding never fails its batch. A batch that parses and validates
+as a whole is answered finding by finding; only a malformed or invalid batch
+is refused as a whole (400), and a platform fault (503) acknowledges nothing.
+The scanner removes every acknowledged finding and counts the rejected ones
+by reason, so an operator can see them (agent health, planned).
+
+| `reason` | Meaning |
+|---|---|
+| `future_observation` | `observed_at_unix_ms` is more than 1 hour ahead of the platform's clock |
+| `retention_expired` | older than the platform's finding retention; nothing to store it in |
+| `out_of_range` | a value the platform cannot represent (for example a `rule_version` above 2^63 − 1) |
+| `unstorable` | refused by the platform's store for this finding alone |
+
+Readers ignore reasons they do not know, and still remove the finding.
 
 `Heartbeat.hostname` is the optional, bounded host name the operating system
 reports. It is an operator-facing label only: it is spoofable, may change,
@@ -187,13 +221,23 @@ Renewal: once two thirds of a certificate's lifetime has passed, measured
 from the scanner's local time when it obtained the certificate, the scanner
 sends a CSR for a new key, authenticated by the current certificate. The
 platform must issue for the same `agent_id`; the scanner rejects any other and
-keeps its identity. Using the local clock for both ends of the interval makes
-the schedule independent of platform clock skew.
+keeps its identity. The lifetime is `expires_at_unix_ms` from the response
+minus the local time the certificate was obtained, so a scanner clock that is
+far behind the platform's shortens the effective renewal window.
+
+Expiry: a scanner whose certificate has expired by its local clock can no
+longer renew, because renewal needs a valid certificate. It then deletes its
+identity, keeps its queued findings, and enrolls again when an enrollment
+token with uses left is available (a fleet token, or a new one). A bare 401
+never triggers this; only the certificate's own expiry does.
 
 Status handling: 2xx is success. 401 and 403 mean the credentials were
 refused. Revocation is signalled only by a 401 or 403 whose body is a
 `PlatformError` with code `identity_revoked`; the scanner then deletes its
-identity, keeps its queued findings, and waits for a new enrollment token. A
+identity, keeps its queued findings, and waits for a new enrollment token. It
+never enrolls again with the token it last enrolled with, so revoking an agent
+enrolled with a fleet token cuts it off; operators revoke the fleet token as
+well if the host itself is no longer trusted. A
 bare 401 or 403, an unknown code, or an unsupported schema version never
 deletes the identity, so a misconfigured proxy or load balancer cannot strand
 a scanner. The platform must complete the TLS handshake for any certificate
@@ -271,7 +315,8 @@ The same export command also writes one `InventoryExport` file per run: a
 snapshot of the host's installed packages, taken at export time, beside the
 `FindingExport` files. It carries `install_id`, optional `agent_id` and
 `hostname`, `scanner_version`, `collected_at_unix_ms`, and up to 10,000
-`packages`, within the 1 MiB document limit. Each package names its `manager`
+`packages`. The whole document must also fit the 1 MiB document limit, which
+a large host can reach first (about 8,500 RPM packages). Each package names its `manager`
 (`rpm` or `dpkg`), `name`, and upstream `version`, and optionally its
 distribution `release`, `epoch`, `arch`, and the `vendor` its database
 records. Package records are copied from the package database and are
@@ -279,8 +324,10 @@ neither verified nor normalised to CPE names.
 
 An inventory export is unsigned and stored like an imported finding export.
 It does not consume anything: every export writes a fresh snapshot. When the
-package collector fails, no inventory file is written and the export command
-reports the failure. Online inventory upload is not specified yet.
+package collector fails, or the inventory would exceed either limit, no
+inventory file is written and the export command reports why. The finding
+export files are written regardless: an inventory problem never blocks the
+export of findings. Online inventory upload is not specified yet.
 
 ## Initial Resource Limits
 
@@ -301,12 +348,14 @@ reports the failure. Online inventory upload is not specified yet.
 | Evidence per finding | 128 keys |
 | CEL operations per rule | 50,000 |
 | CEL expression depth | 32 |
+| CEL expression nodes | 256 |
+| Fact input per scan | 16 MiB |
 | Evaluation wall time | 100 ms |
 | Complete scan | 300 seconds |
 | SQLite queue | 256 MiB |
 | Queue retention | 30 days |
 | Delivery batch | 500 findings |
-| Retry delay | 15 seconds to 1 hour, with equal jitter (half to all of the delay) |
+| Retry delay | Nominal 15 seconds, doubling per failed attempt up to 1 hour; each wait is drawn between half and all of the nominal delay (the first retry comes after 7.5 to 15 seconds) |
 | Platform connect, including TLS | 10 seconds |
 | Platform request, end to end | 60 seconds |
 

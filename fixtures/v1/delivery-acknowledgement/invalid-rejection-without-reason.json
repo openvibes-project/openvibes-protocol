@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "accepted_finding_ids": [
+    "finding.7b1e04"
+  ],
+  "rejected_findings": [
+    {
+      "finding_id": "finding.7b1e04"
+    }
+  ],
+  "acknowledged_at_unix_ms": 1790000000500
+}
