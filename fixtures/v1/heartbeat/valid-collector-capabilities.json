@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "agent_id": "agent.1",
+  "scanner_version": "0.2.0",
+  "hostname": "nas-01",
+  "observed_at_unix_ms": 1790000000000,
+  "capabilities": [
+    "collector.processes",
+    "collector.ports"
+  ]
+}
