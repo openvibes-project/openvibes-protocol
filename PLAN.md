@@ -167,9 +167,11 @@ platform `931d365`.
 
 - [x] Spec and schema: `Finding.rule_set_id` (optional in v1 for earlier
   senders; scanners always send it).
-- [ ] Agent: set `rule_set_id` from the verified bundle that produced the
-  finding.
-- [ ] Ingest: store it; current state per agent, rule set, and rule.
+- [x] Agent: set `rule_set_id` from the verified bundle that produced the
+  finding (agent `ed5cbb1`).
+- [x] Ingest: store it; current state per agent, rule set, and rule
+  (platform `3e21065`, migration 5; the integration test checks the real
+  agent's findings).
 
 ## Open Questions
 
