@@ -64,8 +64,13 @@ finding message. Examples live in `fixtures/v1/rule-set/`:
 - `fixtures/v1/rule-set/valid.json`
 - `openvibes-agent/crates/openvibes-core/tests/fixtures/rule-set-v1.yaml`
 
-A finding records the generating scan, exact rule ID and version, severity,
-confidence, message, and bounded evidence fact keys. Its ID is generated once,
+A finding records the generating scan, the rule set and the exact rule ID
+and version, severity, confidence, message, and bounded evidence fact keys.
+`rule_set_id` names the rule set whose verified bundle produced the finding:
+rule IDs are unique only within a rule set, and each rule set has its own
+trusted keys, so a finding is attributable only with it. Scanners always
+send it; it is optional in schema version 1 only so that documents from
+earlier senders stay valid, and a reader treats its absence as "unknown". Its ID is generated once,
 persisted with the queue record, and reused for every delivery attempt.
 
 ## Signed Rule Envelope

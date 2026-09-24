@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/finding.schema.json",
   "title": "Finding",
-  "description": "One finding produced by a matching rule. finding_id is the idempotency key.",
+  "description": "One finding produced by a matching rule of a rule set. finding_id is the idempotency key.",
   "type": "object",
   "required": [
     "schema_version",
@@ -25,6 +25,10 @@
     },
     "scan_id": {
       "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "rule_set_id": {
+      "$ref": "common.schema.json#/$defs/identifier",
+      "description": "Rule set whose verified bundle produced the finding. Scanners always send it; optional in v1 for earlier senders."
     },
     "rule_id": {
       "$ref": "common.schema.json#/$defs/identifier"
