@@ -230,6 +230,17 @@ and is never used to authenticate or authorise the agent. It is absent when
 the agent cannot obtain a non-empty UTF-8 name. When present, ingest records it
 as the latest reported hostname for the authenticated `agent_id`.
 
+`Heartbeat.capabilities` lists the features this agent currently runs, each
+an identifier, without repeats. Version 1 defines one family: the collectors
+the agent's configuration enables, `collector.processes`,
+`collector.packages`, and `collector.ports`. A rule whose facts come only
+from a collector the agent does not list reports those facts as
+unavailable. Each heartbeat carries the complete current list; ingest
+records it as the agent's latest capabilities, replacing the previous list.
+Readers ignore identifiers they do not know, so later versions may add
+capabilities without a schema change. An empty list means the agent reports
+none (senders before this definition always sent it empty).
+
 Renewal: once two thirds of a certificate's lifetime has passed, measured
 from the scanner's local time when it obtained the certificate, the scanner
 sends a CSR for a new key, authenticated by the current certificate. The

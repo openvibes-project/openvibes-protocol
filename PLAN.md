@@ -173,6 +173,16 @@ platform `931d365`.
   (platform `3e21065`, migration 5; the integration test checks the real
   agent's findings).
 
+### P7: Heartbeats report enabled collectors (user, 2026-09-24)
+
+- [x] Spec: `Heartbeat.capabilities` names the enabled features; version 1
+  defines `collector.processes`, `collector.packages`, `collector.ports`;
+  readers ignore unknown identifiers. Fixture `valid-collector-capabilities`.
+- [ ] Agent: optional `collectors` setting; run only those; report them as
+  capabilities.
+- [ ] Ingest: already stores the list per agent (`agents.capabilities`);
+  confirm with a test using the new fixture.
+
 ## Open Questions
 
 1. ~~**Export provenance.**~~ Decided 2026-09-23: version 1 exports are
