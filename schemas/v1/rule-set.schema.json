@@ -47,7 +47,8 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 16384,
-            "description": "Approved CEL subset only."
+            "description": "Approved CEL subset only.",
+            "pattern": "^[^\\u0000]*$"
           },
           "finding_message": {
             "$ref": "common.schema.json#/$defs/boundedString"

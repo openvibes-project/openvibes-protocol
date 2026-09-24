@@ -25,17 +25,17 @@ Status: **done** (implemented and tested), **todo** (specified, not built),
 
 | # | Message | Direction | Route | Endpoint | Agent | Ingest |
 |---|---|---|---|---|---|---|
-| 1 | `EnrollmentRequest` → `EnrollmentResponse` | agent → ingest | online | `/v1/enroll`, no client cert | done | todo |
-| 2 | `RenewalRequest` → `EnrollmentResponse` | agent → ingest | online | `/v1/renew`, mTLS | done | todo |
-| 3 | `Heartbeat` | agent → ingest | online | `/v1/heartbeat`, mTLS | done | todo |
-| 4 | `FindingBatch` → `DeliveryAcknowledgement` | agent → ingest | online | `/v1/findings`, mTLS | done | todo |
-| 5 | `PlatformError` (`identity_revoked`) | ingest → agent | online | 401/403 body on any mTLS call | done | todo |
+| 1 | `EnrollmentRequest` → `EnrollmentResponse` | agent → ingest | online | `/v1/enroll`, no client cert | todo (key reuse, P5) | done (multi-use tokens; revoked-key refusal todo, P5) |
+| 2 | `RenewalRequest` → `EnrollmentResponse` | agent → ingest | online | `/v1/renew`, mTLS | done (expiry fallback todo, P5) | done |
+| 3 | `Heartbeat` | agent → ingest | online | `/v1/heartbeat`, mTLS | done | done |
+| 4 | `FindingBatch` → `DeliveryAcknowledgement` | agent → ingest | online | `/v1/findings`, mTLS | done (`rejected_findings` todo, P5) | done (per-finding rejection todo, P5) |
+| 5 | `PlatformError` (`identity_revoked`) | ingest → agent | online | 401/403 body on any mTLS call | done | done |
 | 6 | `RuleBundleRequest` → `SignedRuleEnvelope` (rule bundles) | agent → distribution | online | `/v1/rule-bundle` on the distribution service (port 18424), mTLS | done | n/a (distribution service: todo) |
 | 7 | `FindingExport` file | agent → file → ingest | local-only | file import | done | todo |
-| 7a | `InventoryExport` file | agent → file → ingest | local-only | file import | todo | todo |
-| 8 | Enrollment token | operator → agent | out of band | token file | done | todo (issuance) |
-| 9 | Platform CA bundle | operator → agent | out of band | config file | done | todo (PKI) |
-| 10 | Rule-signing trust keys | operator → agent | out of band | agent config | design | n/a |
+| 7a | `InventoryExport` file | agent → file → ingest | local-only | file import | done (oversize handling todo, P5) | todo |
+| 8 | Enrollment token | operator → agent | out of band | token file | done | done (issuance, single- and multi-use) |
+| 9 | Platform CA bundle | operator → agent | out of band | config file | done | done (built-in PKI) |
+| 10 | Rule-signing trust keys | operator → agent | out of band | agent config | done (per rule set) | n/a |
 
 Items 8–10 never travel over the agent protocol: they are provisioned at
 install time. In particular, rule-signing keys are not distributed by the
@@ -52,11 +52,16 @@ The agent is built and tested against these; the ingest service must honour them
   handshake is not reliably detectable by the agent.
 - Revocation is only a 401/403 carrying `PlatformError` with code
   `identity_revoked`. A bare 401/403 means "refused, keep your identity".
-- Enrollment tokens are single-use. A retry with the same token and a CSR for
-  the same public key returns the same identity; any other reuse is 401.
+- Enrollment tokens have a number of uses (one by default; more for fleet
+  tokens). A retry with the same token and a CSR for the same public key
+  returns the same identity without consuming a use, unless that agent was
+  revoked (401). A new key consumes a use; none left, expired, or revoked
+  is 401.
 - Renewals must be issued for the requesting agent's `agent_id`.
 - Findings are acknowledged per ID once durably stored, including duplicates
-  of findings stored earlier; delivery is idempotent on `finding_id`.
+  of findings stored earlier; delivery is idempotent on `finding_id`. A
+  finding refused permanently is acknowledged too and listed in
+  `rejected_findings` with a reason; one finding never fails its batch.
 - A heartbeat may carry the OS-reported `hostname`; ingest stores the latest
   present value as an operator label and never uses it for authorisation.
 - Never answer with a redirect; agents treat 3xx as a rejected request.
@@ -80,26 +85,30 @@ a real agent passes against a real ingest service, not only against mocks.
 - [x] Agent CI runs that cross-check on every change: the agent pins this
   repository as its `protocol/` submodule and tests every fixture against its
   contract types.
-- [ ] Ingest service tests use the same fixtures.
+- [x] Ingest service tests use the same fixtures (`openvibes-platform` pins
+  this repository as `protocol/`). Both sides share `openvibes-core` types,
+  so these tests cannot catch a divergence between them; the schemas and
+  `tools/validate.py` are the independent check.
 
 ### P1: Online ingest
 
 - Agent: done (enrollment, heartbeat, mTLS delivery, retries).
-- [ ] Ingest service: `/v1/enroll`, `/v1/heartbeat`, `/v1/findings`, durable
-  storage before acknowledging, request limits. In progress in
-  `openvibes-platform` (sub-project 1; schema and admin CLI done).
-- [ ] Ingest service: store an optional heartbeat `hostname` as the agent's
+- [x] Ingest service: `/v1/enroll`, `/v1/heartbeat`, `/v1/findings`, durable
+  storage before acknowledging, request limits (`openvibes-platform`
+  sub-project 1).
+- [x] Ingest service: store an optional heartbeat `hostname` as the agent's
   latest operator label, never as identity.
-- [ ] Platform: CA and single-use token issuance.
-- [ ] Cross-repository integration test: a real agent enrolls, delivers a
-  finding once, and reconnects after restart.
+- [x] Platform: CA and token issuance.
+- [x] Cross-repository integration test: a real agent enrolls, delivers a
+  finding once, and reconnects after restart (`scripts/integration-agent.sh`,
+  in platform CI).
 
 ### P2: Identity lifecycle
 
 - Agent: done (renewal at two thirds of the lifetime, revocation recovery).
-- [ ] Ingest service: `/v1/renew`; revoking an agent returns `identity_revoked` on
+- [x] Ingest service: `/v1/renew`; revoking an agent returns `identity_revoked` on
   its next request.
-- [ ] Integration test: renew, revoke, re-enroll with a new token.
+- [x] Integration test: renew, revoke, re-enroll with a new token.
 
 ### P3: Local-only route
 
@@ -120,6 +129,27 @@ a real agent passes against a real ingest service, not only against mocks.
 - [ ] Distribution service: a separate platform service, not the ingest service,
   serves bundles signed offline and never holds the signing key. The agent
   pulls from it over mTLS with the same client identity.
+
+### P5: Review follow-up (2026-09-24)
+
+Decided after the cross-repository review; the spec already says all of it.
+
+- [ ] Agent: store the host key before the first enrollment attempt and reuse
+  it until enrollment succeeds.
+- [ ] Agent: never enroll again with the token of a revoked identity.
+- [ ] Agent: when the certificate has expired by the local clock, delete the
+  identity (keep the queue) and enroll with the token file.
+- [ ] Agent: read `rejected_findings`; remove every acknowledged finding and
+  count the rejected ones by reason.
+- [ ] Agent: refuse U+0000 in every text field.
+- [ ] Agent: an inventory over either limit is reported and skipped; finding
+  export files are written regardless.
+- [ ] Ingest: answer a batch finding by finding (`future_observation` beyond
+  1 hour, `retention_expired`, `out_of_range`, `unstorable`); never fail a
+  batch for one finding.
+- [ ] Ingest: a same-key retry for a revoked agent is 401.
+- [ ] Integration test: expired-certificate re-enrollment, lost-response
+  retry, and a batch with a future-dated finding.
 
 ## Open Questions
 
