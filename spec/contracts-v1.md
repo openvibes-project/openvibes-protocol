@@ -172,6 +172,7 @@ serialized document of response body. Every response is validated before use.
 | `/v1/renew` | required | `RenewalRequest` | `EnrollmentResponse` |
 | `/v1/findings` | required | `FindingBatch` | `DeliveryAcknowledgement` |
 | `/v1/heartbeat` | required | `Heartbeat` | any 2xx; body ignored |
+| `/v1/inventory` | required | `InventoryReport` | any 2xx; body ignored |
 
 `EnrollmentRequest.csr_pem` is a PEM PKCS#10 request signed by a fresh
 ECDSA P-256 host key; its signature proves possession of the key being
@@ -238,8 +239,22 @@ from a collector the agent does not list reports those facts as
 unavailable. Each heartbeat carries the complete current list; ingest
 records it as the agent's latest capabilities, replacing the previous list.
 Readers ignore identifiers they do not know, so later versions may add
-capabilities without a schema change. An empty list means the agent reports
+capabilities without a schema change. An agent that reports its inventory (below) also lists
+`inventory.packages`. An empty list means the agent reports
 none (senders before this definition always sent it empty).
+
+`InventoryReport` (`POST /v1/inventory`) carries the host's operating system
+and installed packages, for the platform's vulnerability matching. `os.id`
+and `os.version_id` are the `ID` and `VERSION_ID` of the host's os-release
+file (for example `fedora` and `44`). `packages` holds up to 10,000
+`InstalledPackage` records, the same shape as in `InventoryExport`, and the
+document stays within 1 MiB. `agent_id` must be the authenticated agent's
+own id, or the report is refused with 400. Each report replaces the host's
+stored inventory. The agent sends one only when its operating system or
+package set has changed since the platform last accepted one, when its
+`packages` collector is enabled, and never in local-only mode; a failed send
+is retried on the next tick. A host without an os-release file sends no
+report.
 
 Renewal: once two thirds of a certificate's lifetime has passed, measured
 from the scanner's local time when it obtained the certificate, the scanner

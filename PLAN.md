@@ -183,6 +183,15 @@ platform `931d365`.
 - [x] Ingest: stores the list per agent (`agents.capabilities`), and a
   changed list at once (platform `149bda7`).
 
+### P8: Inventory reports for vulnerability matching (user, 2026-09-25)
+
+- [x] Spec and schema: `InventoryReport` on `POST /v1/inventory` (os-release
+  `id` and `version_id`, up to 10,000 packages, on change only); heartbeat
+  capability `inventory.packages`. Fixtures `inventory-report/*`.
+- [ ] Agent: os-release collector; send on change; retry on failure.
+- [ ] Ingest: store compactly; notify the vulnerability service
+  (openvibes-platform VM spec, 2026-09-25).
+
 ## Open Questions
 
 1. ~~**Export provenance.**~~ Decided 2026-09-23: version 1 exports are

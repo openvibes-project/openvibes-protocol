@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "agent_id": "agent.1",
+  "os": { "id": "fedora", "version_id": "44" },
+  "collected_at_unix_ms": 1790000600000,
+  "packages": [
+    { "manager": "rpm", "name": "bash", "version": "5.2.37", "release": "1.fc44", "epoch": 0, "arch": "x86_64", "vendor": "Fedora Project" },
+    { "manager": "rpm", "name": "kernel-core", "version": "6.17.4", "release": "300.fc44", "arch": "x86_64" },
+    { "manager": "rpm", "name": "kernel-core", "version": "6.17.7", "release": "300.fc44", "arch": "x86_64" }
+  ]
+}
