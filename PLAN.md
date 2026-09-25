@@ -178,10 +178,10 @@ platform `931d365`.
 - [x] Spec: `Heartbeat.capabilities` names the enabled features; version 1
   defines `collector.processes`, `collector.packages`, `collector.ports`;
   readers ignore unknown identifiers. Fixture `valid-collector-capabilities`.
-- [ ] Agent: optional `collectors` setting; run only those; report them as
-  capabilities.
-- [ ] Ingest: already stores the list per agent (`agents.capabilities`);
-  confirm with a test using the new fixture.
+- [x] Agent: optional `collectors` setting; run only those; report them as
+  capabilities (agent `e0f4240`).
+- [x] Ingest: stores the list per agent (`agents.capabilities`), and a
+  changed list at once (platform `149bda7`).
 
 ## Open Questions
 
