@@ -204,6 +204,17 @@ shows "fix installed, reboot needed".
 - [x] Platform: store it; reboot-needed state for kernel advisories
   (openvibes-platform #20).
 
+### P10: dpkg source packages (user, 2026-09-25)
+
+Debian and Ubuntu vulnerability data (OSV.dev) names source packages; the
+platform matches dpkg hosts by source (platform spec
+`2026-09-25-osv-distributions-design.md`).
+
+- [x] Spec and schema: optional `source` and `source_version` on
+  `InstalledPackage` (dpkg only).
+- [ ] Agent: the dpkg collector reports them.
+- [ ] Platform: stores them and matches by source.
+
 ## Open Questions
 
 1. ~~**Export provenance.**~~ Decided 2026-09-23: version 1 exports are

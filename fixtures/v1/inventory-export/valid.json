@@ -21,6 +21,23 @@
       "release": "3ubuntu13.5",
       "epoch": 1,
       "arch": "amd64"
+    },
+    {
+      "manager": "dpkg",
+      "name": "libssl3t64",
+      "version": "3.0.13",
+      "release": "0ubuntu3.5",
+      "arch": "amd64",
+      "source": "openssl"
+    },
+    {
+      "manager": "dpkg",
+      "name": "libpython3.12-stdlib",
+      "version": "3.12.3",
+      "release": "1ubuntu0.8+b1",
+      "arch": "amd64",
+      "source": "python3.12",
+      "source_version": "3.12.3-1ubuntu0.8"
     }
   ]
 }
