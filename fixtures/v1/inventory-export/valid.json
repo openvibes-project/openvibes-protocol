@@ -15,6 +15,14 @@
       "vendor": "Fedora Project"
     },
     {
+      "manager": "rpm",
+      "name": "systemd-libs",
+      "version": "252",
+      "release": "67.el9_8.2.rocky.0.1",
+      "arch": "x86_64",
+      "source": "systemd"
+    },
+    {
       "manager": "dpkg",
       "name": "openssh-server",
       "version": "9.6p1",

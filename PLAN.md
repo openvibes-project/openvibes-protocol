@@ -212,7 +212,11 @@ platform matches dpkg hosts by source (platform spec
 
 - [x] Spec and schema: optional `source` and `source_version` on
   `InstalledPackage` (dpkg only).
-- [ ] Agent: the dpkg collector reports them.
+- [x] Amended 2026-09-25: `source` for RPM too (the `SOURCERPM` name):
+  Rocky Linux's OSV data names source RPMs (checked against a real Rocky
+  9.8 system: 15 of dnf's 40 advisories named only source packages).
+- [x] Agent: the dpkg collector reports them (agent #11).
+- [ ] Agent: the RPM collector reports `source`.
 - [ ] Platform: stores them and matches by source.
 
 ## Open Questions
