@@ -363,11 +363,14 @@ snapshot of the host's installed packages, taken at export time, beside the
 a large host can reach first (about 8,500 RPM packages). Each package names its `manager`
 (`rpm` or `dpkg`), `name`, and upstream `version`, and optionally its
 distribution `release`, `epoch`, `arch`, and the `vendor` its database
-records. A dpkg package may also name its `source` package (dpkg's `Source`
-field; absent when the source has the binary's name) and, when the source's
-version differs from the binary's (a binNMU), its full `source_version`
-(`[epoch:]upstream[-revision]`). Debian and Ubuntu publish vulnerabilities
-per source package, so the platform matches dpkg hosts by source (P10). Package records are copied from the package database and are
+records. A package may also name its `source` package (dpkg's `Source`
+field, or the name in RPM's `SOURCERPM`; absent when the source has the
+binary's name). A dpkg package whose source version differs from its own (a
+binNMU) also carries the full `source_version`
+(`[epoch:]upstream[-revision]`); RPM subpackages share their source's
+version, so RPM packages never carry it. Debian, Ubuntu and Rocky Linux
+publish vulnerabilities per source package, so the platform matches those
+hosts by source (P10). Package records are copied from the package database and are
 neither verified nor normalised to CPE names.
 
 An inventory export is unsigned and stored like an imported finding export.

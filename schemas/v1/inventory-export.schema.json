@@ -75,7 +75,7 @@
         },
         "source": {
           "$ref": "common.schema.json#/$defs/boundedString",
-          "description": "dpkg only: the source package the binary was built from (dpkg's Source field); absent when it equals the binary's name."
+          "description": "The source package the binary was built from (dpkg's Source field; the name from RPM's SOURCERPM); absent when it equals the binary's name."
         },
         "source_version": {
           "$ref": "common.schema.json#/$defs/boundedString",
