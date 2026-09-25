@@ -200,8 +200,9 @@ shows "fix installed, reboot needed".
 
 - [x] Spec and schema: optional `running_kernel` (`uname -r`) in
   `InventoryReport`, part of the content that decides whether to send.
-- [ ] Agent: report the running kernel.
-- [ ] Platform: store it; reboot-needed state for kernel advisories.
+- [x] Agent: report the running kernel (openvibes-agent #8).
+- [x] Platform: store it; reboot-needed state for kernel advisories
+  (openvibes-platform #20).
 
 ## Open Questions
 
