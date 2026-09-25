@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/inventory-report.schema.json",
+  "title": "InventoryReport",
+  "description": "Online route: the host's operating system and installed packages, sent by an enrolled agent to POST /v1/inventory when they change. Each report replaces the host's stored inventory.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "agent_id",
+    "os",
+    "collected_at_unix_ms",
+    "packages"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "agent_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "os": {
+      "type": "object",
+      "description": "From os-release: ID and VERSION_ID, e.g. fedora and 44.",
+      "required": ["id", "version_id"],
+      "properties": {
+        "id": { "$ref": "common.schema.json#/$defs/identifier" },
+        "version_id": { "$ref": "common.schema.json#/$defs/identifier" }
+      }
+    },
+    "collected_at_unix_ms": {
+      "$ref": "common.schema.json#/$defs/unixMs"
+    },
+    "packages": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "$ref": "inventory-export.schema.json#/$defs/package"
+      }
+    }
+  }
+}
