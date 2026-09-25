@@ -254,7 +254,12 @@ stored inventory. The agent sends one only when its operating system or
 package set has changed since the platform last accepted one, when its
 `packages` collector is enabled, and never in local-only mode; a failed send
 is retried on the next tick. A host without an os-release file sends no
-report.
+report. The optional `running_kernel` is the running kernel's release
+as `uname -r` reports it (for example `6.17.4-300.fc44.x86_64`); it counts
+as part of the report's content, so the first report after a reboot into
+another kernel is sent. With it the platform can tell a kernel fix that is
+installed but not yet running from one that is running. Readers accept
+reports without it (senders before P9).
 
 Renewal: once two thirds of a certificate's lifetime has passed, measured
 from the scanner's local time when it obtained the certificate, the scanner

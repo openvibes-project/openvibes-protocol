@@ -27,6 +27,11 @@
         "version_id": { "$ref": "common.schema.json#/$defs/identifier" }
       }
     },
+    "running_kernel": {
+      "type": "string",
+      "description": "Optional: the running kernel's release as uname -r reports it, e.g. 6.17.4-300.fc44.x86_64. Lets the platform tell an installed fix from a running one.",
+      "pattern": "^[A-Za-z0-9._+~^-]{1,128}$"
+    },
     "collected_at_unix_ms": {
       "$ref": "common.schema.json#/$defs/unixMs"
     },

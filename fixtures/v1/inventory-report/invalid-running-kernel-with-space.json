@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "agent_id": "agent.1",
+  "os": { "id": "fedora", "version_id": "44" },
+  "running_kernel": "6.17.4 300.fc44.x86_64",
+  "collected_at_unix_ms": 1790000600000,
+  "packages": []
+}
