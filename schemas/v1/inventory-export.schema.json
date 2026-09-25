@@ -73,6 +73,14 @@
         "arch": {
           "$ref": "common.schema.json#/$defs/boundedString"
         },
+        "source": {
+          "$ref": "common.schema.json#/$defs/boundedString",
+          "description": "dpkg only: the source package the binary was built from (dpkg's Source field); absent when it equals the binary's name."
+        },
+        "source_version": {
+          "$ref": "common.schema.json#/$defs/boundedString",
+          "description": "dpkg only: the source package's full version ([epoch:]upstream[-revision]) when it differs from the binary's (a binNMU, for example); absent otherwise."
+        },
         "vendor": {
           "$ref": "common.schema.json#/$defs/boundedString",
           "description": "Vendor as the package database records it (RPM VENDOR); absent for dpkg."
