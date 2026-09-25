@@ -188,9 +188,20 @@ platform `931d365`.
 - [x] Spec and schema: `InventoryReport` on `POST /v1/inventory` (os-release
   `id` and `version_id`, up to 10,000 packages, on change only); heartbeat
   capability `inventory.packages`. Fixtures `inventory-report/*`.
-- [ ] Agent: os-release collector; send on change; retry on failure.
-- [ ] Ingest: store compactly; notify the vulnerability service
-  (openvibes-platform VM spec, 2026-09-25).
+- [x] Agent: os-release collector; send on change; retry on failure
+  (openvibes-agent #7).
+- [x] Ingest: store compactly; notify the vulnerability service
+  (openvibes-platform #17).
+
+### P9: Running kernel in inventory reports (user, 2026-09-25)
+
+A kernel fix counts only once the host runs it; until a reboot the platform
+shows "fix installed, reboot needed".
+
+- [x] Spec and schema: optional `running_kernel` (`uname -r`) in
+  `InventoryReport`, part of the content that decides whether to send.
+- [ ] Agent: report the running kernel.
+- [ ] Platform: store it; reboot-needed state for kernel advisories.
 
 ## Open Questions
 

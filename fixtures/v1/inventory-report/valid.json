@@ -2,6 +2,7 @@
   "schema_version": 1,
   "agent_id": "agent.1",
   "os": { "id": "fedora", "version_id": "44" },
+  "running_kernel": "6.17.4-300.fc44.x86_64",
   "collected_at_unix_ms": 1790000600000,
   "packages": [
     { "manager": "rpm", "name": "bash", "version": "5.2.37", "release": "1.fc44", "epoch": 0, "arch": "x86_64", "vendor": "Fedora Project" },
