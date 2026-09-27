@@ -226,8 +226,10 @@ platform matches dpkg hosts by source (platform spec
   Rocky Linux's OSV data names source RPMs (checked against a real Rocky
   9.8 system: 15 of dnf's 40 advisories named only source packages).
 - [x] Agent: the dpkg collector reports them (agent #11).
-- [ ] Agent: the RPM collector reports `source`.
-- [ ] Platform: stores them and matches by source.
+- [x] Agent: the RPM collector reports `source` (openvibes-agent `15c966e`,
+  2026-09-25).
+- [x] Platform: stores them and matches by source (Rocky and dpkg by source,
+  AlmaLinux by binary; `openvibes-vulns` tests `osv_import`).
 
 ### P11: Inventory changes and compression (user, 2026-09-27)
 
