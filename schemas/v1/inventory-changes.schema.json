@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/inventory-changes.schema.json",
+  "title": "InventoryChanges",
+  "description": "Online route (P11): what changed since the inventory the platform last acknowledged for this agent, sent to POST /v1/inventory/changes. The platform applies it only if its stored fingerprint equals base_sha256 and the result's fingerprint equals sha256; otherwise 409 inventory_resync and the agent sends the full InventoryReport. added and removed together hold at most 50,000 packages.",
+  "type": "object",
+  "required": ["schema_version", "agent_id", "base_sha256", "sha256", "os", "collected_at_unix_ms", "added", "removed"],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "agent_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "base_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "Fingerprint of the inventory the platform last acknowledged." },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "Fingerprint after applying the changes." },
+    "os": { "$ref": "inventory-report.schema.json#/properties/os" },
+    "running_kernel": { "$ref": "inventory-report.schema.json#/properties/running_kernel" },
+    "collected_at_unix_ms": { "$ref": "common.schema.json#/$defs/unixMs" },
+    "added": { "type": "array", "maxItems": 50000, "items": { "$ref": "inventory-export.schema.json#/$defs/package" } },
+    "removed": { "type": "array", "maxItems": 50000, "items": { "$ref": "inventory-export.schema.json#/$defs/package" } }
+  }
+}
