@@ -257,7 +257,9 @@ package set has changed since the platform last accepted one, when its
 `packages` collector is enabled, and never in local-only mode. A send that
 fails on the network, with a 5xx (a busy platform answers 503), a 408 (the
 request took too long, for example a large body on a slow link) or a 429 is
-retried on the next tick; a report the agent cannot send because it is over
+retried with a back-off (1, 2, 4 … minutes, up to an hour; a changed
+inventory is sent at once). A platform gives inventory requests a longer
+deadline than other requests, so a large report arrives over a slow link; a report the agent cannot send because it is over
 the limits, or that the platform refuses with another 4xx (not 401/403), is
 not resent until the inventory changes. A host without an os-release file sends no
 report. The optional `running_kernel` is the running kernel's release
