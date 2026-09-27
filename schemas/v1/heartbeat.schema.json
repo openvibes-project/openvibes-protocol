@@ -34,6 +34,154 @@
       "items": {
         "$ref": "common.schema.json#/$defs/identifier"
       }
+    },
+    "health": {
+      "type": "object",
+      "description": "Optional (P12): the agent's health, counts and codes only. Totals are cumulative since the queue was created.",
+      "required": [
+        "queue",
+        "storage_errors"
+      ],
+      "properties": {
+        "queue": {
+          "type": "object",
+          "required": [
+            "pending",
+            "bytes",
+            "max_bytes",
+            "dropped_total"
+          ],
+          "properties": {
+            "pending": {
+              "$ref": "#/$defs/count"
+            },
+            "oldest_pending_age_s": {
+              "$ref": "#/$defs/count"
+            },
+            "bytes": {
+              "$ref": "#/$defs/count"
+            },
+            "max_bytes": {
+              "$ref": "#/$defs/count"
+            },
+            "dropped_total": {
+              "$ref": "#/$defs/count"
+            },
+            "rejected_total": {
+              "type": "object",
+              "maxProperties": 16,
+              "propertyNames": {
+                "$ref": "common.schema.json#/$defs/identifier"
+              },
+              "additionalProperties": {
+                "$ref": "#/$defs/count"
+              }
+            }
+          }
+        },
+        "last_scan": {
+          "type": "object",
+          "required": [
+            "finished_at_unix_ms",
+            "interval_s",
+            "rules_evaluated",
+            "rules_unavailable",
+            "rules_failed",
+            "collectors"
+          ],
+          "properties": {
+            "finished_at_unix_ms": {
+              "$ref": "common.schema.json#/$defs/unixMs"
+            },
+            "interval_s": {
+              "$ref": "#/$defs/count"
+            },
+            "rules_evaluated": {
+              "$ref": "#/$defs/count"
+            },
+            "rules_unavailable": {
+              "$ref": "#/$defs/count"
+            },
+            "rules_failed": {
+              "$ref": "#/$defs/count"
+            },
+            "collectors": {
+              "type": "object",
+              "maxProperties": 16,
+              "propertyNames": {
+                "$ref": "common.schema.json#/$defs/identifier"
+              },
+              "additionalProperties": {
+                "enum": [
+                  "ok",
+                  "permission_denied",
+                  "not_found",
+                  "timed_out",
+                  "invalid_data",
+                  "unsupported",
+                  "internal"
+                ]
+              }
+            }
+          }
+        },
+        "rule_sets": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "common.schema.json#/$defs/identifier"
+              },
+              "version": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1
+              },
+              "expires_at_unix_ms": {
+                "anyOf": [
+                  {
+                    "$ref": "common.schema.json#/$defs/unixMs"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "refused": {
+                "enum": [
+                  "signature",
+                  "expired",
+                  "rolled_back",
+                  "invalid",
+                  null
+                ]
+              }
+            }
+          }
+        },
+        "storage_errors": {
+          "$ref": "#/$defs/count"
+        },
+        "clock_jump_s": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "count": {
+      "type": "integer",
+      "minimum": 0
     }
   }
 }

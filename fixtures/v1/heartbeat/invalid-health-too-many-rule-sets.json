@@ -1,0 +1,426 @@
+{
+  "schema_version": 1,
+  "agent_id": "agent.1",
+  "scanner_version": "0.1.0",
+  "hostname": "db-primary-01",
+  "observed_at_unix_ms": 1790000000000,
+  "capabilities": [],
+  "health": {
+    "queue": {
+      "pending": 12,
+      "oldest_pending_age_s": 340,
+      "bytes": 81920,
+      "max_bytes": 268435456,
+      "dropped_total": 0,
+      "rejected_total": {
+        "retention_expired": 2
+      }
+    },
+    "last_scan": {
+      "finished_at_unix_ms": 1790000000000,
+      "interval_s": 3600,
+      "rules_evaluated": 42,
+      "rules_unavailable": 1,
+      "rules_failed": 0,
+      "collectors": {
+        "packages": "ok",
+        "ports": "ok",
+        "processes": "permission_denied"
+      }
+    },
+    "rule_sets": [
+      {
+        "id": "set-0",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-1",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-2",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-3",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-4",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-5",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-6",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-7",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-8",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-9",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-10",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-11",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-12",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-13",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-14",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-15",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-16",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-17",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-18",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-19",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-20",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-21",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-22",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-23",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-24",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-25",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-26",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-27",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-28",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-29",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-30",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-31",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-32",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-33",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-34",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-35",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-36",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-37",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-38",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-39",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-40",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-41",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-42",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-43",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-44",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-45",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-46",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-47",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-48",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-49",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-50",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-51",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-52",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-53",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-54",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-55",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-56",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-57",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-58",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-59",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-60",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-61",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-62",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-63",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      },
+      {
+        "id": "set-64",
+        "version": 1,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      }
+    ],
+    "storage_errors": 0,
+    "clock_jump_s": null
+  }
+}

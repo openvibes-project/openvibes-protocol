@@ -27,7 +27,7 @@ Status: **done** (implemented and tested), **todo** (specified, not built),
 |---|---|---|---|---|---|---|
 | 1 | `EnrollmentRequest` → `EnrollmentResponse` | agent → ingest | online | `/v1/enroll`, no client cert | done (key reuse, refused token after revocation) | done (multi-use tokens, revoked-key refusal) |
 | 2 | `RenewalRequest` → `EnrollmentResponse` | agent → ingest | online | `/v1/renew`, mTLS | done (expiry re-enrollment) | done |
-| 3 | `Heartbeat` | agent → ingest | online | `/v1/heartbeat`, mTLS | done | done |
+| 3 | `Heartbeat` (health, P12) | agent → ingest | online | `/v1/heartbeat`, mTLS | done (health: todo) | done (health: todo) |
 | 4 | `FindingBatch` → `DeliveryAcknowledgement` | agent → ingest | online | `/v1/findings`, mTLS | done (`rejected_findings`) | done (per-finding refusal) |
 | 5 | `PlatformError` (`identity_revoked`) | ingest → agent | online | 401/403 body on any mTLS call | done | done |
 | 6 | `RuleBundleRequest` → `SignedRuleEnvelope` (rule bundles) | agent → distribution | online | `/v1/rule-bundle` on the distribution service (port 18424), mTLS | done | done (openvibes-distribution) |
@@ -230,6 +230,17 @@ platform matches dpkg hosts by source (platform spec
   2026-09-25).
 - [x] Platform: stores them and matches by source (Rocky and dpkg by source,
   AlmaLinux by binary; `openvibes-vulns` tests `osv_import`).
+
+### P12: Agent health and the rotating queue (user, 2026-09-27)
+
+Heartbeats carry an optional `health` report, and a full agent queue drops
+its oldest findings (counted) instead of refusing new ones. Spec
+`openvibes-platform/docs/specs/2026-09-27-agent-health-design.md`.
+
+- [x] Spec and schema: `Heartbeat.health`, fixtures `heartbeat/*health*`.
+- [ ] Agent: health report, rotating queue, durable dropped and rejected totals.
+- [ ] Platform: store the latest report; Healthy / Degraded / Offline /
+  Unknown with reasons in the admin CLI and the console API.
 
 ### P11: Inventory changes and compression (user, 2026-09-27)
 
