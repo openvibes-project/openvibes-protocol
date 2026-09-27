@@ -157,7 +157,7 @@ unique rule IDs, digests, signatures) are defined only here.
 
 ## Platform HTTP API
 
-All requests are `POST` with a JSON body of the named contract, sent over
+All requests except `GET /v1/ca` are `POST` with a JSON body of the named contract, sent over
 HTTPS to the configured platform base URL. The agent API listens on its own
 port, 18423, used whenever the base URL names no port; an explicit port (for
 example `:443` on networks that only allow web ports) overrides it. The
@@ -175,6 +175,15 @@ serialized document of response body. Every response is validated before use.
 | `/v1/heartbeat` | required | `Heartbeat` | any 2xx; body ignored |
 | `/v1/inventory` | required | `InventoryReport` | any 2xx; body ignored |
 | `/v1/inventory/changes` | required | `InventoryChanges` | any 2xx; body ignored; 409 `PlatformError` `inventory_resync` |
+| `/v1/ca` (`GET`) | none | none | the platform's root CA certificate, PEM |
+
+`GET /v1/ca` returns the root certificate that issued the platform's server
+certificates, as one PEM `CERTIFICATE` block (`Content-Type:
+application/x-pem-file`), or 503 when the platform has none yet. It is public
+data: a client that does not trust the platform yet fetches it without
+verifying the server, accepts it only if its SHA-256 (of the DER) equals a
+fingerprint it got out of band (the install command), then verifies the
+server against it before use. The scanner never calls it.
 
 `EnrollmentRequest.csr_pem` is a PEM PKCS#10 request signed by a fresh
 ECDSA P-256 host key; its signature proves possession of the key being
