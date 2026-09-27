@@ -325,7 +325,7 @@ Local-only and not yet enrolled agents never contact the distribution service.
 
 An agent with no platform configured never uses the network. Its findings stay
 in its durable queue until an operator runs the agent's export command, which
-writes them to files for the ingest service to import later.
+writes them to files for the platform to import later (`openvibes-admin import`).
 
 Each file is one `FindingExport` document: `schema_version`, `install_id`, an
 optional `agent_id`, an optional `hostname`, `scanner_version`,
@@ -346,7 +346,7 @@ fails validation, and its findings stay queued for the next export. The agent
 never overwrites an existing file. Losing an exported file loses its findings.
 
 Version 1 exports are **unsigned**: a file has no mTLS channel, and a
-never-enrolled host has no key the platform trusts. The ingest service validates an
+never-enrolled host has no key the platform trusts. The platform's importer validates an
 import exactly like a `FindingBatch`, stores its findings marked as imported
 and unauthenticated, including the `install_id` it came from, and never lets
 an import update or authenticate an enrolled agent's identity.

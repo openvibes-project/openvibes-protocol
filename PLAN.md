@@ -119,9 +119,10 @@ a real agent passes against a real ingest service, not only against mocks.
 - [x] Agent: `export` command writing that format (plus `InventoryExport`).
 - [x] `InventoryExport` carries optional `os` and `running_kernel`; import
   rules specified (P3b).
-- [ ] Platform: `openvibes-admin import` stores export files as imported
+- [x] Platform: `openvibes-admin import` stores export files as imported
   hosts (findings, and inventories with `os` matched for vulnerabilities);
-  spec `openvibes-platform/docs/specs/2026-09-27-file-import-design.md`.
+  spec `openvibes-platform/docs/specs/2026-09-27-file-import-design.md`
+  (openvibes-platform #34, #35).
 
 ### P4: Rule distribution
 
