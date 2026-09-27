@@ -174,6 +174,7 @@ serialized document of response body. Every response is validated before use.
 | `/v1/findings` | required | `FindingBatch` | `DeliveryAcknowledgement` |
 | `/v1/heartbeat` | required | `Heartbeat` | any 2xx; body ignored |
 | `/v1/inventory` | required | `InventoryReport` | any 2xx; body ignored |
+| `/v1/inventory/changes` | required | `InventoryChanges` | any 2xx; body ignored; 409 `PlatformError` `inventory_resync` |
 
 `EnrollmentRequest.csr_pem` is a PEM PKCS#10 request signed by a fresh
 ECDSA P-256 host key; its signature proves possession of the key being
@@ -268,6 +269,60 @@ as part of the report's content, so the first report after a reboot into
 another kernel is sent. With it the platform can tell a kernel fix that is
 installed but not yet running from one that is running. Readers accept
 reports without it (senders before P9).
+
+Both inventory endpoints accept a body with `Content-Encoding: gzip`
+(P11); agents that implement P11 always send one, and a platform still
+accepts uncompressed bodies from older agents. Any other content encoding
+is refused with 400. The 8 MiB inventory document limit applies to the
+compressed body and to what it expands to; a platform decompresses as a
+stream and refuses (400) a body that would expand past it.
+
+#### Inventory changes (P11)
+
+After the platform has acknowledged a full report, an agent sends only
+what changed: `InventoryChanges` to `POST /v1/inventory/changes`.
+`base_sha256` is the fingerprint (below) of the inventory the platform last
+acknowledged for this agent; `sha256` is the fingerprint after applying the
+changes. `os` and `running_kernel` are always sent, so an operating-system
+or kernel change needs no special case; a kernel-only change has empty
+`added` and `removed`. A package is identified by its whole record: an
+update is one `removed` (the old version) and one `added` (the new).
+`added` and `removed` together hold at most 50,000 packages, and the body is
+within the inventory document limit.
+
+The platform applies a change set under the host's lock only if its stored
+fingerprint equals `base_sha256`, every `removed` package is present, every
+`added` package is absent, and the result's fingerprint equals `sha256`. It
+then stores the result exactly as a full report. Otherwise it answers 409
+with `PlatformError` code `inventory_resync` and stores nothing; the agent
+then sends the full `InventoryReport`, in the same tick. The platform always
+holds the complete list: a change set never replaces a check.
+
+An agent keeps the last inventory the platform acknowledged (with a 2xx)
+as its base, and sends the full report instead of changes when it has no
+base whose fingerprint matches the acknowledged one, when the changes would
+be larger than half the full report, or after the platform answered 404 to
+the changes endpoint (a platform before P11), until the agent restarts.
+Retries and refusals follow the full report's rules above.
+
+#### Inventory fingerprint
+
+Agent and platform compute the same fingerprint, byte for byte: SHA-256 of
+the UTF-8 compact JSON (no whitespace; non-ASCII characters not escaped) of
+
+    [[os.id, os.version_id], running_kernel, [record, …]]
+
+where `running_kernel` is `null` when absent and each record is the
+package normalised as the platform stores it:
+
+    [manager, name, epoch, version, release, arch, source, source_version]
+
+with `epoch` 0 when absent, `release` and `arch` `""` when absent, and
+`source` and `source_version` `null` when absent; `vendor` is not part of
+it. Records are deduplicated and sorted by their compact JSON text, in byte
+order. Test vectors (inventory → digest) are in
+`vectors/inventory-fingerprint.json`. Agents before P11 used another digest
+for their own bookkeeping; after upgrading, each sends one full report.
 
 Renewal: once two thirds of a certificate's lifetime has passed, measured
 from the scanner's local time when it obtained the certificate, the scanner
@@ -415,8 +470,8 @@ export of findings. Online inventory reports are `InventoryReport` (P8).
 | CEL expression | 16 KiB |
 | General list | 1,024 items |
 | String-list fact | 10,000 items, sorted and unique (`package.names`: 50,000) |
-| Inventory packages (`InventoryReport`, `InventoryExport`) | 50,000 |
-| Inventory document (one `InventoryReport` body or `InventoryExport` file) | 8 MiB |
+| Inventory packages (`InventoryReport`, `InventoryExport`; `InventoryChanges` added and removed together) | 50,000 |
+| Inventory document (one `InventoryReport` or `InventoryChanges` body, compressed and expanded, or `InventoryExport` file) | 8 MiB |
 | Evidence per finding | 128 keys |
 | CEL operations per rule | 50,000 |
 | CEL expression depth | 32 |

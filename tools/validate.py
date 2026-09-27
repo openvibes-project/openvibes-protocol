@@ -6,6 +6,7 @@ schemas/v1/<message>.schema.json, and invalid*.json must not. Exits non-zero
 on any mismatch. Requires the packages pinned in tools/requirements.txt.
 """
 
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -14,6 +15,33 @@ from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def fingerprint(inventory: dict) -> str:
+    """spec/contracts-v1.md, "Inventory fingerprint"."""
+
+    def compact(value) -> str:
+        return json.dumps(value, separators=(",", ":"), ensure_ascii=False)
+
+    records = sorted(
+        {
+            compact(
+                [
+                    p["manager"], p["name"], p.get("epoch", 0), p["version"],
+                    p.get("release", ""), p.get("arch", ""),
+                    p.get("source"), p.get("source_version"),
+                ]
+            )
+            for p in inventory["packages"]
+        }
+    )
+    os = inventory["os"]
+    text = "[{},{},[{}]]".format(
+        compact([os["id"], os["version_id"]]),
+        compact(inventory.get("running_kernel")),
+        ",".join(records),
+    )
+    return hashlib.sha256(text.encode()).hexdigest()
 
 
 def main() -> int:
@@ -57,6 +85,13 @@ def main() -> int:
         checked += 1
         if valid != expect_valid:
             print(f"FAIL generated inventory-report with {count} packages: valid={valid}")
+            failures += 1
+    # The inventory fingerprint (protocol P11): each vector's digest must be
+    # the SHA-256 of the canonical JSON the contract defines.
+    for vector in json.loads((ROOT / "vectors/inventory-fingerprint.json").read_text()):
+        checked += 1
+        if fingerprint(vector["inventory"]) != vector["sha256"]:
+            print(f"FAIL fingerprint vector {vector['name']}")
             failures += 1
     print(f"{checked} fixtures checked, {failures} failures")
     return 1 if failures else 0

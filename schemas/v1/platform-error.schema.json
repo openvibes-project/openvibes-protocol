@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/platform-error.schema.json",
   "title": "PlatformError",
-  "description": "Optional body of a 401 or 403. Only code identity_revoked makes an agent discard its identity.",
+  "description": "Optional body of a 401 or 403 (identity_revoked makes an agent discard its identity), or of a 409 from POST /v1/inventory/changes (inventory_resync: send the full inventory).",
   "type": "object",
   "required": [
     "schema_version",
@@ -14,7 +14,8 @@
     },
     "code": {
       "enum": [
-        "identity_revoked"
+        "identity_revoked",
+        "inventory_resync"
       ]
     }
   }

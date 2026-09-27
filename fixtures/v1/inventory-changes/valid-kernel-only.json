@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "agent_id": "agent.1",
+  "base_sha256": "0aec6f76ae2bd8749130718bc52381e8517e9f652e9315cec4275b3651bda505",
+  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "os": {
+    "id": "fedora",
+    "version_id": "44"
+  },
+  "running_kernel": "6.17.7-300.fc44.x86_64",
+  "collected_at_unix_ms": 1790000700000,
+  "added": [],
+  "removed": []
+}
