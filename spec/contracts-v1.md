@@ -255,10 +255,11 @@ own id, or the report is refused with 400. Each report replaces the host's
 stored inventory. The agent sends one only when its operating system or
 package set has changed since the platform last accepted one, when its
 `packages` collector is enabled, and never in local-only mode. A send that
-fails on the network or with a 5xx (a busy platform answers 503) is retried
-on the next tick; a report the agent cannot send because it is over the
-limits, or that the platform refuses with a 4xx other than 401/403, is not
-resent until the inventory changes. A host without an os-release file sends no
+fails on the network, with a 5xx (a busy platform answers 503), a 408 (the
+request took too long, for example a large body on a slow link) or a 429 is
+retried on the next tick; a report the agent cannot send because it is over
+the limits, or that the platform refuses with another 4xx (not 401/403), is
+not resent until the inventory changes. A host without an os-release file sends no
 report. The optional `running_kernel` is the running kernel's release
 as `uname -r` reports it (for example `6.17.4-300.fc44.x86_64`); it counts
 as part of the report's content, so the first report after a reboot into
