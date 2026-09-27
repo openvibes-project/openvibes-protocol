@@ -208,7 +208,8 @@ A single finding never fails its batch. A batch that parses and validates
 as a whole is answered finding by finding; only a malformed or invalid batch
 is refused as a whole (400), and a platform fault (503) acknowledges nothing.
 The scanner removes every acknowledged finding and counts the rejected ones
-by reason, so an operator can see them (agent health, planned).
+by reason, so an operator can see them: the counts are reported in
+`Heartbeat.health.queue.rejected_total` (P12).
 
 | `reason` | Meaning |
 |---|---|
@@ -244,6 +245,43 @@ Readers ignore identifiers they do not know, so later versions may add
 capabilities without a schema change. An agent that reports its inventory (below) also lists
 `inventory.packages`. An empty list means the agent reports
 none (senders before this definition always sent it empty).
+
+`Heartbeat.health` (P12) is the agent's optional health report, sent with
+each heartbeat. It is within schema version 1: readers before P12 ignore
+it and senders before P12 omit it. It carries counts and codes only, never
+paths, file contents or finding data:
+
+- `queue`: `pending` findings, `oldest_pending_age_s`, `bytes` used,
+  `max_bytes`, and two totals kept across restarts: `dropped_total` (findings
+  the rotating queue dropped, below) and `rejected_total` (findings the
+  platform refused permanently, by reason; at most 16 reasons, later ones
+  counted under `other`);
+- `last_scan` (absent before the first scan): when it finished, the scan
+  interval, rules evaluated, unavailable and failed, and each enabled
+  collector's outcome: `ok` or a collector error code (`permission_denied`,
+  `not_found`, `timed_out`, `invalid_data`, `unsupported`, `internal`).
+  `unsupported` and `not_found` mean the host has nothing that collector
+  can read (another operating system, no supported package database) and
+  are not failures;
+- `rule_sets`: each configured rule set's version in use and its expiry
+  (`null` before a bundle was accepted) and `refused`: `null`, or why the
+  last provisioned bundle was refused (`signature`, `expired`,
+  `rolled_back`, `invalid`);
+- `storage_errors` since the agent started, and `clock_jump_s`, a
+  wall-clock jump the agent detected in the last hour (absent otherwise).
+
+Collector outcomes and refusal codes are open identifiers, so later
+versions can add values: a reader treats an outcome it does not know as a
+failure, and a refusal code it does not know as `invalid`.
+
+At most 16 collectors and 64 rule sets. An invalid `health` makes the
+heartbeat invalid (400), so an agent validates its report and leaves it out
+rather than send it invalid.
+
+The queue rotates (P12): when a new finding would exceed the queue's byte
+limit, the agent drops the oldest pending findings, only as many as
+needed, and counts them in `dropped_total`; a full queue never refuses the
+newest observation.
 
 `InventoryReport` (`POST /v1/inventory`) carries the host's operating system
 and installed packages, for the platform's vulnerability matching. `os.id`
