@@ -271,9 +271,12 @@ installed but not yet running from one that is running. Readers accept
 reports without it (senders before P9).
 
 Both inventory endpoints accept a body with `Content-Encoding: gzip`
-(P11); agents that implement P11 always send one, and a platform still
-accepts uncompressed bodies from older agents. Any other content encoding
-is refused with 400. The 8 MiB inventory document limit applies to the
+(P11); agents that implement P11 send one, and a platform still accepts
+uncompressed bodies from older agents. Any other content encoding is
+refused with 400. A platform before P11 reads the body as plain JSON and
+refuses a gzip body with 400: an agent whose gzip full report is refused
+sends it again uncompressed in the same tick, and when that is accepted it
+sends full reports uncompressed, and no change sets, until it restarts. The 8 MiB inventory document limit applies to the
 compressed body and to what it expands to; a platform decompresses as a
 stream and refuses (400) a body that would expand past it.
 
@@ -302,8 +305,10 @@ An agent keeps the last inventory the platform acknowledged (with a 2xx)
 as its base, and sends the full report instead of changes when it has no
 base whose fingerprint matches the acknowledged one, when the changes would
 be larger than half the full report, or after the platform answered 404 to
-the changes endpoint (a platform before P11), until the agent restarts.
-Retries and refusals follow the full report's rules above.
+the changes endpoint (a platform before P11), until the agent restarts. A
+change set the platform refuses for another reason (any other 4xx) is also
+followed by the full report in the same tick. Retries and refusals follow
+the full report's rules above.
 
 #### Inventory fingerprint
 
