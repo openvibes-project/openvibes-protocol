@@ -258,13 +258,21 @@ paths, file contents or finding data:
   counted under `other`);
 - `last_scan` (absent before the first scan): when it finished, the scan
   interval, rules evaluated, unavailable and failed, and each enabled
-  collector's outcome: `ok` or a collector error code;
+  collector's outcome: `ok` or a collector error code (`permission_denied`,
+  `not_found`, `timed_out`, `invalid_data`, `unsupported`, `internal`).
+  `unsupported` and `not_found` mean the host has nothing that collector
+  can read (another operating system, no supported package database) and
+  are not failures;
 - `rule_sets`: each configured rule set's version in use and its expiry
   (`null` before a bundle was accepted) and `refused`: `null`, or why the
   last provisioned bundle was refused (`signature`, `expired`,
   `rolled_back`, `invalid`);
-- `storage_errors` since the agent started, and `clock_jump_s`, the last
-  wall-clock jump the agent detected.
+- `storage_errors` since the agent started, and `clock_jump_s`, a
+  wall-clock jump the agent detected in the last hour (absent otherwise).
+
+Collector outcomes and refusal codes are open identifiers, so later
+versions can add values: a reader treats an outcome it does not know as a
+failure, and a refusal code it does not know as `invalid`.
 
 At most 16 collectors and 64 rule sets. An invalid `health` makes the
 heartbeat invalid (400), so an agent validates its report and leaves it out

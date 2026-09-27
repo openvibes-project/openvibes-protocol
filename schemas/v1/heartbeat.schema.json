@@ -112,15 +112,8 @@
                 "$ref": "common.schema.json#/$defs/identifier"
               },
               "additionalProperties": {
-                "enum": [
-                  "ok",
-                  "permission_denied",
-                  "not_found",
-                  "timed_out",
-                  "invalid_data",
-                  "unsupported",
-                  "internal"
-                ]
+                "$ref": "common.schema.json#/$defs/identifier",
+                "description": "ok, permission_denied, not_found, timed_out, invalid_data, unsupported or internal; readers treat a value they do not know as a failure (later versions may add values)."
               }
             }
           }
@@ -155,13 +148,15 @@
                 ]
               },
               "refused": {
-                "enum": [
-                  "signature",
-                  "expired",
-                  "rolled_back",
-                  "invalid",
-                  null
-                ]
+                "anyOf": [
+                  {
+                    "$ref": "common.schema.json#/$defs/identifier"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "signature, expired, rolled_back or invalid; readers treat a value they do not know as invalid (later versions may add values)."
               }
             }
           }
