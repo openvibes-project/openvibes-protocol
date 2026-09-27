@@ -24,6 +24,27 @@
     "hostname": {
       "$ref": "common.schema.json#/$defs/boundedString"
     },
+    "os": {
+      "type": "object",
+      "description": "From os-release: ID and VERSION_ID, e.g. debian and 12. Required by the importer for vulnerability matching; optional so files from older agents stay valid.",
+      "required": [
+        "id",
+        "version_id"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "version_id": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        }
+      }
+    },
+    "running_kernel": {
+      "type": "string",
+      "description": "Optional: the running kernel's release as uname -r reports it, e.g. 6.1.0-25-amd64.",
+      "pattern": "^[A-Za-z0-9._+~^-]{1,128}$"
+    },
     "scanner_version": {
       "$ref": "common.schema.json#/$defs/boundedString"
     },

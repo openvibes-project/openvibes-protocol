@@ -117,7 +117,11 @@ a real agent passes against a real ingest service, not only against mocks.
   delivery batch plus `install_id`, optional `agent_id` and `hostname`.
   Unsigned in version 1; export consumes the exported findings.
 - [x] Agent: `export` command writing that format (plus `InventoryExport`).
-- [ ] Ingest service: import path, with imported findings marked as such.
+- [x] `InventoryExport` carries optional `os` and `running_kernel`; import
+  rules specified (P3b).
+- [ ] Platform: `openvibes-admin import` stores export files as imported
+  hosts (findings, and inventories with `os` matched for vulnerabilities);
+  spec `openvibes-platform/docs/specs/2026-09-27-file-import-design.md`.
 
 ### P4: Rule distribution
 

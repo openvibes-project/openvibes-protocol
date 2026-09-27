@@ -349,9 +349,16 @@ Version 1 exports are **unsigned**: a file has no mTLS channel, and a
 never-enrolled host has no key the platform trusts. The ingest service validates an
 import exactly like a `FindingBatch`, stores its findings marked as imported
 and unauthenticated, including the `install_id` it came from, and never lets
-an import update or authenticate an enrolled agent's identity. Import is
-idempotent on `finding_id` within an `install_id`. A later schema version may
-add a signature for enrolled agents.
+an import update or authenticate an enrolled agent's identity.
+
+Import rules: each `install_id` is one imported host, separate from any
+enrolled agent. Findings are idempotent on `finding_id` within an
+`install_id`. Of several `InventoryExport` files, the one with the newest
+`collected_at_unix_ms` wins; an older or equal one is ignored, so files
+can be imported in any order. An inventory without `os` cannot be matched
+for vulnerabilities and is refused. `agent_id` and `hostname` in a file are
+labels for operators, never identity. A later schema version may add a
+signature for enrolled agents.
 
 ### Inventory Export
 
@@ -373,12 +380,16 @@ publish vulnerabilities per source package, so the platform matches those
 hosts by source (P10). Package records are copied from the package database and are
 neither verified nor normalised to CPE names.
 
+It also carries the host's `os` (os-release `ID` and `VERSION_ID`) and
+`running_kernel`, as in `InventoryReport`. Both are optional in the schema
+so files from older agents stay valid.
+
 An inventory export is unsigned and stored like an imported finding export.
 It does not consume anything: every export writes a fresh snapshot. When the
 package collector fails, or the inventory would exceed either limit, no
 inventory file is written and the export command reports why. The finding
 export files are written regardless: an inventory problem never blocks the
-export of findings. Online inventory upload is not specified yet.
+export of findings. Online inventory reports are `InventoryReport` (P8).
 
 ## Initial Resource Limits
 
