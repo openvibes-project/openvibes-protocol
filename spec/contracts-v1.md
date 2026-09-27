@@ -44,7 +44,8 @@ observable.
 The CEL binding is a flat map named `facts`, from each canonical key to its
 unwrapped typed value. For example, `process.names` is a string-list fact and
 the example rule uses `'sshd' in facts['process.names']`. A string-list fact
-holds at most 10,000 values, sorted by byte order without duplicates; an
+holds at most 10,000 values (`package.names`: 50,000, the inventory limit),
+sorted by byte order without duplicates; an
 evaluator refuses any other list, and `in` is a binary search over it. A missing fact, or one
 whose collector reported an error, produces an unavailable result rather than
 silently implying compliance.
@@ -246,14 +247,18 @@ none (senders before this definition always sent it empty).
 `InventoryReport` (`POST /v1/inventory`) carries the host's operating system
 and installed packages, for the platform's vulnerability matching. `os.id`
 and `os.version_id` are the `ID` and `VERSION_ID` of the host's os-release
-file (for example `fedora` and `44`). `packages` holds up to 10,000
+file (for example `fedora` and `44`). `packages` holds up to 50,000
 `InstalledPackage` records, the same shape as in `InventoryExport`, and the
-document stays within 1 MiB. `agent_id` must be the authenticated agent's
+document stays within the inventory document limit (8 MiB), not the 1 MiB
+limit of other documents. `agent_id` must be the authenticated agent's
 own id, or the report is refused with 400. Each report replaces the host's
 stored inventory. The agent sends one only when its operating system or
 package set has changed since the platform last accepted one, when its
-`packages` collector is enabled, and never in local-only mode; a failed send
-is retried on the next tick. A host without an os-release file sends no
+`packages` collector is enabled, and never in local-only mode. A send that
+fails on the network or with a 5xx (a busy platform answers 503) is retried
+on the next tick; a report the agent cannot send because it is over the
+limits, or that the platform refuses with a 4xx other than 401/403, is not
+resent until the inventory changes. A host without an os-release file sends no
 report. The optional `running_kernel` is the running kernel's release
 as `uname -r` reports it (for example `6.17.4-300.fc44.x86_64`); it counts
 as part of the report's content, so the first report after a reboot into
@@ -365,9 +370,9 @@ signature for enrolled agents.
 The same export command also writes one `InventoryExport` file per run: a
 snapshot of the host's installed packages, taken at export time, beside the
 `FindingExport` files. It carries `install_id`, optional `agent_id` and
-`hostname`, `scanner_version`, `collected_at_unix_ms`, and up to 10,000
-`packages`. The whole document must also fit the 1 MiB document limit, which
-a large host can reach first (about 8,500 RPM packages). Each package names its `manager`
+`hostname`, `scanner_version`, `collected_at_unix_ms`, and up to 50,000
+`packages`. The whole document must also fit the inventory document limit
+(8 MiB; about 134 bytes per RPM package, so 50,000 packages fit). Each package names its `manager`
 (`rpm` or `dpkg`), `name`, and upstream `version`, and optionally its
 distribution `release`, `epoch`, `arch`, and the `vendor` its database
 records. A package may also name its `source` package (dpkg's `Source`
@@ -406,7 +411,9 @@ export of findings. Online inventory reports are `InventoryReport` (P8).
 | YAML alias replay | 10,000 events, depth 16, 64 expansions per anchor |
 | CEL expression | 16 KiB |
 | General list | 1,024 items |
-| String-list fact | 10,000 items, sorted and unique |
+| String-list fact | 10,000 items, sorted and unique (`package.names`: 50,000) |
+| Inventory packages (`InventoryReport`, `InventoryExport`) | 50,000 |
+| Inventory document (one `InventoryReport` body or `InventoryExport` file) | 8 MiB |
 | Evidence per finding | 128 keys |
 | CEL operations per rule | 50,000 |
 | CEL expression depth | 32 |

@@ -46,6 +46,18 @@ def main() -> int:
                 # states; a second error would hide what it tests.
                 print(f"FAIL {directory.name}/{fixture.name}: {len(errors)} errors, want 1")
                 failures += 1
+    # Generated, not checked in: inventories at the package limits.
+    base = json.loads((ROOT / "fixtures/v1/inventory-report/valid.json").read_text())
+    report = Draft202012Validator(schemas["inventory-report"], registry=registry)
+    for count, expect_valid in [(10_001, True), (50_000, True), (50_001, False)]:
+        document = dict(
+            base, packages=[dict(base["packages"][0], name=f"p{i}") for i in range(count)]
+        )
+        valid = report.is_valid(document)
+        checked += 1
+        if valid != expect_valid:
+            print(f"FAIL generated inventory-report with {count} packages: valid={valid}")
+            failures += 1
     print(f"{checked} fixtures checked, {failures} failures")
     return 1 if failures else 0
 

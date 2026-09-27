@@ -53,7 +53,7 @@
     },
     "packages": {
       "type": "array",
-      "maxItems": 10000,
+      "maxItems": 50000,
       "items": {
         "$ref": "#/$defs/package"
       }

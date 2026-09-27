@@ -37,7 +37,7 @@
     },
     "packages": {
       "type": "array",
-      "maxItems": 10000,
+      "maxItems": 50000,
       "items": {
         "$ref": "inventory-export.schema.json#/$defs/package"
       }

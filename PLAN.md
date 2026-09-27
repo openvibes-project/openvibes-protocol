@@ -198,6 +198,10 @@ platform `931d365`.
 - [x] Ingest: store compactly; notify the vulnerability service
   (openvibes-platform #17).
 
+- [x] Larger inventories: up to 50,000 packages and 8 MiB per inventory
+  (M1 limits review, 2026-09-27); a refused inventory is not resent until it
+  changes. Spec `openvibes-platform/docs/specs/2026-09-27-inventory-limits-design.md`.
+
 ### P9: Running kernel in inventory reports (user, 2026-09-25)
 
 A kernel fix counts only once the host runs it; until a reboot the platform
