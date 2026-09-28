@@ -1,0 +1,67 @@
+[
+  {
+    "name": "empty set",
+    "matches": [],
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "name": "one match",
+    "matches": [
+      {
+        "rule_set_id": "baseline",
+        "rule_id": "port.redis.exposed",
+        "rule_version": 1,
+        "severity": "high",
+        "message": "Redis is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      }
+    ],
+    "sha256": "2bf7bd1c6d57e5b8bd132f9d9d678a06b947c40ebacdf5a24149b7dd2e387352"
+  },
+  {
+    "name": "unordered matches, unordered and duplicate evidence, non-ASCII message",
+    "matches": [
+      {
+        "rule_set_id": "hardening-ssh",
+        "rule_id": "SSH-002",
+        "rule_version": 3,
+        "severity": "medium",
+        "message": "Root login allowed — café",
+        "evidence": [
+          "process.names",
+          "listening.exposed_ports",
+          "process.names"
+        ]
+      },
+      {
+        "rule_set_id": "baseline",
+        "rule_id": "pkg.telnet-server",
+        "rule_version": 2,
+        "severity": "low",
+        "message": "telnet-server is installed",
+        "evidence": [
+          "package.names"
+        ]
+      }
+    ],
+    "sha256": "0514ccf429bc5682b72f4a384208721d81f714bda15348884afb08af81d0449a"
+  },
+  {
+    "name": "escaping: quote, backslash, newline, U+001F, slash, tab (checked against Rust serde_json)",
+    "matches": [
+      {
+        "rule_set_id": "baseline",
+        "rule_id": "msg.escaping",
+        "rule_version": 1,
+        "severity": "info",
+        "message": "quote \" backslash \\ newline \n unit-sep \u001f slash / tab \t",
+        "evidence": [
+          "process.names"
+        ]
+      }
+    ],
+    "sha256": "5c8f251a29481c271e9f7ae2f05335ce83c734edd6b474ae3fc49d9fd2122962"
+  }
+]

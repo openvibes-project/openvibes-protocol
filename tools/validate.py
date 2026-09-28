@@ -44,6 +44,26 @@ def fingerprint(inventory: dict) -> str:
     return hashlib.sha256(text.encode()).hexdigest()
 
 
+def match_digest(matches: list) -> str:
+    """spec/contracts-v1.md, "Match digest (P13)"."""
+
+    def compact(value) -> str:
+        return json.dumps(value, separators=(",", ":"), ensure_ascii=False)
+
+    rows = sorted(
+        {
+            compact(
+                [
+                    m["rule_set_id"], m["rule_id"], m["rule_version"],
+                    m["severity"], m["message"], sorted(set(m["evidence"])),
+                ]
+            )
+            for m in matches
+        }
+    )
+    return hashlib.sha256(("[" + ",".join(rows) + "]").encode()).hexdigest()
+
+
 def main() -> int:
     schemas = {
         path.name.removesuffix(".schema.json"): json.loads(path.read_text())
@@ -92,6 +112,12 @@ def main() -> int:
         checked += 1
         if fingerprint(vector["inventory"]) != vector["sha256"]:
             print(f"FAIL fingerprint vector {vector['name']}")
+            failures += 1
+    # The match digest (protocol P13).
+    for vector in json.loads((ROOT / "vectors/match-digest.json").read_text()):
+        checked += 1
+        if match_digest(vector["matches"]) != vector["sha256"]:
+            print(f"FAIL match digest vector {vector['name']}")
             failures += 1
     print(f"{checked} fixtures checked, {failures} failures")
     return 1 if failures else 0

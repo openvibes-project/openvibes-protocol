@@ -34,6 +34,7 @@ Status: **done** (implemented and tested), **todo** (specified, not built),
 | 7 | `FindingExport` file | agent → file → ingest | local-only | file import | done | done (`openvibes-admin import`, openvibes-platform #34) |
 | 7a | `InventoryExport` file | agent → file → ingest | local-only | file import | done | done (`openvibes-admin import`, openvibes-platform #34) |
 | 11 | `InventoryChanges` (gzip), `PlatformError` `inventory_resync` | agent → ingest | online | `/v1/inventory/changes`, mTLS; 409 resync | done (gzip, fallbacks; openvibes-agent #16) | done (openvibes-platform #42) |
+| 12 | `FindingChanges` (gzip), `PlatformError` `findings_resync`; heartbeat `match_sha256` | agent → ingest | online | `/v1/findings/changes`, mTLS; 409 resync (also on heartbeat) | todo | todo |
 | 8 | Enrollment token | operator → agent | out of band | token file | done | done (issuance, single- and multi-use) |
 | 9 | Platform CA bundle | operator → agent; installer → ingest | out of band; online | config file; `GET /v1/ca`, no client cert, checked by fingerprint | done | done (built-in PKI; `/v1/ca`, openvibes-platform #47) |
 | 10 | Rule-signing trust keys | operator → agent | out of band | agent config | done (per rule set) | n/a |
@@ -258,6 +259,20 @@ every change set against the agent's fingerprint (spec
   uncompressed for a platform before P11) (openvibes-agent #16).
 - [x] Platform: gzip bodies, apply change sets under the host lock
   (openvibes-platform #42).
+
+### P13: Fewer repeat findings: match start and end (user, 2026-09-28)
+
+Agents report when a rule match starts, changes and ends instead of on every
+scan; the platform keeps the current set and checks each change set against
+the agent's match digest (spec
+`openvibes-platform/docs/specs/2026-09-28-finding-matches-design.md`).
+
+- [x] Spec and schema: `FindingChanges`, `findings_resync`, the match digest
+  and its vectors (`vectors/match-digest.json`), heartbeat `match_sha256`,
+  `health.matches_truncated`.
+- [ ] Platform: store changes, digest check and replace, heartbeat resync,
+  match status (Matching, Fixed, Stale, Seen while offline) in the console.
+- [ ] Agent: match table, change sets, transients, 409 and 404 fallbacks.
 
 ## Open Questions
 

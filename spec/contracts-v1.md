@@ -172,9 +172,10 @@ serialized document of response body. Every response is validated before use.
 | `/v1/enroll` | none | `EnrollmentRequest` | `EnrollmentResponse` |
 | `/v1/renew` | required | `RenewalRequest` | `EnrollmentResponse` |
 | `/v1/findings` | required | `FindingBatch` | `DeliveryAcknowledgement` |
-| `/v1/heartbeat` | required | `Heartbeat` | any 2xx; body ignored |
+| `/v1/heartbeat` | required | `Heartbeat` | any 2xx; body ignored; 409 `PlatformError` `findings_resync` (P13, only when the heartbeat carried `match_sha256`) |
 | `/v1/inventory` | required | `InventoryReport` | any 2xx; body ignored |
 | `/v1/inventory/changes` | required | `InventoryChanges` | any 2xx; body ignored; 409 `PlatformError` `inventory_resync` |
+| `/v1/findings/changes` | required | `FindingChanges` | any 2xx; body ignored; 409 `PlatformError` `findings_resync` |
 | `/v1/ca` (`GET`) | none | none | the platform's root CA certificate, PEM |
 
 `GET /v1/ca` returns the root certificate that issued the platform's server
@@ -404,6 +405,95 @@ its CA issued and answer at the HTTP level, because a TLS 1.3 post-handshake
 rejection races the request write and is indistinguishable from a network
 failure. Any other status, including 3xx, is a rejected request.
 
+#### Finding changes (P13)
+
+An agent using P13 reports rule matches as changes, not per scan. A match
+is one rule set and rule on the agent; it is open from the scan that first
+matched until a scan that evaluates the rule and does not match, or until
+the rule is gone: absent from the rule set's currently accepted bundle, or
+its rule set no longer configured on the agent. A rule the scan could not
+evaluate (bundle expired or refused, collector unavailable, budget
+exceeded) keeps its match open; it is counted in
+`health.last_scan.rules_unavailable` or `rules_failed`. A host that stops
+reporting is stale, never "ended".
+
+The agent keeps at most 500 current matches, and at most what fits in one
+8 MiB `FindingChanges` body. A match already acknowledged by the platform
+keeps its place; a new match that would pass either bound is left out and
+counted in `health.matches_truncated`, so no match is ever reported ended
+to make room, and a replace always fits.
+
+After a scan, if its current match set differs from the set the platform
+last acknowledged, or it holds transient matches, the agent sends one
+`FindingChanges` to `POST /v1/findings/changes` (mTLS, gzip as for
+inventory, within the 8 MiB inventory document limit):
+
+- `started`: matches not in the acknowledged set, as `Finding` documents
+  with `rule_set_id` required and `observed_at_unix_ms` the time the match
+  started; `changed`: acknowledged matches whose rule version, severity,
+  message or evidence differ, as `Finding` documents; `ended`: acknowledged
+  matches that ended (above). A `finding_id` is new for each entry. Each
+  rule set and rule appears at most once across `started`, `changed` and
+  `ended`.
+- `transient`: matches that started and ended since the last
+  acknowledgement (the platform never saw them start), at most 100;
+  `transient_dropped` counts those not kept.
+- `base_sha256` and `sha256`: the match digest (below) of the acknowledged
+  set and of the set after the changes. With nothing acknowledged,
+  `base_sha256` is the empty set's digest.
+- `started`, `changed` and `ended` together hold at most 500 entries; a
+  change set that would hold more is sent as a replace instead.
+
+The platform applies the changes under the agent's lock only if its stored
+digest equals `base_sha256`, every `started` match is not open, every
+`changed` and `ended` match is open, and the result's digest equals
+`sha256`. Otherwise it answers 409 with `PlatformError` code
+`findings_resync` and stores nothing. The agent then sends
+`replace: true`: its whole current set in `started`, `changed` and `ended`
+empty, `base_sha256` ignored; the platform ends every open match missing
+from it at `scanned_at_unix_ms`, as approximate.
+
+Entries are never refused one by one. A `started` or `changed` finding
+whose `observed_at_unix_ms` is older than the platform's finding retention
+or more than one hour ahead of its clock is stored as observed at receipt,
+keeping the reported start as the match's approximate start. A document
+the platform can never accept (invalid, a rule set and rule listed twice,
+a value it cannot store such as a `rule_version` above 2^63 − 1) is
+answered 400, never 409.
+
+On a 2xx the agent records the new set as acknowledged and drops its
+transients. An agent with nothing acknowledged (first start, or after
+re-enrolling) sends a replace after its first scan, even when its set is
+empty. A 409 that answers a replace, a 400, and any other 4xx except 404
+are refused requests: the agent retries with the delivery backoff, never
+at once. A platform before P13 answers 404: the agent then sends per-scan
+`FindingBatch` deliveries as before, until it restarts. Local-only export
+is unchanged.
+
+A heartbeat from an agent using P13 carries `match_sha256`, the digest of
+its acknowledged set; an agent with nothing acknowledged yet, or in the 404
+fallback, leaves it out. A platform whose stored digest differs (restored,
+lost, or never received) stores the heartbeat as usual and answers 409
+`findings_resync`. The agent treats that heartbeat as delivered and sends a
+replace, unless a replace is already pending or waiting on its backoff. A
+heartbeat without `match_sha256` is never answered 409, so agents before
+P13 are unaffected.
+
+#### Match digest (P13)
+
+The agent and the platform both compute the digest of an agent's current
+match set and must agree byte for byte. A match is the JSON array
+`[rule_set_id, rule_id, rule_version, severity, message, evidence]`, with
+`evidence` deduplicated and sorted in byte order. The digest is the
+lowercase hex SHA-256 of the UTF-8 compact JSON array (no spaces) of all
+current matches, deduplicated and sorted by their compact JSON text in byte
+order; the empty set is `[]`. Compact JSON is written as for the
+inventory fingerprint: no whitespace, non-ASCII characters not escaped,
+`"` and `\` escaped with a backslash, control characters as `\b`, `\f`,
+`\n`, `\r`, `\t` or lowercase `\u00xx`, `/` not escaped, integers in plain
+decimal. When a match started is not part of it. Test
+vectors (match set → digest) are in `vectors/match-digest.json`.
+
 ## Rule Distribution
 
 Signed rule bundles come from the platform's **distribution service**, never
@@ -523,7 +613,7 @@ export of findings. Online inventory reports are `InventoryReport` (P8).
 | General list | 1,024 items |
 | String-list fact | 10,000 items, sorted and unique (`package.names`: 50,000) |
 | Inventory packages (`InventoryReport`, `InventoryExport`; `InventoryChanges` added and removed together) | 50,000 |
-| Inventory document (one `InventoryReport` or `InventoryChanges` body, compressed and expanded, or `InventoryExport` file) | 8 MiB |
+| Inventory document (one `InventoryReport`, `InventoryChanges` or `FindingChanges` body, compressed and expanded, or `InventoryExport` file); the 1 MiB document and aggregate string limits do not apply to these | 8 MiB |
 | Evidence per finding | 128 keys |
 | CEL operations per rule | 50,000 |
 | CEL expression depth | 32 |
@@ -534,6 +624,9 @@ export of findings. Online inventory reports are `InventoryReport` (P8).
 | SQLite queue | 256 MiB |
 | Queue retention | 30 days |
 | Delivery batch | 500 findings |
+| `FindingChanges` entries (`started`, `changed` and `ended` together) | 500 |
+| `FindingChanges` transient matches | 100 |
+| Current matches per agent (P13) | 500 |
 | Retry delay | Nominal 15 seconds, doubling per failed attempt up to 1 hour; each wait is drawn between half and all of the nominal delay (the first retry comes after 7.5 to 15 seconds) |
 | Platform connect, including TLS | 10 seconds |
 | Platform request, end to end | 60 seconds |

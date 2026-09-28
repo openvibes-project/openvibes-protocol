@@ -169,8 +169,17 @@
             "integer",
             "null"
           ]
+        },
+        "matches_truncated": {
+          "$ref": "#/$defs/count",
+          "description": "Optional (P13): current matches beyond the 500 kept."
         }
       }
+    },
+    "match_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Optional (P13): match digest of the set the platform last acknowledged for this agent. Sent only by agents using finding changes; a platform whose stored digest differs answers 409 findings_resync after storing the heartbeat."
     }
   },
   "$defs": {
