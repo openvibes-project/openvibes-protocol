@@ -1410,5 +1410,89 @@
       "-c",
       "PGPASSWORD=*** pg_dump db"
     ]
+  },
+  {
+    "name": "wrapper: shell options before -c are skipped",
+    "exe": "/usr/bin/sudo",
+    "args": [
+      "sudo",
+      "bash",
+      "-o",
+      "pipefail",
+      "-e",
+      "+x",
+      "-c",
+      "mysql -psecret db"
+    ],
+    "masked": [
+      "sudo",
+      "bash",
+      "-o",
+      "pipefail",
+      "-e",
+      "+x",
+      "-c",
+      "mysql -p*** db"
+    ]
+  },
+  {
+    "name": "wrapper: long shell options before -c are skipped",
+    "exe": "/usr/bin/sudo",
+    "args": [
+      "sudo",
+      "bash",
+      "--norc",
+      "--rcfile",
+      "/etc/r",
+      "-lc",
+      "mysql -psecret db"
+    ],
+    "masked": [
+      "sudo",
+      "bash",
+      "--norc",
+      "--rcfile",
+      "/etc/r",
+      "-lc",
+      "mysql -p*** db"
+    ]
+  },
+  {
+    "name": "wrapper: a script path before -c means no script",
+    "exe": "/usr/bin/sudo",
+    "args": [
+      "sudo",
+      "bash",
+      "-e",
+      "/srv/run.sh",
+      "-c",
+      "conf"
+    ],
+    "masked": [
+      "sudo",
+      "bash",
+      "-e",
+      "/srv/run.sh",
+      "-c",
+      "conf"
+    ]
+  },
+  {
+    "name": "wrapper: -- before -c means no script",
+    "exe": "/usr/bin/sudo",
+    "args": [
+      "sudo",
+      "sh",
+      "--",
+      "-c",
+      "conf"
+    ],
+    "masked": [
+      "sudo",
+      "sh",
+      "--",
+      "-c",
+      "conf"
+    ]
   }
 ]
