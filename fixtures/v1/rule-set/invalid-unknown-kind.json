@@ -8,11 +8,6 @@
       "title": "Web server started a shell",
       "severity": "high",
       "confidence": 80,
-      "programs": [
-        "sh",
-        "bash",
-        "dash"
-      ],
       "expression": "event['parent.name'] == 'nginx' || event['parent.name'] == 'httpd'",
       "finding_message": "A web server started a shell"
     },

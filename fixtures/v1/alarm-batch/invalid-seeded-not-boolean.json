@@ -8,7 +8,7 @@
       "rule_set_version": 1,
       "rule_id": "web-server-spawns-shell",
       "rule_version": 1,
-      "severity": "urgent",
+      "severity": "high",
       "confidence": 80,
       "message": "A web server started a shell",
       "first_seen_unix_ms": 1790604131000,
@@ -47,7 +47,7 @@
           ],
           "uid": 0,
           "truncated": false,
-          "seeded": true
+          "seeded": "yes"
         }
       ]
     }

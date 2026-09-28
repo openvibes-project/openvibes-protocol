@@ -1,6 +1,5 @@
 {
   "schema_version": 1,
-  "dropped": 0,
   "alarms": [
     {
       "alarm_id": "0192a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b",
@@ -46,9 +45,11 @@
             "--system"
           ],
           "uid": 0,
-          "truncated": false
+          "truncated": false,
+          "seeded": true
         }
       ]
     }
-  ]
+  ],
+  "dropped_total": 0
 }

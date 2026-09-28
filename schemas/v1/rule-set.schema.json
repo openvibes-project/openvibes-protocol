@@ -64,7 +64,9 @@
             "items": { "$ref": "common.schema.json#/$defs/boundedString" },
             "description": "process_event only, optional: exact exe paths or basenames. An event whose exe and name are in no rule's list skips evaluation."
           }
-        }
+        },
+        "if": { "not": { "properties": { "kind": { "const": "process_event" } }, "required": ["kind"] } },
+        "then": { "not": { "required": ["programs"] } }
       }
     }
   }

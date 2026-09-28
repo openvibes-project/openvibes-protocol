@@ -160,6 +160,22 @@ def main() -> int:
         if not ok:
             print(f"FAIL cel vector {vector.get('name')!r}")
             failures += 1
+    # Alarm masking (P14): the agent's tests check the rewriting; here only
+    # the shape, and that masking never changes the number of arguments.
+    names = set()
+    for vector in json.loads((ROOT / "vectors/alarm-masking.json").read_text()):
+        checked += 1
+        ok = (
+            set(vector) == {"name", "exe", "args", "masked"}
+            and isinstance(vector["exe"], str) and vector["exe"].startswith("/")
+            and all(isinstance(x, list) and all(isinstance(a, str) for a in x) for x in (vector["args"], vector["masked"]))
+            and len(vector["args"]) == len(vector["masked"])
+            and vector["name"] not in names
+        )
+        names.add(vector.get("name"))
+        if not ok:
+            print(f"FAIL masking vector {vector.get('name')!r}")
+            failures += 1
     print(f"{checked} fixtures checked, {failures} failures")
     return 1 if failures else 0
 

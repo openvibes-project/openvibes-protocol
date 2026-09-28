@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
   "agent_id": "agent.1",
-  "dropped": 0,
-  "alarms": []
+  "alarms": [],
+  "dropped_total": 0
 }

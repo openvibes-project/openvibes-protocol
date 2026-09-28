@@ -1,0 +1,294 @@
+[
+  {
+    "name": "mysql -p value is masked",
+    "exe": "/usr/bin/mysql",
+    "args": [
+      "mysql",
+      "-u",
+      "app",
+      "-psecret",
+      "shop"
+    ],
+    "masked": [
+      "mysql",
+      "-u",
+      "app",
+      "-p***",
+      "shop"
+    ]
+  },
+  {
+    "name": "mysql bare -p prompts, next word is kept",
+    "exe": "/usr/bin/mysql",
+    "args": [
+      "mysql",
+      "-p",
+      "shop"
+    ],
+    "masked": [
+      "mysql",
+      "-p",
+      "shop"
+    ]
+  },
+  {
+    "name": "sshpass -p next argument is masked",
+    "exe": "/usr/bin/sshpass",
+    "args": [
+      "sshpass",
+      "-p",
+      "secret",
+      "ssh",
+      "host"
+    ],
+    "masked": [
+      "sshpass",
+      "-p",
+      "***",
+      "ssh",
+      "host"
+    ]
+  },
+  {
+    "name": "ssh -p is a port",
+    "exe": "/usr/bin/ssh",
+    "args": [
+      "ssh",
+      "-p",
+      "2222",
+      "host"
+    ],
+    "masked": [
+      "ssh",
+      "-p",
+      "2222",
+      "host"
+    ]
+  },
+  {
+    "name": "the -p gate uses the exe basename, not argv[0]",
+    "exe": "/usr/bin/ssh",
+    "args": [
+      "mysql",
+      "-p2222",
+      "host"
+    ],
+    "masked": [
+      "mysql",
+      "-p2222",
+      "host"
+    ]
+  },
+  {
+    "name": "--password=value",
+    "exe": "/usr/bin/tool",
+    "args": [
+      "tool",
+      "--password=secret"
+    ],
+    "masked": [
+      "tool",
+      "--password=***"
+    ]
+  },
+  {
+    "name": "--password value",
+    "exe": "/usr/bin/tool",
+    "args": [
+      "tool",
+      "--password",
+      "secret",
+      "x"
+    ],
+    "masked": [
+      "tool",
+      "--password",
+      "***",
+      "x"
+    ]
+  },
+  {
+    "name": "flag names are case-insensitive",
+    "exe": "/usr/bin/tool",
+    "args": [
+      "tool",
+      "--PASSWORD=secret",
+      "--Token",
+      "abc"
+    ],
+    "masked": [
+      "tool",
+      "--PASSWORD=***",
+      "--Token",
+      "***"
+    ]
+  },
+  {
+    "name": "environment-style assignment",
+    "exe": "/usr/bin/env",
+    "args": [
+      "env",
+      "PGPASSWORD=secret",
+      "MY_API_KEY=abc",
+      "HOME=/root",
+      "psql"
+    ],
+    "masked": [
+      "env",
+      "PGPASSWORD=***",
+      "MY_API_KEY=***",
+      "HOME=/root",
+      "psql"
+    ]
+  },
+  {
+    "name": "URL userinfo password",
+    "exe": "/usr/bin/git",
+    "args": [
+      "git",
+      "clone",
+      "https://bob:secret@example.org/r.git"
+    ],
+    "masked": [
+      "git",
+      "clone",
+      "https://bob:***@example.org/r.git"
+    ]
+  },
+  {
+    "name": "URL without a password is kept",
+    "exe": "/usr/bin/git",
+    "args": [
+      "git",
+      "clone",
+      "https://bob@example.org/r.git"
+    ],
+    "masked": [
+      "git",
+      "clone",
+      "https://bob@example.org/r.git"
+    ]
+  },
+  {
+    "name": "curl -u user:password",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "-u",
+      "bob:secret",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "-u",
+      "bob:***",
+      "https://x"
+    ]
+  },
+  {
+    "name": "curl --user=user:password",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "--user=bob:secret",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "--user=bob:***",
+      "https://x"
+    ]
+  },
+  {
+    "name": "Authorization header value",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "-H",
+      "authorization: Bearer abc.def",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "-H",
+      "authorization: ***",
+      "https://x"
+    ]
+  },
+  {
+    "name": "openssl pass: argument",
+    "exe": "/usr/bin/openssl",
+    "args": [
+      "openssl",
+      "enc",
+      "-pass",
+      "pass:secret",
+      "-in",
+      "f"
+    ],
+    "masked": [
+      "openssl",
+      "enc",
+      "-pass",
+      "pass:***",
+      "-in",
+      "f"
+    ]
+  },
+  {
+    "name": "inside sh -c, words are masked per command",
+    "exe": "/usr/bin/sh",
+    "args": [
+      "sh",
+      "-c",
+      "mysql -u app -psecret shop"
+    ],
+    "masked": [
+      "sh",
+      "-c",
+      "mysql -u app -p*** shop"
+    ]
+  },
+  {
+    "name": "inside sh -c, the command changes after &&",
+    "exe": "/usr/bin/bash",
+    "args": [
+      "bash",
+      "-c",
+      "cd /srv && mysql -psecret db"
+    ],
+    "masked": [
+      "bash",
+      "-c",
+      "cd /srv && mysql -p*** db"
+    ]
+  },
+  {
+    "name": "inside sh -c, -p of another command is kept",
+    "exe": "/usr/bin/sh",
+    "args": [
+      "sh",
+      "-c",
+      "ssh -p2222 host"
+    ],
+    "masked": [
+      "sh",
+      "-c",
+      "ssh -p2222 host"
+    ]
+  },
+  {
+    "name": "inside sh -c, assignments and flags are masked",
+    "exe": "/usr/bin/dash",
+    "args": [
+      "dash",
+      "-c",
+      "PGPASSWORD=secret psql --password=x"
+    ],
+    "masked": [
+      "dash",
+      "-c",
+      "PGPASSWORD=*** psql --password=***"
+    ]
+  }
+]

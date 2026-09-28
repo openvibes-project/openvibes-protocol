@@ -244,8 +244,9 @@ suppressions. Spec
 - [x] Spec and schema: `AlarmBatch` on `POST /v1/alarms`, `kind` and
   `programs` on rules, the `event` binding, CEL subset v2 and its vectors
   (`vectors/cel-subset-v2.json`).
-- [ ] Platform: store, ingest, console API (plan 2).
-- [ ] Agent: collector, process table, rules, masking, delivery (plan 3).
+- [ ] Agent: collector, process table, rules, masking, delivery (plan 2;
+  before the platform, which takes its wire types from `openvibes-core`).
+- [ ] Platform: store, ingest, console API (plan 3).
 - [ ] Console UI: Alarms screen, detail, suppressions (plan 4).
 
 ### P12: Agent health and the rotating queue (user, 2026-09-27)

