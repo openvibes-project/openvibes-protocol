@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "agent_id": "agent.1",
+  "base_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "sha256": "2BF7BD1C6D57E5B8BD132F9D9D678A06B947C40EBACDF5A24149B7DD2E387352",
+  "replace": false,
+  "scanned_at_unix_ms": 1790000000000,
+  "started": [
+    {
+      "schema_version": 1,
+      "finding_id": "finding.7a1",
+      "scan_id": "scan.2026-09-28.1",
+      "rule_set_id": "baseline",
+      "rule_id": "port.redis.exposed",
+      "rule_version": 1,
+      "observed_at_unix_ms": 1790000000000,
+      "severity": "high",
+      "confidence": 100,
+      "message": "Redis is reachable from the network",
+      "evidence": [
+        "listening.exposed_ports"
+      ]
+    }
+  ],
+  "changed": [],
+  "ended": [
+    {
+      "rule_set_id": "baseline",
+      "rule_id": "port.telnet.exposed",
+      "ended_at_unix_ms": 1790000000000
+    }
+  ],
+  "transient": [],
+  "transient_dropped": 0
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/finding-changes.schema.json",
+  "title": "FindingChanges",
+  "description": "Online route (P13): how the agent's current rule matches differ from the set the platform last acknowledged, sent to POST /v1/findings/changes. Applied only if the platform's stored match digest equals base_sha256 (ignored when replace) and the result's digest equals sha256; otherwise 409 findings_resync and the agent sends replace: true with its whole set in started. started, changed and ended together hold at most 500 entries.",
+  "type": "object",
+  "required": ["schema_version", "agent_id", "base_sha256", "sha256", "replace", "scanned_at_unix_ms", "started", "changed", "ended", "transient", "transient_dropped"],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "agent_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "base_sha256": { "$ref": "#/$defs/sha256" },
+    "sha256": { "$ref": "#/$defs/sha256" },
+    "replace": { "type": "boolean" },
+    "scanned_at_unix_ms": { "$ref": "common.schema.json#/$defs/unixMs" },
+    "started": { "type": "array", "maxItems": 500, "items": { "$ref": "#/$defs/finding" } },
+    "changed": { "type": "array", "maxItems": 500, "items": { "$ref": "#/$defs/finding" } },
+    "ended": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "required": ["rule_set_id", "rule_id", "ended_at_unix_ms"],
+        "properties": {
+          "rule_set_id": { "$ref": "common.schema.json#/$defs/identifier" },
+          "rule_id": { "$ref": "common.schema.json#/$defs/identifier" },
+          "ended_at_unix_ms": { "$ref": "common.schema.json#/$defs/unixMs" }
+        }
+      }
+    },
+    "transient": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "required": ["finding", "ended_at_unix_ms"],
+        "properties": {
+          "finding": { "$ref": "#/$defs/finding" },
+          "ended_at_unix_ms": { "$ref": "common.schema.json#/$defs/unixMs" }
+        }
+      }
+    },
+    "transient_dropped": { "type": "integer", "minimum": 0 }
+  },
+  "if": { "properties": { "replace": { "const": true } } },
+  "then": { "properties": { "changed": { "maxItems": 0 }, "ended": { "maxItems": 0 } } },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "finding": { "allOf": [ { "$ref": "finding.schema.json" }, { "required": ["rule_set_id"] } ] }
+  }
+}

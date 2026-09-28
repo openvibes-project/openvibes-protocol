@@ -1,0 +1,1832 @@
+{
+  "schema_version": 1,
+  "agent_id": "agent.1",
+  "base_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "replace": false,
+  "scanned_at_unix_ms": 1790000000000,
+  "started": [],
+  "changed": [],
+  "ended": [],
+  "transient": [
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t000",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t001",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t002",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t003",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t004",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t005",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t006",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t007",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t008",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t009",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t010",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t011",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t012",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t013",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t014",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t015",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t016",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t017",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t018",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t019",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t020",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t021",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t022",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t023",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t024",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t025",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t026",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t027",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t028",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t029",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t030",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t031",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t032",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t033",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t034",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t035",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t036",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t037",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t038",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t039",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t040",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t041",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t042",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t043",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t044",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t045",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t046",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t047",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t048",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t049",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t050",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t051",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t052",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t053",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t054",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t055",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t056",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t057",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t058",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t059",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t060",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t061",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t062",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t063",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t064",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t065",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t066",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t067",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t068",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t069",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t070",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t071",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t072",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t073",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t074",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t075",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t076",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t077",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t078",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t079",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t080",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t081",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t082",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t083",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t084",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t085",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t086",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t087",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t088",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t089",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t090",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t091",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t092",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t093",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t094",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t095",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t096",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t097",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t098",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t099",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    },
+    {
+      "finding": {
+        "schema_version": 1,
+        "finding_id": "finding.t100",
+        "scan_id": "scan.2026-09-28.2",
+        "rule_set_id": "baseline",
+        "rule_id": "port.vnc.exposed",
+        "rule_version": 1,
+        "observed_at_unix_ms": 1790000000000,
+        "severity": "high",
+        "confidence": 100,
+        "message": "VNC is reachable from the network",
+        "evidence": [
+          "listening.exposed_ports"
+        ]
+      },
+      "ended_at_unix_ms": 1790003600000
+    }
+  ],
+  "transient_dropped": 3
+}

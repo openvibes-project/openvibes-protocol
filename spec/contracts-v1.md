@@ -175,6 +175,7 @@ serialized document of response body. Every response is validated before use.
 | `/v1/heartbeat` | required | `Heartbeat` | any 2xx; body ignored |
 | `/v1/inventory` | required | `InventoryReport` | any 2xx; body ignored |
 | `/v1/inventory/changes` | required | `InventoryChanges` | any 2xx; body ignored; 409 `PlatformError` `inventory_resync` |
+| `/v1/findings/changes` | required | `FindingChanges` | any 2xx; body ignored; 409 `PlatformError` `findings_resync` |
 | `/v1/ca` (`GET`) | none | none | the platform's root CA certificate, PEM |
 
 `GET /v1/ca` returns the root certificate that issued the platform's server
@@ -404,6 +405,51 @@ its CA issued and answer at the HTTP level, because a TLS 1.3 post-handshake
 rejection races the request write and is indistinguishable from a network
 failure. Any other status, including 3xx, is a rejected request.
 
+#### Finding changes (P13)
+
+An agent using P13 reports rule matches as changes, not per scan. A match
+is one rule set and rule on the agent; it is open from the scan that first
+matched until a scan that evaluates the rule and does not match. A rule the
+scan could not evaluate (bundle expired or refused, collector unavailable,
+budget exceeded) keeps its match open; it is counted in
+`health.last_scan.rules_unavailable` or `rules_failed`. A host that stops
+reporting is stale, never "ended".
+
+After a scan, if its current match set differs from the set the platform
+last acknowledged, or it holds transient matches, the agent sends one
+`FindingChanges` to `POST /v1/findings/changes` (mTLS, gzip as for
+inventory, within the 8 MiB inventory document limit):
+
+- `started`: matches not in the acknowledged set, as `Finding` documents
+  with `rule_set_id` required and `observed_at_unix_ms` the time the match
+  started; `changed`: acknowledged matches whose rule version, severity,
+  message or evidence differ, as `Finding` documents; `ended`: acknowledged
+  matches that a later scan evaluated without a match. A `finding_id` is
+  new for each entry.
+- `transient`: matches that started and ended since the last
+  acknowledgement (the platform never saw them start), at most 100;
+  `transient_dropped` counts those not kept.
+- `base_sha256` and `sha256`: the match digest (below) of the acknowledged
+  set and of the set after the changes.
+- `started`, `changed` and `ended` together hold at most 500 entries; an
+  agent keeps at most 500 current matches (those beyond are counted in
+  `health.matches_truncated`), so a replace always fits.
+
+The platform applies the changes under the agent's lock only if its stored
+digest equals `base_sha256`, every `started` match is not open, every
+`changed` and `ended` match is open, and the result's digest equals
+`sha256`. Otherwise it answers 409 with `PlatformError` code
+`findings_resync` and stores nothing. The agent then sends
+`replace: true`: its whole current set in `started`, `changed` and `ended`
+empty, `base_sha256` ignored; the platform ends every open match missing
+from it, at the replace time, as approximate.
+
+On a 2xx the agent records the new set as acknowledged and drops its
+transients. An agent that re-enrolls starts with nothing acknowledged, so
+its first delivery is a replace. A platform before P13 answers 404: the
+agent then sends per-scan `FindingBatch` deliveries as before, until it
+restarts. Local-only export is unchanged.
+
 #### Match digest (P13)
 
 The agent and the platform both compute the digest of an agent's current
@@ -545,6 +591,9 @@ export of findings. Online inventory reports are `InventoryReport` (P8).
 | SQLite queue | 256 MiB |
 | Queue retention | 30 days |
 | Delivery batch | 500 findings |
+| `FindingChanges` entries (`started`, `changed` and `ended` together) | 500 |
+| `FindingChanges` transient matches | 100 |
+| Current matches per agent (P13) | 500 |
 | Retry delay | Nominal 15 seconds, doubling per failed attempt up to 1 hour; each wait is drawn between half and all of the nominal delay (the first retry comes after 7.5 to 15 seconds) |
 | Platform connect, including TLS | 10 seconds |
 | Platform request, end to end | 60 seconds |
