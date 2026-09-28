@@ -632,13 +632,17 @@ user%password`, `7z -p`, `zip -P`), structured bodies (`-d
 a command passed as one argument to a program that is not a shell above
 (`ssh host 'mysql -px'`), `su`/`runuser --command` (only `-c` is recognised), other
 shells (`ksh`, `mksh`, `fish`), and script separators without spaces
-(`cd /x;mysql -px`, since `/x;mysql` is not a program word). Over-masking
+(`cd /x;mysql -px`, since `/x;mysql` is not a program word), and a script
+passed to a shell by a wrapper (`sudo sh -c '…'`, `timeout 5 bash -c '…'`,
+`busybox sh -c '…'`): the script rule looks only at the process's own
+`exe`, so the wrapper's arguments keep the script in clear when the wrapper
+appears as an ancestor. Over-masking
 is accepted: the broad suffixes also hide values such as `--ssh-key
 /path` or `PWD=/tmp/x`, which costs a little detail but never leaks.
 `exe` and `cwd` are never masked.
-After masking, each process's `args` is cut to at most 4096 UTF-8 bytes
-counted as joined by single spaces: whole arguments are kept from the start
-while they fit, and when even the first does not fit it is cut to fit. A cut
+After masking, each process's `args` is cut to at most 256 arguments and
+4096 UTF-8 bytes counted as joined by single spaces: whole arguments are
+kept from the start while both fit, and when even the first does not fit it is cut to fit. A cut
 sets `truncated`; nothing is appended.
 
 `AlarmBatch` (`POST /v1/alarms`, optionally `Content-Encoding: gzip`)
