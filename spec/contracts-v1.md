@@ -620,7 +620,12 @@ A shell script is masked word by word with the same rules. It is the
 argument after a `-c` flag, or after a single-dash cluster of letters that
 contains `c` (`-lc`, `-ec`), when the `exe` basename is `sh`, `bash`,
 `dash`, `zsh`, `ash`, `su` or `runuser`, or `busybox` with an `argv[0]`
-whose basename is one of the shells. The script is split on ASCII
+whose basename is one of the shells. The same holds inside any process's
+arguments, from an argument whose basename is one of these programs: for
+`sh`, `bash`, `dash`, `zsh` and `ash` when the `-c` flag or cluster directly
+follows it, for `su` and `runuser` at any later `-c` (`sudo sh -c '…'`,
+`sudo -u app bash -lc '…'`, `timeout 5 bash -c '…'`, `busybox sh -c '…'`,
+`ssh host sh -c '…'`, `sudo su - app -c '…'`). The script is split on ASCII
 whitespace; a next-argument form takes the next word; quoting and shell
 grammar are not interpreted.
 
@@ -632,11 +637,9 @@ user%password`, `7z -p`, `zip -P`), structured bodies (`-d
 a command passed as one argument to a program that is not a shell above
 (`ssh host 'mysql -px'`), `su`/`runuser --command` (only `-c` is recognised), other
 shells (`ksh`, `mksh`, `fish`), and script separators without spaces
-(`cd /x;mysql -px`, since `/x;mysql` is not a program word), and a script
-passed to a shell by a wrapper (`sudo sh -c '…'`, `timeout 5 bash -c '…'`,
-`busybox sh -c '…'`): the script rule looks only at the process's own
-`exe`, so the wrapper's arguments keep the script in clear when the wrapper
-appears as an ancestor. Over-masking
+(`cd /x;mysql -px`, since `/x;mysql` is not a program word), and a
+wrapper's shell with options before `-c` (`sudo bash -o pipefail -c
+'…'`). Over-masking
 is accepted: the broad suffixes also hide values such as `--ssh-key
 /path` or `PWD=/tmp/x`, which costs a little detail but never leaks.
 `exe` and `cwd` are never masked.

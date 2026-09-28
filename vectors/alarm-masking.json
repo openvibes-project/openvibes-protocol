@@ -1130,5 +1130,247 @@
       "-c",
       "cd /srv && find / -name '*.key' | xargs ls -la"
     ]
+  },
+  {
+    "name": "wrapper: sudo sh -c",
+    "exe": "/usr/bin/sudo",
+    "args": [
+      "sudo",
+      "sh",
+      "-c",
+      "mysql -psecret db"
+    ],
+    "masked": [
+      "sudo",
+      "sh",
+      "-c",
+      "mysql -p*** db"
+    ]
+  },
+  {
+    "name": "wrapper: sudo -u app bash -lc",
+    "exe": "/usr/bin/sudo",
+    "args": [
+      "sudo",
+      "-u",
+      "app",
+      "bash",
+      "-lc",
+      "PGPASSWORD=secret psql"
+    ],
+    "masked": [
+      "sudo",
+      "-u",
+      "app",
+      "bash",
+      "-lc",
+      "PGPASSWORD=*** psql"
+    ]
+  },
+  {
+    "name": "wrapper: timeout 5 bash -c",
+    "exe": "/usr/bin/timeout",
+    "args": [
+      "timeout",
+      "5",
+      "/bin/bash",
+      "-c",
+      "mysql -psecret db"
+    ],
+    "masked": [
+      "timeout",
+      "5",
+      "/bin/bash",
+      "-c",
+      "mysql -p*** db"
+    ]
+  },
+  {
+    "name": "wrapper: env A=1 sh -c",
+    "exe": "/usr/bin/env",
+    "args": [
+      "env",
+      "A=1",
+      "sh",
+      "-c",
+      "curl -u bob:secret https://x"
+    ],
+    "masked": [
+      "env",
+      "A=1",
+      "sh",
+      "-c",
+      "curl -u bob:*** https://x"
+    ]
+  },
+  {
+    "name": "wrapper: nohup dash -c",
+    "exe": "/usr/bin/nohup",
+    "args": [
+      "nohup",
+      "dash",
+      "-c",
+      "mysql -psecret db"
+    ],
+    "masked": [
+      "nohup",
+      "dash",
+      "-c",
+      "mysql -p*** db"
+    ]
+  },
+  {
+    "name": "wrapper: xargs sh -c",
+    "exe": "/usr/bin/xargs",
+    "args": [
+      "xargs",
+      "-I{}",
+      "sh",
+      "-c",
+      "mysqldump -psecret {}"
+    ],
+    "masked": [
+      "xargs",
+      "-I{}",
+      "sh",
+      "-c",
+      "mysqldump -p*** {}"
+    ]
+  },
+  {
+    "name": "wrapper: find -exec sh -c",
+    "exe": "/usr/bin/find",
+    "args": [
+      "find",
+      "/srv",
+      "-exec",
+      "sh",
+      "-c",
+      "mysql -psecret < {}",
+      ";"
+    ],
+    "masked": [
+      "find",
+      "/srv",
+      "-exec",
+      "sh",
+      "-c",
+      "mysql -p*** < {}",
+      ";"
+    ]
+  },
+  {
+    "name": "wrapper: docker exec sh -c",
+    "exe": "/usr/bin/docker",
+    "args": [
+      "docker",
+      "exec",
+      "db",
+      "sh",
+      "-c",
+      "MYSQL_PWD=secret mysql"
+    ],
+    "masked": [
+      "docker",
+      "exec",
+      "db",
+      "sh",
+      "-c",
+      "MYSQL_PWD=*** mysql"
+    ]
+  },
+  {
+    "name": "wrapper: ssh host sh -c",
+    "exe": "/usr/bin/ssh",
+    "args": [
+      "ssh",
+      "host",
+      "sh",
+      "-c",
+      "mysql -psecret db"
+    ],
+    "masked": [
+      "ssh",
+      "host",
+      "sh",
+      "-c",
+      "mysql -p*** db"
+    ]
+  },
+  {
+    "name": "wrapper: busybox sh -c",
+    "exe": "/usr/bin/sudo",
+    "args": [
+      "sudo",
+      "busybox",
+      "sh",
+      "-c",
+      "mysql -psecret db"
+    ],
+    "masked": [
+      "sudo",
+      "busybox",
+      "sh",
+      "-c",
+      "mysql -p*** db"
+    ]
+  },
+  {
+    "name": "wrapper: sudo su - app -c",
+    "exe": "/usr/bin/sudo",
+    "args": [
+      "sudo",
+      "su",
+      "-",
+      "app",
+      "-c",
+      "mysql -psecret db"
+    ],
+    "masked": [
+      "sudo",
+      "su",
+      "-",
+      "app",
+      "-c",
+      "mysql -p*** db"
+    ]
+  },
+  {
+    "name": "wrapper: sudo runuser -l app -c",
+    "exe": "/usr/bin/sudo",
+    "args": [
+      "sudo",
+      "runuser",
+      "-l",
+      "app",
+      "-c",
+      "mysql -psecret db"
+    ],
+    "masked": [
+      "sudo",
+      "runuser",
+      "-l",
+      "app",
+      "-c",
+      "mysql -p*** db"
+    ]
+  },
+  {
+    "name": "wrapper: a shell word without -c keeps its arguments",
+    "exe": "/usr/bin/sudo",
+    "args": [
+      "sudo",
+      "bash",
+      "/srv/run.sh",
+      "-c",
+      "conf"
+    ],
+    "masked": [
+      "sudo",
+      "bash",
+      "/srv/run.sh",
+      "-c",
+      "conf"
+    ]
   }
 ]

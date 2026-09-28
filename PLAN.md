@@ -248,6 +248,8 @@ suppressions. Spec
   clusters, busybox/su/runuser, `-p` program words, flag and `NAME`
   suffixes, headers, pairs, URLs anywhere) with a known-gaps list; bounds
   for every `event` string; literal limit in decoded bytes.
+  Wrapper scripts (`sudo sh -c`, `sudo su - app -c`) masked in any
+  process's arguments.
 - [ ] Agent: collector, process table, rules, masking, delivery (plan 2;
   before the platform, which takes its wire types from `openvibes-core`).
 - [ ] Platform: store, ingest, console API (plan 3).
