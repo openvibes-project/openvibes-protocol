@@ -630,7 +630,12 @@ user%password`, `7z -p`, `zip -P`), structured bodies (`-d
 '{"password":"x"}'`), a quoted value that spans words inside a script
 (`--password 'two words'`, `-H 'Authorization: Bearer x'` inside `-c`), and
 a command passed as one argument to a program that is not a shell above
-(`ssh host 'mysql -px'`). `exe` and `cwd` are never masked.
+(`ssh host 'mysql -px'`), `su`/`runuser --command` (only `-c` is recognised), other
+shells (`ksh`, `mksh`, `fish`), and script separators without spaces
+(`cd /x;mysql -px`, since `/x;mysql` is not a program word). Over-masking
+is accepted: the broad suffixes also hide values such as `--ssh-key
+/path` or `PWD=/tmp/x`, which costs a little detail but never leaks.
+`exe` and `cwd` are never masked.
 After masking, each process's `args` is cut to at most 4096 UTF-8 bytes
 counted as joined by single spaces: whole arguments are kept from the start
 while they fit, and when even the first does not fit it is cut to fit. A cut
