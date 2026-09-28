@@ -59,7 +59,10 @@ is checked before execution, including branches a short circuit would skip.
 **Subset v2 (P14)** adds three methods on a string operand:
 `s.startsWith('lit')`, `s.endsWith('lit')` and `s.contains('lit')`. The
 argument must be one plain single- or double-quoted string literal (not
-raw, bytes or triple-quoted). A loader refuses a rule with any other
+raw, bytes or triple-quoted) of at most 256 bytes. Implementations must run
+each method in time linear in the receiver's and the literal's length
+(for example Two-Way or a similar algorithm, as Rust's `str::contains`), so
+the length-based charge below bounds the real work. A loader refuses a rule with any other
 argument, a non-string receiver, any other method or function (including
 the global form `contains(s, 'x')` and `size`), or a non-literal map index,
 so a signed rule can never carry one. Each call charges the evaluation
@@ -556,10 +559,12 @@ events no rule names. The evaluation wall-time limit applies to each rule
 on each event.
 
 A match becomes an alarm, identified by an `alarm_id` the agent makes once.
-Repeats collapse: a match with the same rule set, rule, `process.exe` and
-`parent.exe` (empty when there is no parent) within 10 minutes of the
-alarm's `first_seen_unix_ms` raises that alarm's `count` and
-`last_seen_unix_ms` instead of creating one. An alarm already delivered is
+Repeats collapse: a match with the same rule set, rule, `process.exe`,
+`parent.exe` (empty when there is no parent) and masked `process.cmdline`
+within 10 minutes of the alarm's `first_seen_unix_ms` raises that alarm's
+`count` and `last_seen_unix_ms` instead of creating one. The command line is
+part of the key so that a harmless first command cannot hide a later,
+different one under the same alarm; an identical loop still collapses. An alarm already delivered is
 sent again, with the same `alarm_id`, when its `count` has grown. A platform
 keeps one record per agent and `alarm_id`: a repeat updates `count` and
 `last_seen_unix_ms` to the larger values and keeps everything else from the
@@ -758,6 +763,7 @@ export of findings. Online inventory reports are `InventoryReport` (P8).
 | `args` per process in an alarm | 256 entries, 4 KiB joined |
 | Ancestors per alarm | 5 |
 | `process.cmdline` in the `event` binding | 256 KiB (longer is cut, `process.cmdline_truncated`) |
+| String literal argument of a subset v2 method | 256 bytes |
 
 These are security limits, not performance targets. Raising them requires test
 coverage and a resource-exhaustion review.
