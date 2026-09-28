@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "agent_id": "agent.1",
+  "alarms": [
+    {
+      "alarm_id": "0192a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b",
+      "rule_set_id": "baseline-alarms",
+      "rule_set_version": 1,
+      "rule_id": "web-server-spawns-shell",
+      "rule_version": 1,
+      "severity": "high",
+      "confidence": 80,
+      "message": "A web server started a shell",
+      "first_seen_unix_ms": 1790604131000,
+      "last_seen_unix_ms": 1790604190000,
+      "count": 3,
+      "process": {
+        "pid": 4242,
+        "exe": "",
+        "args": [
+          "sh",
+          "-c",
+          "mysql -u app -p*** shop"
+        ],
+        "cwd": "/var/www",
+        "uid": 48,
+        "truncated": false
+      },
+      "ancestors": [
+        {
+          "pid": 900,
+          "exe": "/usr/sbin/nginx",
+          "args": [
+            "nginx: worker process"
+          ],
+          "cwd": "/",
+          "uid": 48,
+          "truncated": false
+        },
+        {
+          "pid": 1,
+          "exe": "/usr/lib/systemd/systemd",
+          "args": [
+            "/usr/lib/systemd/systemd",
+            "--switched-root",
+            "--system"
+          ],
+          "uid": 0,
+          "truncated": false,
+          "seeded": true
+        }
+      ]
+    }
+  ],
+  "dropped_total": 0
+}

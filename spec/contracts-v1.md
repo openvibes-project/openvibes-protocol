@@ -56,6 +56,27 @@ literals, `!`, unary `-`, `&&`, `||`, `==`, `!=`, `<`, `<=`, `>`, `>=`, and
 and triple-quoted strings are rejected. Every referenced fact and operand type
 is checked before execution, including branches a short circuit would skip.
 
+**Subset v2 (P14)** adds three methods on a string operand:
+`s.startsWith('lit')`, `s.endsWith('lit')` and `s.contains('lit')`. The
+argument must be one plain single- or double-quoted string literal (not
+raw, bytes or triple-quoted) of at most 256 bytes. Implementations must run
+each method in time linear in the receiver's and the literal's length
+(for example Two-Way or a similar algorithm, as Rust's `str::contains`), so
+the length-based charge below bounds the real work. A loader refuses a rule with any other
+argument, a non-string receiver, any other method or function (including
+the global form `contains(s, 'x')` and `size`), or a non-literal map index,
+so a signed rule can never carry one. Each call charges the evaluation
+budget by the receiver's length: one operation per started 64 bytes (at
+least one). A loader also computes each rule's worst case from the key
+bounds below (for example 4,096 operations per call on the 256 KiB
+`process.cmdline`) and refuses a rule whose worst case exceeds the per-rule
+operation limit, so no input an attacker controls can push a signed rule
+over its budget. The methods are allowed in both rule kinds. There are no
+regular expressions. An agent before P14 refuses any method call as an
+invalid expression, per rule, so a rule set that older agents load must not
+use them. Test vectors: `vectors/cel-subset-v2.json` (`refused` = the loader
+rejects the rule; `unavailable` = a referenced value is missing).
+
 ## Rules and Findings
 
 A rule set contains declarative CEL rules with stable IDs, positive monotonic
@@ -176,6 +197,7 @@ serialized document of response body. Every response is validated before use.
 | `/v1/inventory` | required | `InventoryReport` | any 2xx; body ignored |
 | `/v1/inventory/changes` | required | `InventoryChanges` | any 2xx; body ignored; 409 `PlatformError` `inventory_resync` |
 | `/v1/findings/changes` | required | `FindingChanges` | any 2xx; body ignored; 409 `PlatformError` `findings_resync` |
+| `/v1/alarms` | required | `AlarmBatch` (P14) | any 2xx; body ignored |
 | `/v1/ca` (`GET`) | none | none | the platform's root CA certificate, PEM |
 
 `GET /v1/ca` returns the root certificate that issued the platform's server
@@ -494,6 +516,111 @@ inventory fingerprint: no whitespace, non-ASCII characters not escaped,
 decimal. When a match started is not part of it. Test
 vectors (match set → digest) are in `vectors/match-digest.json`.
 
+#### Process events and alarms (P14)
+
+A rule's optional `kind` is `snapshot` (the default) or `process_event`;
+only a `process_event` rule may carry `programs`. A `process_event` rule is
+evaluated once per process start on the host, against a flat map named
+`event`, and may reference only `event[...]` keys from the table below; a
+snapshot rule may reference only `facts[...]`. A loader refuses the other
+binding and any `event` key not in the table (the set is closed, unlike
+facts, so a typo is caught at signing, not silently never matched). Alarm
+rules ship in their own rule sets (for example `baseline-alarms`): an agent
+before P14 ignores `kind` and would fail every `event[...]` rule, so it is
+not configured with one.
+
+| `event` key | Type |
+|---|---|
+| `process.exe`, `process.name`, `process.cmdline` (args joined by single spaces, at most 256 KiB), `process.cwd` | string |
+| `process.cmdline_truncated` (the command line was longer than 256 KiB and was cut) | boolean |
+| `process.uid` | integer |
+| `parent.exe`, `parent.name`, `parent.cmdline` | string |
+| `ancestors.names`, `ancestors.exes` (the parent and up to 4 further ancestors) | string list, sorted, no duplicates |
+
+`exe` is the executed file's path and `name` its basename. A process the
+agent learnt from `/proc` when it started, not from an exec event, is
+*seeded*: its `name` is the kernel's `comm` (`/proc/<pid>/stat`, at most 15
+bytes, e.g. `nginx` for an nginx worker), and its `exe` is the
+`/proc/<pid>/exe` link when readable, otherwise `argv[0]` when it is an
+absolute path, otherwise `[comm]` in brackets. Neither is ever empty
+(`[unknown]` as a last resort). Seeded values are real values, not missing
+ones, so a rule on `parent.name` works for a parent that started before the
+agent. A key whose value the agent does not know (no parent at all, a cwd it
+cannot read) is missing, and the rule is `Unavailable`, never a match.
+
+Values come from the kernel as bytes. An agent decodes them as UTF-8,
+replacing each invalid sequence with U+FFFD, before binding, masking or
+sending, and every cut in this section falls on a character boundary.
+Rules see the full, unmasked command line up to the 256 KiB cut; a longer
+one is cut rather than dropped, and a rule may treat
+`process.cmdline_truncated` itself as suspicious. The optional `programs`
+list (exact exe paths or basenames) lets an agent skip evaluation for
+events no rule names. The evaluation wall-time limit applies to each rule
+on each event.
+
+A match becomes an alarm, identified by an `alarm_id` the agent makes once.
+Repeats collapse: a match with the same rule set, rule, `process.exe`,
+`parent.exe` (empty when there is no parent) and masked `process.cmdline`
+within 10 minutes of the alarm's `first_seen_unix_ms` raises that alarm's
+`count` and `last_seen_unix_ms` instead of creating one. The command line is
+part of the key so that a harmless first command cannot hide a later,
+different one under the same alarm; an identical loop still collapses. An alarm already delivered is
+sent again, with the same `alarm_id`, when its `count` has grown. A platform
+keeps one record per agent and `alarm_id`: a repeat updates `count` and
+`last_seen_unix_ms` to the larger values and keeps everything else from the
+first delivery, so a retry or a late update never creates a second alarm and
+never lowers the count.
+
+Before an alarm is queued, the agent masks every `args` entry of the process
+and its ancestors, replacing the secret part with `***` (vectors:
+`vectors/alarm-masking.json`). Flag names match without regard to case.
+
+- the value of `-p<value>` (and `-p value` for `sshpass`) when the
+  program's name is `mysql`, `mariadb`, `mysqldump`, `mariadb-dump`,
+  `mysqladmin` or `sshpass`; the name is the basename of the process's
+  `exe`, not of `argv[0]`. A bare `-p` for the MySQL tools prompts, so the
+  next word is kept; other programs keep `-p` (a port for `ssh`, `scp`,
+  `nc`);
+- the value after `--password`, `--passwd`, `--pass`, `--token`,
+  `--secret`, `--api-key`, `--apikey`, in `=value` and next-argument form;
+- the password in `-u user:password` and `--user[=]user:password`;
+- the value of an `authorization:` header, in any argument that starts with
+  it (`-H 'Authorization: Bearer …'` becomes `authorization: ***` with the
+  original case kept);
+- `pass:` values (`-pass pass:secret`, as OpenSSL takes them);
+- `NAME=value` arguments whose upper-cased `NAME` ends in `PASSWORD`,
+  `PASSWD`, `SECRET`, `TOKEN` or `KEY`;
+- the password in URL userinfo: `scheme://user:PASSWORD@host`.
+
+A shell script passed as `-c SCRIPT` to a program named `sh`, `bash`,
+`dash`, `zsh` or `ash` is masked word by word with the same rules: the
+script is split on ASCII whitespace, and each word's program is the first
+word of the script or the first word after a `;`, `|`, `||`, `&&` or `&`
+word (or after a word ending in `;`), skipping `NAME=value` words. Only the
+secret characters are replaced; the script's other characters, spacing
+included, are kept. Quoting is not interpreted.
+
+This list is a floor, not a guarantee. `exe` and `cwd` are never masked.
+After masking, each process's `args` is cut to at most 4096 UTF-8 bytes
+counted as joined by single spaces: whole arguments are kept from the start
+while they fit, and when even the first does not fit it is cut to fit. A cut
+sets `truncated`; nothing is appended.
+
+`AlarmBatch` (`POST /v1/alarms`, optionally `Content-Encoding: gzip`)
+carries up to 100 alarms and the agent's `dropped_total`, a cumulative count
+that never decreases (a platform keeps the largest it has seen, so a retried
+batch cannot double-count). `agent_id` must be the authenticated agent's own
+id, or the batch is refused with 400. An agent fills a batch with alarms
+until the next one would take it past 100 alarms or 256 KiB serialized.
+One alarm serializes to at most 64 KiB: before queueing, an agent cuts
+further arguments (the farthest ancestor first, with `truncated` set) until
+it fits. Readers check what the schema cannot: `last_seen_unix_ms` is not
+before `first_seen_unix_ms`, the `args` bound above, and the size limits
+(413 otherwise). An agent drops a batch refused with 400 or 413 and adds its
+alarms to `dropped_total`, so one bad batch never blocks the queue; on 404
+(a platform before P14) it keeps its alarms and retries hourly; any other
+failure is retried as findings are.
+
 ## Rule Distribution
 
 Signed rule bundles come from the platform's **distribution service**, never
@@ -630,6 +757,13 @@ export of findings. Online inventory reports are `InventoryReport` (P8).
 | Retry delay | Nominal 15 seconds, doubling per failed attempt up to 1 hour; each wait is drawn between half and all of the nominal delay (the first retry comes after 7.5 to 15 seconds) |
 | Platform connect, including TLS | 10 seconds |
 | Platform request, end to end | 60 seconds |
+| Alarms per `AlarmBatch` | 100 |
+| `AlarmBatch` document, uncompressed | 256 KiB |
+| One alarm, serialized | 64 KiB |
+| `args` per process in an alarm | 256 entries, 4 KiB joined |
+| Ancestors per alarm | 5 |
+| `process.cmdline` in the `event` binding | 256 KiB (longer is cut, `process.cmdline_truncated`) |
+| String literal argument of a subset v2 method | 256 bytes |
 
 These are security limits, not performance targets. Raising them requires test
 coverage and a resource-exhaustion review.

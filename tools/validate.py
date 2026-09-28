@@ -106,6 +106,23 @@ def main() -> int:
         if valid != expect_valid:
             print(f"FAIL generated inventory-report with {count} packages: valid={valid}")
             failures += 1
+    # Generated, not checked in: alarm batches at their limits (P14).
+    base = json.loads((ROOT / "fixtures/v1/alarm-batch/valid.json").read_text())
+    batch = Draft202012Validator(schemas["alarm-batch"], registry=registry)
+    alarm = base["alarms"][0]
+    cases = [
+        ("100 alarms", dict(base, alarms=[dict(alarm, alarm_id=f"a{i}") for i in range(100)]), True),
+        ("101 alarms", dict(base, alarms=[dict(alarm, alarm_id=f"a{i}") for i in range(101)]), False),
+    ]
+    for count, expect_valid in [(256, True), (257, False)]:
+        process = dict(alarm["process"], args=["x"] * count)
+        cases.append((f"{count} args", dict(base, alarms=[dict(alarm, process=process)]), expect_valid))
+    for name, document, expect_valid in cases:
+        valid = batch.is_valid(document)
+        checked += 1
+        if valid != expect_valid:
+            print(f"FAIL generated alarm-batch with {name}: valid={valid}")
+            failures += 1
     # The inventory fingerprint (protocol P11): each vector's digest must be
     # the SHA-256 of the canonical JSON the contract defines.
     for vector in json.loads((ROOT / "vectors/inventory-fingerprint.json").read_text()):
@@ -118,6 +135,46 @@ def main() -> int:
         checked += 1
         if match_digest(vector["matches"]) != vector["sha256"]:
             print(f"FAIL match digest vector {vector['name']}")
+            failures += 1
+    # CEL subset v2 (P14): semantics are checked by the agent's tests; here
+    # only the shape, so a malformed vector cannot silently test nothing.
+    kinds = {"snapshot", "process_event"}
+    expects = {"true", "false", "unavailable", "refused"}
+    names = set()
+    for vector in json.loads((ROOT / "vectors/cel-subset-v2.json").read_text()):
+        checked += 1
+        ok = (
+            set(vector) == {"name", "kind", "expression", "bindings", "expect"}
+            and vector["kind"] in kinds
+            and vector["expect"] in expects
+            and isinstance(vector["expression"], str) and vector["expression"]
+            and isinstance(vector["bindings"], dict)
+            and all(
+                isinstance(v, (str, int, bool))
+                or (isinstance(v, list) and v == sorted(set(v)) and all(isinstance(s, str) for s in v))
+                for v in vector["bindings"].values()
+            )
+            and vector["name"] not in names
+        )
+        names.add(vector.get("name"))
+        if not ok:
+            print(f"FAIL cel vector {vector.get('name')!r}")
+            failures += 1
+    # Alarm masking (P14): the agent's tests check the rewriting; here only
+    # the shape, and that masking never changes the number of arguments.
+    names = set()
+    for vector in json.loads((ROOT / "vectors/alarm-masking.json").read_text()):
+        checked += 1
+        ok = (
+            set(vector) == {"name", "exe", "args", "masked"}
+            and isinstance(vector["exe"], str) and vector["exe"].startswith("/")
+            and all(isinstance(x, list) and all(isinstance(a, str) for a in x) for x in (vector["args"], vector["masked"]))
+            and len(vector["args"]) == len(vector["masked"])
+            and vector["name"] not in names
+        )
+        names.add(vector.get("name"))
+        if not ok:
+            print(f"FAIL masking vector {vector.get('name')!r}")
             failures += 1
     print(f"{checked} fixtures checked, {failures} failures")
     return 1 if failures else 0
