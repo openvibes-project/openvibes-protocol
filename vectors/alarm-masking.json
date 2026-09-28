@@ -1372,5 +1372,43 @@
       "-c",
       "conf"
     ]
+  },
+  {
+    "name": "wrapper: nice -n 10 sh -c",
+    "exe": "/usr/bin/nice",
+    "args": [
+      "nice",
+      "-n",
+      "10",
+      "sh",
+      "-c",
+      "mysqldump -psecret db"
+    ],
+    "masked": [
+      "nice",
+      "-n",
+      "10",
+      "sh",
+      "-c",
+      "mysqldump -p*** db"
+    ]
+  },
+  {
+    "name": "wrapper: flock sh -c",
+    "exe": "/usr/bin/flock",
+    "args": [
+      "flock",
+      "/run/backup.lock",
+      "bash",
+      "-c",
+      "PGPASSWORD=secret pg_dump db"
+    ],
+    "masked": [
+      "flock",
+      "/run/backup.lock",
+      "bash",
+      "-c",
+      "PGPASSWORD=*** pg_dump db"
+    ]
   }
 ]
