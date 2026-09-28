@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/alarm-batch.schema.json",
+  "title": "AlarmBatch",
+  "description": "Online route (P14): alarms raised by process_event rules, sent to POST /v1/alarms over mTLS, optionally gzip-compressed. agent_id must be the authenticated agent's own id. Not expressible here, checked by readers: last_seen_unix_ms is not before first_seen_unix_ms; each args list joins to at most 4096 bytes; the whole document is at most 256 KiB uncompressed; alarm_id is unique per agent (a repeated one is a retry and stores nothing).",
+  "type": "object",
+  "required": ["schema_version", "agent_id", "dropped", "alarms"],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "agent_id": { "$ref": "common.schema.json#/$defs/identifier" },
+    "dropped": {
+      "type": "integer", "minimum": 0, "maximum": 9223372036854775807,
+      "description": "Alarms the agent dropped since its last accepted batch (queue cap, refused batches)."
+    },
+    "alarms": { "type": "array", "minItems": 1, "maxItems": 100, "items": { "$ref": "#/$defs/alarm" } }
+  },
+  "$defs": {
+    "process": {
+      "type": "object",
+      "required": ["pid", "exe", "args", "uid", "truncated"],
+      "properties": {
+        "pid": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "exe": { "$ref": "common.schema.json#/$defs/boundedString" },
+        "args": {
+          "type": "array", "maxItems": 256,
+          "items": { "type": "string", "maxLength": 4096, "pattern": "^[^\\u0000]*$" },
+          "description": "Masked on the agent before sending (contract, \"Process events and alarms\"); cut at an argument boundary to 4096 bytes joined."
+        },
+        "cwd": { "$ref": "common.schema.json#/$defs/boundedString" },
+        "uid": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "truncated": { "type": "boolean", "description": "True when args were cut to the limit." }
+      }
+    },
+    "alarm": {
+      "type": "object",
+      "required": [
+        "alarm_id", "rule_set_id", "rule_set_version", "rule_id", "rule_version",
+        "severity", "confidence", "message", "first_seen_unix_ms", "last_seen_unix_ms",
+        "count", "process", "ancestors"
+      ],
+      "properties": {
+        "alarm_id": { "$ref": "common.schema.json#/$defs/identifier" },
+        "rule_set_id": { "$ref": "common.schema.json#/$defs/identifier" },
+        "rule_set_version": { "$ref": "common.schema.json#/$defs/positiveVersion" },
+        "rule_id": { "$ref": "common.schema.json#/$defs/identifier" },
+        "rule_version": { "$ref": "common.schema.json#/$defs/positiveVersion" },
+        "severity": { "$ref": "common.schema.json#/$defs/severity" },
+        "confidence": { "$ref": "common.schema.json#/$defs/confidence" },
+        "message": { "$ref": "common.schema.json#/$defs/boundedString" },
+        "first_seen_unix_ms": { "$ref": "common.schema.json#/$defs/unixMs" },
+        "last_seen_unix_ms": { "$ref": "common.schema.json#/$defs/unixMs" },
+        "count": { "type": "integer", "minimum": 1, "maximum": 2147483647 },
+        "process": { "$ref": "#/$defs/process" },
+        "ancestors": {
+          "type": "array", "maxItems": 5, "items": { "$ref": "#/$defs/process" },
+          "description": "Nearest first: the parent, then its parent, and so on."
+        }
+      }
+    }
+  }
+}

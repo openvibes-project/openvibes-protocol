@@ -106,6 +106,23 @@ def main() -> int:
         if valid != expect_valid:
             print(f"FAIL generated inventory-report with {count} packages: valid={valid}")
             failures += 1
+    # Generated, not checked in: alarm batches at their limits (P14).
+    base = json.loads((ROOT / "fixtures/v1/alarm-batch/valid.json").read_text())
+    batch = Draft202012Validator(schemas["alarm-batch"], registry=registry)
+    alarm = base["alarms"][0]
+    cases = [
+        ("100 alarms", dict(base, alarms=[dict(alarm, alarm_id=f"a{i}") for i in range(100)]), True),
+        ("101 alarms", dict(base, alarms=[dict(alarm, alarm_id=f"a{i}") for i in range(101)]), False),
+    ]
+    for count, expect_valid in [(256, True), (257, False)]:
+        process = dict(alarm["process"], args=["x"] * count)
+        cases.append((f"{count} args", dict(base, alarms=[dict(alarm, process=process)]), expect_valid))
+    for name, document, expect_valid in cases:
+        valid = batch.is_valid(document)
+        checked += 1
+        if valid != expect_valid:
+            print(f"FAIL generated alarm-batch with {name}: valid={valid}")
+            failures += 1
     # The inventory fingerprint (protocol P11): each vector's digest must be
     # the SHA-256 of the canonical JSON the contract defines.
     for vector in json.loads((ROOT / "vectors/inventory-fingerprint.json").read_text()):
