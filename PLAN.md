@@ -27,15 +27,15 @@ Status: **done** (implemented and tested), **todo** (specified, not built),
 |---|---|---|---|---|---|---|
 | 1 | `EnrollmentRequest` → `EnrollmentResponse` | agent → ingest | online | `/v1/enroll`, no client cert | done (key reuse, refused token after revocation) | done (multi-use tokens, revoked-key refusal) |
 | 2 | `RenewalRequest` → `EnrollmentResponse` | agent → ingest | online | `/v1/renew`, mTLS | done (expiry re-enrollment) | done |
-| 3 | `Heartbeat` (health, P12) | agent → ingest | online | `/v1/heartbeat`, mTLS | done (health: todo) | done (health: todo) |
+| 3 | `Heartbeat` (health, P12) | agent → ingest | online | `/v1/heartbeat`, mTLS | done (health: openvibes-agent #17) | done (health: openvibes-platform #45) |
 | 4 | `FindingBatch` → `DeliveryAcknowledgement` | agent → ingest | online | `/v1/findings`, mTLS | done (`rejected_findings`) | done (per-finding refusal) |
 | 5 | `PlatformError` (`identity_revoked`) | ingest → agent | online | 401/403 body on any mTLS call | done | done |
 | 6 | `RuleBundleRequest` → `SignedRuleEnvelope` (rule bundles) | agent → distribution | online | `/v1/rule-bundle` on the distribution service (port 18424), mTLS | done | done (openvibes-distribution) |
-| 7 | `FindingExport` file | agent → file → ingest | local-only | file import | done | todo |
-| 7a | `InventoryExport` file | agent → file → ingest | local-only | file import | done | todo |
+| 7 | `FindingExport` file | agent → file → ingest | local-only | file import | done | done (`openvibes-admin import`, openvibes-platform #34) |
+| 7a | `InventoryExport` file | agent → file → ingest | local-only | file import | done | done (`openvibes-admin import`, openvibes-platform #34) |
 | 11 | `InventoryChanges` (gzip), `PlatformError` `inventory_resync` | agent → ingest | online | `/v1/inventory/changes`, mTLS; 409 resync | done (gzip, fallbacks; openvibes-agent #16) | done (openvibes-platform #42) |
 | 8 | Enrollment token | operator → agent | out of band | token file | done | done (issuance, single- and multi-use) |
-| 9 | Platform CA bundle | operator → agent; installer → ingest | out of band; online | config file; `GET /v1/ca`, no client cert, checked by fingerprint | done | done (built-in PKI); `/v1/ca`: todo |
+| 9 | Platform CA bundle | operator → agent; installer → ingest | out of band; online | config file; `GET /v1/ca`, no client cert, checked by fingerprint | done | done (built-in PKI; `/v1/ca`, openvibes-platform #47) |
 | 10 | Rule-signing trust keys | operator → agent | out of band | agent config | done (per rule set) | n/a |
 
 Items 8–10 never travel over the agent protocol: they are provisioned at
@@ -238,9 +238,11 @@ its oldest findings (counted) instead of refusing new ones. Spec
 `openvibes-platform/docs/specs/2026-09-27-agent-health-design.md`.
 
 - [x] Spec and schema: `Heartbeat.health`, fixtures `heartbeat/*health*`.
-- [ ] Agent: health report, rotating queue, durable dropped and rejected totals.
-- [ ] Platform: store the latest report; Healthy / Degraded / Offline /
-  Unknown with reasons in the admin CLI and the console API.
+- [x] Agent: health report, rotating queue, durable dropped and rejected totals
+  (openvibes-agent #17).
+- [x] Platform: store the latest report; Healthy / Degraded / Offline /
+  Unknown with reasons in the admin CLI and the console API
+  (openvibes-platform #45).
 
 ### P11: Inventory changes and compression (user, 2026-09-27)
 
@@ -265,10 +267,10 @@ every change set against the agent's fingerprint (spec
 2. ~~**Local-only identity.**~~ Decided 2026-09-23: a random `install_id`
    generated once per installation, plus `agent_id` when enrolled and the OS
    hostname for operators. Other host facts wait for question 3.
-3. **Inventory upload.** Partly decided 2026-09-23: installed packages leave
-   the agent as an `InventoryExport` file on the local-only route (up to
-   10,000 packages, 1 MiB). Online upload to the ingest service, and any
-   other fact families, are still open.
+3. **Inventory upload.** Packages decided: on the local-only route they
+   leave the agent as an `InventoryExport` file (2026-09-23); online they go
+   as `InventoryReport` on `POST /v1/inventory` (P8, 2026-09-25), then as
+   change sets (P11). Other fact families are still open.
 4. ~~**Rule-set assignment.**~~ Decided 2026-09-23: local. Each agent's
    configuration names its rule sets and their trusted keys; the agent asks
    the distribution service for exactly those.
