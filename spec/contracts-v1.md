@@ -404,6 +404,17 @@ its CA issued and answer at the HTTP level, because a TLS 1.3 post-handshake
 rejection races the request write and is indistinguishable from a network
 failure. Any other status, including 3xx, is a rejected request.
 
+#### Match digest (P13)
+
+The agent and the platform both compute the digest of an agent's current
+match set and must agree byte for byte. A match is the JSON array
+`[rule_set_id, rule_id, rule_version, severity, message, evidence]`, with
+`evidence` deduplicated and sorted in byte order. The digest is the
+lowercase hex SHA-256 of the UTF-8 compact JSON array (no spaces) of all
+current matches, deduplicated and sorted by their compact JSON text in byte
+order; the empty set is `[]`. When a match started is not part of it. Test
+vectors (match set → digest) are in `vectors/match-digest.json`.
+
 ## Rule Distribution
 
 Signed rule bundles come from the platform's **distribution service**, never
