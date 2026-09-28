@@ -290,5 +290,845 @@
       "-c",
       "PGPASSWORD=*** psql --password=***"
     ]
+  },
+  {
+    "name": "bash -lc: -c inside a flag cluster",
+    "exe": "/usr/bin/bash",
+    "args": [
+      "bash",
+      "-lc",
+      "mysql -psecret db"
+    ],
+    "masked": [
+      "bash",
+      "-lc",
+      "mysql -p*** db"
+    ]
+  },
+  {
+    "name": "busybox is a shell when argv[0] is one",
+    "exe": "/usr/bin/busybox",
+    "args": [
+      "sh",
+      "-c",
+      "mysql -psecret db"
+    ],
+    "masked": [
+      "sh",
+      "-c",
+      "mysql -p*** db"
+    ]
+  },
+  {
+    "name": "su -c script is masked",
+    "exe": "/usr/bin/su",
+    "args": [
+      "su",
+      "-",
+      "postgres",
+      "-c",
+      "PGPASSWORD=secret psql -c 'select 1'"
+    ],
+    "masked": [
+      "su",
+      "-",
+      "postgres",
+      "-c",
+      "PGPASSWORD=*** psql -c 'select 1'"
+    ]
+  },
+  {
+    "name": "runuser -c script is masked",
+    "exe": "/usr/sbin/runuser",
+    "args": [
+      "runuser",
+      "-l",
+      "app",
+      "-c",
+      "mysql -psecret db"
+    ],
+    "masked": [
+      "runuser",
+      "-l",
+      "app",
+      "-c",
+      "mysql -p*** db"
+    ]
+  },
+  {
+    "name": "a newline does not hide the program word",
+    "exe": "/usr/bin/sh",
+    "args": [
+      "sh",
+      "-c",
+      "cd /srv\nmysql -psecret db"
+    ],
+    "masked": [
+      "sh",
+      "-c",
+      "cd /srv\nmysql -p*** db"
+    ]
+  },
+  {
+    "name": "program word after a subshell parenthesis",
+    "exe": "/usr/bin/sh",
+    "args": [
+      "sh",
+      "-c",
+      "(mysql -psecret db)"
+    ],
+    "masked": [
+      "sh",
+      "-c",
+      "(mysql -p*** db)"
+    ]
+  },
+  {
+    "name": "program word after command substitution",
+    "exe": "/usr/bin/sh",
+    "args": [
+      "sh",
+      "-c",
+      "echo $(mysql -psecret -e 'select 1')"
+    ],
+    "masked": [
+      "sh",
+      "-c",
+      "echo $(mysql -p*** -e 'select 1')"
+    ]
+  },
+  {
+    "name": "program word as a full path in a script",
+    "exe": "/usr/bin/sh",
+    "args": [
+      "sh",
+      "-c",
+      "/usr/bin/mysql -psecret db"
+    ],
+    "masked": [
+      "sh",
+      "-c",
+      "/usr/bin/mysql -p*** db"
+    ]
+  },
+  {
+    "name": "sudo wrapper: program word in plain args",
+    "exe": "/usr/bin/sudo",
+    "args": [
+      "sudo",
+      "-u",
+      "mysql",
+      "mysql",
+      "-psecret",
+      "db"
+    ],
+    "masked": [
+      "sudo",
+      "-u",
+      "mysql",
+      "mysql",
+      "-p***",
+      "db"
+    ]
+  },
+  {
+    "name": "timeout wrapper",
+    "exe": "/usr/bin/timeout",
+    "args": [
+      "timeout",
+      "10",
+      "mysqldump",
+      "-psecret",
+      "db"
+    ],
+    "masked": [
+      "timeout",
+      "10",
+      "mysqldump",
+      "-p***",
+      "db"
+    ]
+  },
+  {
+    "name": "docker exec wrapper",
+    "exe": "/usr/bin/docker",
+    "args": [
+      "docker",
+      "exec",
+      "db",
+      "mariadb",
+      "-psecret"
+    ],
+    "masked": [
+      "docker",
+      "exec",
+      "db",
+      "mariadb",
+      "-p***"
+    ]
+  },
+  {
+    "name": "program word keeps -p masking on for later words",
+    "exe": "/usr/bin/sh",
+    "args": [
+      "sh",
+      "-c",
+      "mysqldump -psecret db | ssh -p22 backup"
+    ],
+    "masked": [
+      "sh",
+      "-c",
+      "mysqldump -p*** db | ssh -p*** backup"
+    ]
+  },
+  {
+    "name": "argv[0] is not a program word",
+    "exe": "/usr/bin/ssh",
+    "args": [
+      "mysql",
+      "-p",
+      "2222",
+      "-p2222",
+      "host"
+    ],
+    "masked": [
+      "mysql",
+      "-p",
+      "2222",
+      "-p2222",
+      "host"
+    ]
+  },
+  {
+    "name": "sshpass as a program word masks -p value",
+    "exe": "/usr/bin/sh",
+    "args": [
+      "sh",
+      "-c",
+      "sshpass -p secret ssh host"
+    ],
+    "masked": [
+      "sh",
+      "-c",
+      "sshpass -p *** ssh host"
+    ]
+  },
+  {
+    "name": "-p after -- is still masked for mysql",
+    "exe": "/usr/bin/mysql",
+    "args": [
+      "mysql",
+      "--",
+      "-psecret"
+    ],
+    "masked": [
+      "mysql",
+      "--",
+      "-p***"
+    ]
+  },
+  {
+    "name": "--NAME suffix: --db-password=",
+    "exe": "/usr/bin/tool",
+    "args": [
+      "tool",
+      "--db-password=secret"
+    ],
+    "masked": [
+      "tool",
+      "--db-password=***"
+    ]
+  },
+  {
+    "name": "--NAME suffix: --client-secret next argument",
+    "exe": "/usr/bin/tool",
+    "args": [
+      "tool",
+      "--client-secret",
+      "secret",
+      "x"
+    ],
+    "masked": [
+      "tool",
+      "--client-secret",
+      "***",
+      "x"
+    ]
+  },
+  {
+    "name": "--NAME suffix: gpg --passphrase",
+    "exe": "/usr/bin/gpg",
+    "args": [
+      "gpg",
+      "--batch",
+      "--passphrase",
+      "secret",
+      "-c",
+      "f"
+    ],
+    "masked": [
+      "gpg",
+      "--batch",
+      "--passphrase",
+      "***",
+      "-c",
+      "f"
+    ]
+  },
+  {
+    "name": "--NAME suffix over-masks --no-password, accepted",
+    "exe": "/usr/bin/psql",
+    "args": [
+      "psql",
+      "--no-password",
+      "shop"
+    ],
+    "masked": [
+      "psql",
+      "--no-password",
+      "***"
+    ]
+  },
+  {
+    "name": "-NAME: keytool -storepass and -keypass",
+    "exe": "/usr/bin/keytool",
+    "args": [
+      "keytool",
+      "-list",
+      "-storepass",
+      "secret",
+      "-keypass",
+      "secret2"
+    ],
+    "masked": [
+      "keytool",
+      "-list",
+      "-storepass",
+      "***",
+      "-keypass",
+      "***"
+    ]
+  },
+  {
+    "name": "-NAME: -password=value",
+    "exe": "/usr/bin/tool",
+    "args": [
+      "tool",
+      "-password=secret"
+    ],
+    "masked": [
+      "tool",
+      "-password=***"
+    ]
+  },
+  {
+    "name": "single-dash -pass is not a -NAME flag, pass: masks its value",
+    "exe": "/usr/bin/openssl",
+    "args": [
+      "openssl",
+      "enc",
+      "-pass",
+      "pass:secret",
+      "-in",
+      "f"
+    ],
+    "masked": [
+      "openssl",
+      "enc",
+      "-pass",
+      "pass:***",
+      "-in",
+      "f"
+    ]
+  },
+  {
+    "name": "empty --password= stays empty and the next argument is kept",
+    "exe": "/usr/bin/tool",
+    "args": [
+      "tool",
+      "--password=",
+      "next"
+    ],
+    "masked": [
+      "tool",
+      "--password=",
+      "next"
+    ]
+  },
+  {
+    "name": "case folding is ASCII only",
+    "exe": "/usr/bin/tool",
+    "args": [
+      "tool",
+      "--api-Key=secret"
+    ],
+    "masked": [
+      "tool",
+      "--api-Key=secret"
+    ]
+  },
+  {
+    "name": "curl -u attached",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "-ubob:secret",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "-ubob:***",
+      "https://x"
+    ]
+  },
+  {
+    "name": "-u without a colon is a user name",
+    "exe": "/usr/bin/mysql",
+    "args": [
+      "mysql",
+      "-uroot",
+      "-u",
+      "app",
+      "db"
+    ],
+    "masked": [
+      "mysql",
+      "-uroot",
+      "-u",
+      "app",
+      "db"
+    ]
+  },
+  {
+    "name": "-U is -u by case folding",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "-U",
+      "bob:secret",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "-U",
+      "bob:***",
+      "https://x"
+    ]
+  },
+  {
+    "name": "--proxy-user next argument",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "--proxy-user",
+      "bob:secret",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "--proxy-user",
+      "bob:***",
+      "https://x"
+    ]
+  },
+  {
+    "name": "--proxy-user=",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "--proxy-user=bob:secret",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "--proxy-user=bob:***",
+      "https://x"
+    ]
+  },
+  {
+    "name": "header attached to -H",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "-HAuthorization: Bearer abc",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "-HAuthorization: ***",
+      "https://x"
+    ]
+  },
+  {
+    "name": "header in --header=",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "--header=Authorization: Bearer abc",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "--header=Authorization: ***",
+      "https://x"
+    ]
+  },
+  {
+    "name": "header after --header",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "--header",
+      "Proxy-Authorization: Basic abc",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "--header",
+      "Proxy-Authorization: ***",
+      "https://x"
+    ]
+  },
+  {
+    "name": "Cookie header",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "-H",
+      "Cookie: session=abc",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "-H",
+      "Cookie: ***",
+      "https://x"
+    ]
+  },
+  {
+    "name": "header name ending in token (GitLab)",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "-H",
+      "PRIVATE-TOKEN: abc",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "-H",
+      "PRIVATE-TOKEN: ***",
+      "https://x"
+    ]
+  },
+  {
+    "name": "header name ending in key",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "-H",
+      "X-Api-Key: abc",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "-H",
+      "X-Api-Key: ***",
+      "https://x"
+    ]
+  },
+  {
+    "name": "header without a space after the colon",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "-H",
+      "X-Auth-Token:abc",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "-H",
+      "X-Auth-Token:***",
+      "https://x"
+    ]
+  },
+  {
+    "name": "other headers are kept",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "-H",
+      "Accept: application/json",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "-H",
+      "Accept: application/json",
+      "https://x"
+    ]
+  },
+  {
+    "name": "NAME suffix PWD (MySQL)",
+    "exe": "/usr/bin/env",
+    "args": [
+      "env",
+      "MYSQL_PWD=secret",
+      "mysql"
+    ],
+    "masked": [
+      "env",
+      "MYSQL_PWD=***",
+      "mysql"
+    ]
+  },
+  {
+    "name": "NAME suffix PASS (sshpass -e)",
+    "exe": "/usr/bin/env",
+    "args": [
+      "env",
+      "SSHPASS=secret",
+      "sshpass",
+      "-e",
+      "ssh",
+      "h"
+    ],
+    "masked": [
+      "env",
+      "SSHPASS=***",
+      "sshpass",
+      "-e",
+      "ssh",
+      "h"
+    ]
+  },
+  {
+    "name": "NAME suffix AUTH",
+    "exe": "/usr/bin/env",
+    "args": [
+      "env",
+      "REDISCLI_AUTH=secret",
+      "redis-cli"
+    ],
+    "masked": [
+      "env",
+      "REDISCLI_AUTH=***",
+      "redis-cli"
+    ]
+  },
+  {
+    "name": "ordinary assignments are kept",
+    "exe": "/usr/bin/env",
+    "args": [
+      "env",
+      "PATH=/usr/bin",
+      "HOME=/root",
+      "LANG=C"
+    ],
+    "masked": [
+      "env",
+      "PATH=/usr/bin",
+      "HOME=/root",
+      "LANG=C"
+    ]
+  },
+  {
+    "name": "pair after --env=",
+    "exe": "/usr/bin/docker",
+    "args": [
+      "docker",
+      "run",
+      "--env=DB_PASSWORD=secret",
+      "img"
+    ],
+    "masked": [
+      "docker",
+      "run",
+      "--env=DB_PASSWORD=***",
+      "img"
+    ]
+  },
+  {
+    "name": "pair attached to -e",
+    "exe": "/usr/bin/docker",
+    "args": [
+      "docker",
+      "run",
+      "-eDB_PASSWORD=secret",
+      "img"
+    ],
+    "masked": [
+      "docker",
+      "run",
+      "-eDB_PASSWORD=***",
+      "img"
+    ]
+  },
+  {
+    "name": "Java system property",
+    "exe": "/usr/bin/java",
+    "args": [
+      "java",
+      "-Dspring.datasource.password=secret",
+      "-jar",
+      "app.jar"
+    ],
+    "masked": [
+      "java",
+      "-Dspring.datasource.password=***",
+      "-jar",
+      "app.jar"
+    ]
+  },
+  {
+    "name": "comma-separated mount options",
+    "exe": "/usr/bin/mount",
+    "args": [
+      "mount",
+      "-o",
+      "username=u,password=secret,vers=3",
+      "//h/s",
+      "/m"
+    ],
+    "masked": [
+      "mount",
+      "-o",
+      "username=u,password=***,vers=3",
+      "//h/s",
+      "/m"
+    ]
+  },
+  {
+    "name": "form data pairs",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "-d",
+      "user=a&password=secret&x=1",
+      "https://x"
+    ],
+    "masked": [
+      "curl",
+      "-d",
+      "user=a&password=***&x=1",
+      "https://x"
+    ]
+  },
+  {
+    "name": "query string pair",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "https://h/x?user=a&access_token=secret"
+    ],
+    "masked": [
+      "curl",
+      "https://h/x?user=a&access_token=***"
+    ]
+  },
+  {
+    "name": "value runs past = (base64)",
+    "exe": "/usr/bin/tool",
+    "args": [
+      "tool",
+      "TOKEN=YWJj==,x=1"
+    ],
+    "masked": [
+      "tool",
+      "TOKEN=***,x=1"
+    ]
+  },
+  {
+    "name": "the ; after a value is kept in a script",
+    "exe": "/usr/bin/sh",
+    "args": [
+      "sh",
+      "-c",
+      "export PGPASSWORD=secret; psql db"
+    ],
+    "masked": [
+      "sh",
+      "-c",
+      "export PGPASSWORD=***; psql db"
+    ]
+  },
+  {
+    "name": "URL inside NAME=value",
+    "exe": "/usr/bin/env",
+    "args": [
+      "env",
+      "DATABASE_URL=postgres://app:secret@db/app",
+      "x"
+    ],
+    "masked": [
+      "env",
+      "DATABASE_URL=postgres://app:***@db/app",
+      "x"
+    ]
+  },
+  {
+    "name": "URL inside --flag=",
+    "exe": "/usr/bin/tool",
+    "args": [
+      "tool",
+      "--url=postgres://app:secret@db:5432/app"
+    ],
+    "masked": [
+      "tool",
+      "--url=postgres://app:***@db:5432/app"
+    ]
+  },
+  {
+    "name": "URL password containing @ runs to the last @",
+    "exe": "/usr/bin/git",
+    "args": [
+      "git",
+      "clone",
+      "https://bob:p@ss@example.org/r.git"
+    ],
+    "masked": [
+      "git",
+      "clone",
+      "https://bob:***@example.org/r.git"
+    ]
+  },
+  {
+    "name": "two URLs in one argument",
+    "exe": "/usr/bin/tool",
+    "args": [
+      "tool",
+      "a=https://u:p1@h1/x,b=https://v:p2@h2/y"
+    ],
+    "masked": [
+      "tool",
+      "a=https://u:***@h1/x,b=https://v:***@h2/y"
+    ]
+  },
+  {
+    "name": "@ in the path is not userinfo",
+    "exe": "/usr/bin/curl",
+    "args": [
+      "curl",
+      "https://h/users/a:b@c"
+    ],
+    "masked": [
+      "curl",
+      "https://h/users/a:b@c"
+    ]
+  },
+  {
+    "name": "ordinary commands are kept",
+    "exe": "/usr/bin/sh",
+    "args": [
+      "sh",
+      "-c",
+      "cd /srv && find / -name '*.key' | xargs ls -la"
+    ],
+    "masked": [
+      "sh",
+      "-c",
+      "cd /srv && find / -name '*.key' | xargs ls -la"
+    ]
   }
 ]

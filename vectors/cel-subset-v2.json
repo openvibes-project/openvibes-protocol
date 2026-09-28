@@ -248,5 +248,185 @@
       "process.cmdline": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     },
     "expect": "true"
+  },
+  {
+    "name": "ternary refused",
+    "kind": "process_event",
+    "expression": "event['process.name'] == 'sh' ? true : false",
+    "bindings": {
+      "process.name": "sh"
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "concatenated argument refused",
+    "kind": "process_event",
+    "expression": "event['process.cmdline'].contains('cu' + 'rl')",
+    "bindings": {
+      "process.cmdline": "curl"
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "has() refused",
+    "kind": "process_event",
+    "expression": "has(event['process.cwd'])",
+    "bindings": {
+      "process.cwd": "/"
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "list literal refused",
+    "kind": "process_event",
+    "expression": "event['process.name'] in ['sh']",
+    "bindings": {
+      "process.name": "sh"
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "list literal compared refused",
+    "kind": "process_event",
+    "expression": "event['ancestors.names'] == ['sh']",
+    "bindings": {
+      "ancestors.names": [
+        "sh"
+      ]
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "escaped typo in an event key refused",
+    "kind": "process_event",
+    "expression": "event['parent\\x2enmae'] == 'nginx'",
+    "bindings": {},
+    "expect": "refused"
+  },
+  {
+    "name": "escaped event key is the decoded key",
+    "kind": "process_event",
+    "expression": "event['process\\x2ename'] == 'sh'",
+    "bindings": {
+      "process.name": "sh"
+    },
+    "expect": "true"
+  },
+  {
+    "name": "method on a boolean result refused",
+    "kind": "process_event",
+    "expression": "event['process.cmdline'].contains('x').contains('y')",
+    "bindings": {
+      "process.cmdline": "x y"
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "method names are case-sensitive",
+    "kind": "process_event",
+    "expression": "event['process.cmdline'].Contains('x')",
+    "bindings": {
+      "process.cmdline": "x"
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "startswith spelling refused",
+    "kind": "process_event",
+    "expression": "event['process.cwd'].startswith('/')",
+    "bindings": {
+      "process.cwd": "/"
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "integer compared with a string refused",
+    "kind": "process_event",
+    "expression": "event['process.uid'] == '0'",
+    "bindings": {
+      "process.uid": 0
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "worst case counts branches a short circuit skips",
+    "kind": "process_event",
+    "expression": "false && (event['process.cmdline'].contains('w0') || event['process.cmdline'].contains('w1') || event['process.cmdline'].contains('w2') || event['process.cmdline'].contains('w3') || event['process.cmdline'].contains('w4') || event['process.cmdline'].contains('w5') || event['process.cmdline'].contains('w6') || event['process.cmdline'].contains('w7') || event['process.cmdline'].contains('w8') || event['process.cmdline'].contains('w9') || event['process.cmdline'].contains('w10') || event['process.cmdline'].contains('w11') || event['process.cmdline'].contains('w12'))",
+    "bindings": {
+      "process.cmdline": "x"
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "worst case on parent.cmdline refused",
+    "kind": "process_event",
+    "expression": "event['parent.cmdline'].contains('w') || event['parent.cmdline'].contains('w0') || event['parent.cmdline'].contains('w1') || event['parent.cmdline'].contains('w2') || event['parent.cmdline'].contains('w3') || event['parent.cmdline'].contains('w4') || event['parent.cmdline'].contains('w5') || event['parent.cmdline'].contains('w6') || event['parent.cmdline'].contains('w7') || event['parent.cmdline'].contains('w8') || event['parent.cmdline'].contains('w9') || event['parent.cmdline'].contains('w10') || event['parent.cmdline'].contains('w11')",
+    "bindings": {
+      "parent.cmdline": "x"
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "contains is case-sensitive",
+    "kind": "process_event",
+    "expression": "event['process.cmdline'].contains('CURL')",
+    "bindings": {
+      "process.cmdline": "curl -s x"
+    },
+    "expect": "false"
+  },
+  {
+    "name": "no Unicode normalisation (NFC literal, NFD value)",
+    "kind": "process_event",
+    "expression": "event['process.cwd'].contains('é')",
+    "bindings": {
+      "process.cwd": "/srv/café"
+    },
+    "expect": "false"
+  },
+  {
+    "name": "parenthesised literal is a literal",
+    "kind": "process_event",
+    "expression": "event['process.cmdline'].contains(('curl'))",
+    "bindings": {
+      "process.cmdline": "curl x"
+    },
+    "expect": "true"
+  },
+  {
+    "name": "literal receiver is a string operand",
+    "kind": "process_event",
+    "expression": "'abc'.contains('b') && event['process.name'] == 'sh'",
+    "bindings": {
+      "process.name": "sh"
+    },
+    "expect": "true"
+  },
+  {
+    "name": "literal limit counts decoded bytes: 128 two-byte characters allowed",
+    "kind": "process_event",
+    "expression": "event['process.cmdline'].contains('éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé')",
+    "bindings": {
+      "process.cmdline": "x éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé"
+    },
+    "expect": "true"
+  },
+  {
+    "name": "literal limit counts decoded bytes: 129 two-byte characters refused",
+    "kind": "process_event",
+    "expression": "event['process.cmdline'].contains('ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé')",
+    "bindings": {
+      "process.cmdline": "x"
+    },
+    "expect": "refused"
+  },
+  {
+    "name": "literal limit counts decoded bytes: 100 escapes are 100 bytes",
+    "kind": "process_event",
+    "expression": "event['process.cmdline'].contains('\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61\\x61')",
+    "bindings": {
+      "process.cmdline": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "expect": "true"
   }
 ]
