@@ -56,6 +56,19 @@ literals, `!`, unary `-`, `&&`, `||`, `==`, `!=`, `<`, `<=`, `>`, `>=`, and
 and triple-quoted strings are rejected. Every referenced fact and operand type
 is checked before execution, including branches a short circuit would skip.
 
+**Subset v2 (P14)** adds three methods on a string operand:
+`s.startsWith('lit')`, `s.endsWith('lit')` and `s.contains('lit')`. The
+argument must be a single string literal: a loader refuses a rule with any
+other argument, a non-string receiver, or any other method, so a signed
+rule can never carry one. Each call charges the evaluation budget by the
+receiver's length: one operation per started 64 bytes (at least one), so a
+2 MiB command line costs 32,768 operations and fits the per-rule budget.
+They are allowed in both rule kinds. There are no regular expressions. An
+agent before P14 refuses any method call as an invalid expression, per
+rule, so a rule set that older agents load must not use them. Test vectors:
+`vectors/cel-subset-v2.json` (`refused` = the loader rejects the rule;
+`unavailable` = a referenced value is missing).
+
 ## Rules and Findings
 
 A rule set contains declarative CEL rules with stable IDs, positive monotonic
@@ -176,6 +189,7 @@ serialized document of response body. Every response is validated before use.
 | `/v1/inventory` | required | `InventoryReport` | any 2xx; body ignored |
 | `/v1/inventory/changes` | required | `InventoryChanges` | any 2xx; body ignored; 409 `PlatformError` `inventory_resync` |
 | `/v1/findings/changes` | required | `FindingChanges` | any 2xx; body ignored; 409 `PlatformError` `findings_resync` |
+| `/v1/alarms` | required | `AlarmBatch` (P14) | any 2xx; body ignored |
 | `/v1/ca` (`GET`) | none | none | the platform's root CA certificate, PEM |
 
 `GET /v1/ca` returns the root certificate that issued the platform's server
@@ -494,6 +508,64 @@ inventory fingerprint: no whitespace, non-ASCII characters not escaped,
 decimal. When a match started is not part of it. Test
 vectors (match set → digest) are in `vectors/match-digest.json`.
 
+#### Process events and alarms (P14)
+
+A rule's optional `kind` is `snapshot` (the default) or `process_event`.
+A `process_event` rule is evaluated once per process start on the host,
+against a flat map named `event`, and may reference only `event[...]`; a
+snapshot rule may reference only `facts[...]`. A loader refuses the other.
+Alarm rules ship in their own rule sets (for example `baseline-alarms`):
+an agent before P14 ignores `kind` and would fail every `event[...]` rule,
+so it is not configured with one.
+
+| `event` key | Type |
+|---|---|
+| `process.exe`, `process.name` (basename of exe), `process.cmdline` (args joined by single spaces, at most 256 KiB), `process.cwd` | string |
+| `process.cmdline_truncated` (the command line was longer than 256 KiB and was cut) | boolean |
+| `process.uid` | integer |
+| `parent.exe`, `parent.name`, `parent.cmdline` | string |
+| `ancestors.names`, `ancestors.exes` (the parent and up to 4 further ancestors) | string list, sorted, no duplicates |
+
+A key whose value the agent does not know (no parent, a seeded ancestor
+without a readable cwd) is missing, and the rule is `Unavailable`, never a
+match. Rules see the full, unmasked command line up to the 256 KiB cut; a
+longer one is cut rather than dropped, and a rule may treat
+`process.cmdline_truncated` itself as suspicious. The optional `programs`
+list (exact exe paths or basenames) lets an agent skip evaluation for
+events no rule names.
+
+A match becomes an alarm. The agent collapses repeats: rule set, rule,
+`process.exe` and `parent.exe` within 10 minutes form one alarm whose
+`count` and `last_seen_unix_ms` grow. Before an alarm is queued, the agent
+masks every `args` entry of the process and its ancestors, replacing with
+`***`:
+
+- the value of `-p<value>` (and `-p value` for `sshpass`) when the
+  program's basename is `mysql`, `mariadb`, `mysqldump`, `mariadb-dump`,
+  `mysqladmin` or `sshpass`; other programs keep `-p` (a port for `ssh`,
+  `scp`, `nc`);
+- the value after `--password`, `--passwd`, `--pass`, `--token`,
+  `--secret`, `--api-key`, `--apikey`, in `=value` and next-argument form;
+- `NAME=value` arguments whose upper-cased `NAME` ends in `PASSWORD`,
+  `PASSWD`, `SECRET`, `TOKEN` or `KEY`;
+- the password in URL userinfo: `scheme://user:PASSWORD@host`.
+
+This list is a floor, not a guarantee. `exe` and `cwd` are never masked.
+After masking, each process's `args` is cut at an argument boundary to 4096
+bytes joined, with `truncated` set.
+
+`AlarmBatch` (`POST /v1/alarms`, optionally `Content-Encoding: gzip`)
+carries up to 100 alarms and the agent's `dropped` count; `agent_id` must be
+the authenticated agent's own id, or the batch is refused with 400.
+`alarm_id` is made by the agent once and reused on every retry; a platform
+stores an `alarm_id` it has seen for that agent only once. Readers check
+what the schema cannot: `last_seen_unix_ms` is not before
+`first_seen_unix_ms`, each `args` joins to at most 4096 bytes, and the
+document is at most 256 KiB uncompressed (413 otherwise). An agent drops a
+batch refused with 400 and counts it in `dropped`, so one bad batch never
+blocks the queue; on 404 (a platform before P14) it keeps its alarms and
+retries hourly.
+
 ## Rule Distribution
 
 Signed rule bundles come from the platform's **distribution service**, never
@@ -630,6 +702,11 @@ export of findings. Online inventory reports are `InventoryReport` (P8).
 | Retry delay | Nominal 15 seconds, doubling per failed attempt up to 1 hour; each wait is drawn between half and all of the nominal delay (the first retry comes after 7.5 to 15 seconds) |
 | Platform connect, including TLS | 10 seconds |
 | Platform request, end to end | 60 seconds |
+| Alarms per `AlarmBatch` | 100 |
+| `AlarmBatch` document, uncompressed | 256 KiB |
+| `args` per process in an alarm | 256 entries, 4 KiB joined |
+| Ancestors per alarm | 5 |
+| `process.cmdline` in the `event` binding | 256 KiB (longer is cut, `process.cmdline_truncated`) |
 
 These are security limits, not performance targets. Raising them requires test
 coverage and a resource-exhaustion review.

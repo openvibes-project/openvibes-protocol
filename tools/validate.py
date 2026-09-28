@@ -150,7 +150,7 @@ def main() -> int:
             and isinstance(vector["expression"], str) and vector["expression"]
             and isinstance(vector["bindings"], dict)
             and all(
-                isinstance(v, (str, int)) and not isinstance(v, bool)
+                isinstance(v, (str, int, bool))
                 or (isinstance(v, list) and v == sorted(set(v)) and all(isinstance(s, str) for s in v))
                 for v in vector["bindings"].values()
             )
