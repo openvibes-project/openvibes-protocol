@@ -136,6 +136,30 @@ def main() -> int:
         if match_digest(vector["matches"]) != vector["sha256"]:
             print(f"FAIL match digest vector {vector['name']}")
             failures += 1
+    # CEL subset v2 (P14): semantics are checked by the agent's tests; here
+    # only the shape, so a malformed vector cannot silently test nothing.
+    kinds = {"snapshot", "process_event"}
+    expects = {"true", "false", "unavailable", "refused"}
+    names = set()
+    for vector in json.loads((ROOT / "vectors/cel-subset-v2.json").read_text()):
+        checked += 1
+        ok = (
+            set(vector) == {"name", "kind", "expression", "bindings", "expect"}
+            and vector["kind"] in kinds
+            and vector["expect"] in expects
+            and isinstance(vector["expression"], str) and vector["expression"]
+            and isinstance(vector["bindings"], dict)
+            and all(
+                isinstance(v, (str, int)) and not isinstance(v, bool)
+                or (isinstance(v, list) and v == sorted(set(v)) and all(isinstance(s, str) for s in v))
+                for v in vector["bindings"].values()
+            )
+            and vector["name"] not in names
+        )
+        names.add(vector.get("name"))
+        if not ok:
+            print(f"FAIL cel vector {vector.get('name')!r}")
+            failures += 1
     print(f"{checked} fixtures checked, {failures} failures")
     return 1 if failures else 0
 
