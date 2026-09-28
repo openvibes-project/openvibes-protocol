@@ -59,7 +59,8 @@ is checked before execution, including branches a short circuit would skip.
 **Subset v2 (P14)** adds three methods on a string operand:
 `s.startsWith('lit')`, `s.endsWith('lit')` and `s.contains('lit')`. The
 argument must be one plain single- or double-quoted string literal (not
-raw, bytes or triple-quoted) of at most 256 bytes. Implementations must run
+raw, bytes or triple-quoted) of at most 256 bytes after escapes are
+decoded (`'\x61'` is 1 byte, `'é'` is 2). Implementations must run
 each method in time linear in the receiver's and the literal's length
 (for example Two-Way or a similar algorithm, as Rust's `str::contains`), so
 the length-based charge below bounds the real work. A loader refuses a rule with any other
@@ -534,7 +535,7 @@ not configured with one.
 | `process.exe`, `process.name`, `process.cmdline` (args joined by single spaces, at most 256 KiB), `process.cwd` | string |
 | `process.cmdline_truncated` (the command line was longer than 256 KiB and was cut) | boolean |
 | `process.uid` | integer |
-| `parent.exe`, `parent.name`, `parent.cmdline` | string |
+| `parent.exe`, `parent.name`, `parent.cmdline` (cut like `process.cmdline`) | string |
 | `ancestors.names`, `ancestors.exes` (the parent and up to 4 further ancestors) | string list, sorted, no duplicates |
 
 `exe` is the executed file's path and `name` its basename. A process the
@@ -572,35 +573,64 @@ first delivery, so a retry or a late update never creates a second alarm and
 never lowers the count.
 
 Before an alarm is queued, the agent masks every `args` entry of the process
-and its ancestors, replacing the secret part with `***` (vectors:
-`vectors/alarm-masking.json`). Flag names match without regard to case.
+and its ancestors (vectors: `vectors/alarm-masking.json`). Each rule below
+marks secret characters of an argument, and each run of marked characters
+is replaced by `***`; everything else, spacing included, is kept. An empty
+value (`--password=`) stays empty. Names match with ASCII case folding only.
+A *`-p` program* is `mysql`, `mariadb`, `mysqldump`, `mariadb-dump`,
+`mysqladmin` or `sshpass`; a *program word* is an argument after `argv[0]`
+(or any script word, below) whose basename, after dropping one leading
+`$(`, `(`, backtick, `'` or `"`, is a `-p` program.
 
-- the value of `-p<value>` (and `-p value` for `sshpass`) when the
-  program's name is `mysql`, `mariadb`, `mysqldump`, `mariadb-dump`,
-  `mysqladmin` or `sshpass`; the name is the basename of the process's
-  `exe`, not of `argv[0]`. A bare `-p` for the MySQL tools prompts, so the
-  next word is kept; other programs keep `-p` (a port for `ssh`, `scp`,
-  `nc`);
-- the value after `--password`, `--passwd`, `--pass`, `--token`,
-  `--secret`, `--api-key`, `--apikey`, in `=value` and next-argument form;
-- the password in `-u user:password` and `--user[=]user:password`;
-- the value of an `authorization:` header, in any argument that starts with
-  it (`-H 'Authorization: Bearer …'` becomes `authorization: ***` with the
-  original case kept);
-- `pass:` values (`-pass pass:secret`, as OpenSSL takes them);
-- `NAME=value` arguments whose upper-cased `NAME` ends in `PASSWORD`,
-  `PASSWD`, `SECRET`, `TOKEN` or `KEY`;
-- the password in URL userinfo: `scheme://user:PASSWORD@host`.
+- `-p<value>` (attached) when the basename of the process's `exe` (not of
+  `argv[0]`) is a `-p` program, and in every argument after a program word
+  (so `sudo mysql -p…`, `timeout 10 mysql -p…` and `docker exec db mysql
+  -p…` are masked; a later `ssh -p22` in the same line is masked too,
+  which is harmless). A bare `-p` prompts for the MySQL tools, so the next
+  word is kept, except for `sshpass` (as the `exe` or a program word),
+  whose `-p value` is masked. Other programs keep `-p` (a port for `ssh`,
+  `scp`, `nc`);
+- the value of a flag, in `=value` and next-argument form, when the flag is
+  `--NAME` with `NAME` ending in `password`, `passwd`, `pass`,
+  `passphrase`, `token`, `secret` or `key` (`--db-password`,
+  `--client-secret`, `--api-key`), or `-NAME` with `NAME` ending in
+  `password`, `passwd`, `passphrase`, `storepass` or `keypass` (`-password`,
+  keytool's `-storepass`);
+- the password in `-u user:password`, `-uuser:password`, `--user[=]` and
+  `--proxy-user[=]` (`-U` is `-u` by case folding);
+- the value of a `Name: value` header (after the colon and any spaces) when
+  `Name` is `authorization`, `proxy-authorization`, `cookie`, `x-api-key` or
+  `private-token`, or ends in `token`, `key` or `secret`: an argument that
+  is the header, or that starts with `-H` or `--header=` directly followed
+  by it;
+- the value of an argument starting with `pass:` (`-pass pass:secret`, as
+  OpenSSL takes them);
+- each `NAME=value` pair in an argument whose upper-cased `NAME` ends in
+  `PASSWORD`, `PASSWD`, `PASS`, `PWD`, `PASSPHRASE`, `SECRET`, `TOKEN`, `KEY`
+  or `AUTH`. `NAME` is the text before the `=` back to the previous `=`,
+  `,`, `&`, `?`, `;` or the argument's start, and the value runs to the next
+  `,`, `&`, `;` or the end, so `MYSQL_PWD=x`, `--env=DB_PASSWORD=x`,
+  `-Dspring.datasource.password=x`, `-o user=u,password=x`,
+  `?user=a&password=x` and `PGPASSWORD=x;` are masked and the `;` is kept;
+- the password in URL userinfo anywhere in an argument: after `://`, up to
+  the first `/`, `?`, `#` or the end, the userinfo runs to the last `@` and
+  its password from the first `:` (`https://bob:p@ss@host` masks `p@ss`).
 
-A shell script passed as `-c SCRIPT` to a program named `sh`, `bash`,
-`dash`, `zsh` or `ash` is masked word by word with the same rules: the
-script is split on ASCII whitespace, and each word's program is the first
-word of the script or the first word after a `;`, `|`, `||`, `&&` or `&`
-word (or after a word ending in `;`), skipping `NAME=value` words. Only the
-secret characters are replaced; the script's other characters, spacing
-included, are kept. Quoting is not interpreted.
+A shell script is masked word by word with the same rules. It is the
+argument after a `-c` flag, or after a single-dash cluster of letters that
+contains `c` (`-lc`, `-ec`), when the `exe` basename is `sh`, `bash`,
+`dash`, `zsh`, `ash`, `su` or `runuser`, or `busybox` with an `argv[0]`
+whose basename is one of the shells. The script is split on ASCII
+whitespace; a next-argument form takes the next word; quoting and shell
+grammar are not interpreted.
 
-This list is a floor, not a guarantee. `exe` and `cwd` are never masked.
+This list is a floor, not a guarantee. Known gaps: program-specific short
+flags (`redis-cli -a`, `ldapsearch -w`, `docker login -p`, `smbclient -U
+user%password`, `7z -p`, `zip -P`), structured bodies (`-d
+'{"password":"x"}'`), a quoted value that spans words inside a script
+(`--password 'two words'`, `-H 'Authorization: Bearer x'` inside `-c`), and
+a command passed as one argument to a program that is not a shell above
+(`ssh host 'mysql -px'`). `exe` and `cwd` are never masked.
 After masking, each process's `args` is cut to at most 4096 UTF-8 bytes
 counted as joined by single spaces: whole arguments are kept from the start
 while they fit, and when even the first does not fit it is cut to fit. A cut
@@ -762,8 +792,9 @@ export of findings. Online inventory reports are `InventoryReport` (P8).
 | One alarm, serialized | 64 KiB |
 | `args` per process in an alarm | 256 entries, 4 KiB joined |
 | Ancestors per alarm | 5 |
-| `process.cmdline` in the `event` binding | 256 KiB (longer is cut, `process.cmdline_truncated`) |
-| String literal argument of a subset v2 method | 256 bytes |
+| `process.cmdline` and `parent.cmdline` in the `event` binding | 256 KiB (longer is cut; `process.cmdline_truncated`) |
+| Other strings in the `event` binding (`*.exe`, `*.name`, `process.cwd`, each `ancestors` entry) | 4 KiB (longer is cut) |
+| String literal argument of a subset v2 method | 256 bytes, decoded UTF-8 |
 
 These are security limits, not performance targets. Raising them requires test
 coverage and a resource-exhaustion review.
