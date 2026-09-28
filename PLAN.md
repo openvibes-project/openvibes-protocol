@@ -35,7 +35,7 @@ Status: **done** (implemented and tested), **todo** (specified, not built),
 | 7a | `InventoryExport` file | agent → file → ingest | local-only | file import | done | todo |
 | 11 | `InventoryChanges` (gzip), `PlatformError` `inventory_resync` | agent → ingest | online | `/v1/inventory/changes`, mTLS; 409 resync | done (gzip, fallbacks; openvibes-agent #16) | done (openvibes-platform #42) |
 | 8 | Enrollment token | operator → agent | out of band | token file | done | done (issuance, single- and multi-use) |
-| 9 | Platform CA bundle | operator → agent | out of band | config file | done | done (built-in PKI) |
+| 9 | Platform CA bundle | operator → agent; installer → ingest | out of band; online | config file; `GET /v1/ca`, no client cert, checked by fingerprint | done | done (built-in PKI); `/v1/ca`: todo |
 | 10 | Rule-signing trust keys | operator → agent | out of band | agent config | done (per rule set) | n/a |
 
 Items 8–10 never travel over the agent protocol: they are provisioned at
