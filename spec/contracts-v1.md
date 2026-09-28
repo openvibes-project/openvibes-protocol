@@ -172,7 +172,7 @@ serialized document of response body. Every response is validated before use.
 | `/v1/enroll` | none | `EnrollmentRequest` | `EnrollmentResponse` |
 | `/v1/renew` | required | `RenewalRequest` | `EnrollmentResponse` |
 | `/v1/findings` | required | `FindingBatch` | `DeliveryAcknowledgement` |
-| `/v1/heartbeat` | required | `Heartbeat` | any 2xx; body ignored |
+| `/v1/heartbeat` | required | `Heartbeat` | any 2xx; body ignored; 409 `PlatformError` `findings_resync` (P13, only when the heartbeat carried `match_sha256`) |
 | `/v1/inventory` | required | `InventoryReport` | any 2xx; body ignored |
 | `/v1/inventory/changes` | required | `InventoryChanges` | any 2xx; body ignored; 409 `PlatformError` `inventory_resync` |
 | `/v1/findings/changes` | required | `FindingChanges` | any 2xx; body ignored; 409 `PlatformError` `findings_resync` |
@@ -449,6 +449,12 @@ transients. An agent that re-enrolls starts with nothing acknowledged, so
 its first delivery is a replace. A platform before P13 answers 404: the
 agent then sends per-scan `FindingBatch` deliveries as before, until it
 restarts. Local-only export is unchanged.
+
+A heartbeat from an agent using P13 carries `match_sha256`, the digest of
+its acknowledged set. A platform whose stored digest differs (restored,
+lost, or never received) stores the heartbeat as usual and answers 409
+`findings_resync`; the agent sends a replace. A heartbeat without
+`match_sha256` is never answered 409, so agents before P13 are unaffected.
 
 #### Match digest (P13)
 
