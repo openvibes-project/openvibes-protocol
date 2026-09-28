@@ -47,5 +47,21 @@
       }
     ],
     "sha256": "0514ccf429bc5682b72f4a384208721d81f714bda15348884afb08af81d0449a"
+  },
+  {
+    "name": "escaping: quote, backslash, newline, U+001F, slash, tab (checked against Rust serde_json)",
+    "matches": [
+      {
+        "rule_set_id": "baseline",
+        "rule_id": "msg.escaping",
+        "rule_version": 1,
+        "severity": "info",
+        "message": "quote \" backslash \\ newline \n unit-sep \u001f slash / tab \t",
+        "evidence": [
+          "process.names"
+        ]
+      }
+    ],
+    "sha256": "5c8f251a29481c271e9f7ae2f05335ce83c734edd6b474ae3fc49d9fd2122962"
   }
 ]
