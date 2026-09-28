@@ -24,7 +24,7 @@
         "args": {
           "type": "array", "maxItems": 256,
           "items": { "type": "string", "maxLength": 4096, "pattern": "^[^\\u0000]*$" },
-          "description": "Masked on the agent before sending (contract, \"Process events and alarms\"); cut at an argument boundary to 4096 bytes joined."
+          "description": "Masked on the agent before sending (contract, \"Process events and alarms\"); cut at an argument boundary to at most 256 arguments and 4096 bytes joined."
         },
         "cwd": { "$ref": "common.schema.json#/$defs/boundedString" },
         "uid": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
