@@ -494,8 +494,11 @@ at once. A platform before P13 answers 404: the agent then sends per-scan
 is unchanged.
 
 A heartbeat from an agent using P13 carries `match_sha256`, the digest of
-its acknowledged set; an agent with nothing acknowledged yet, or in the 404
-fallback, leaves it out. A platform whose stored digest differs (restored,
+its acknowledged set; an agent with nothing acknowledged yet, in the 404
+fallback, or with a change set (or replace) not yet acknowledged, leaves it
+out. The acknowledged set no longer describes the host once a scan changed
+it, and a matching digest would tell the platform that matches the latest
+scan ended are still open (confirming them and reopening their triage). A platform whose stored digest differs (restored,
 lost, or never received) stores the heartbeat as usual and answers 409
 `findings_resync`. The agent treats that heartbeat as delivered and sends a
 replace, unless a replace is already pending or waiting on its backoff. A
