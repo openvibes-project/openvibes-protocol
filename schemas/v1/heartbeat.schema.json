@@ -179,7 +179,7 @@
     "match_sha256": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$",
-      "description": "Optional (P13): match digest of the set the platform last acknowledged for this agent. Sent only by agents using finding changes; a platform whose stored digest differs answers 409 findings_resync after storing the heartbeat."
+      "description": "Optional (P13): match digest of the set the platform last acknowledged for this agent. Sent only by agents using finding changes, and left out while a change set or replace is not yet acknowledged; a platform whose stored digest differs answers 409 findings_resync after storing the heartbeat."
     }
   },
   "$defs": {
