@@ -173,6 +173,58 @@
         "matches_truncated": {
           "$ref": "#/$defs/count",
           "description": "Optional (P13): current matches beyond the 500 kept."
+        },
+        "alarms": {
+          "type": "object",
+          "description": "Optional (P14): process-event alarms. collector is the process_events collector's outcome (unsupported without audit or CAP_AUDIT_READ).",
+          "required": [
+            "collector",
+            "events_dropped_total",
+            "alarms_dropped_total",
+            "pending",
+            "platform_unsupported",
+            "rules_accepted",
+            "rules_refused",
+            "rules_without_prefilter"
+          ],
+          "properties": {
+            "collector": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            "events_dropped_total": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9223372036854775807
+            },
+            "alarms_dropped_total": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9223372036854775807
+            },
+            "pending": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "platform_unsupported": {
+              "type": "boolean"
+            },
+            "rules_accepted": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 32768
+            },
+            "rules_refused": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 32768
+            },
+            "rules_without_prefilter": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 32768
+            }
+          }
         }
       }
     },

@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "agent_id": "agent.1",
+  "scanner_version": "0.1.0",
+  "hostname": "db-primary-01",
+  "observed_at_unix_ms": 1790000000000,
+  "capabilities": [],
+  "health": {
+    "queue": {
+      "pending": 12,
+      "oldest_pending_age_s": 340,
+      "bytes": 81920,
+      "max_bytes": 268435456,
+      "dropped_total": 0,
+      "rejected_total": {
+        "retention_expired": 2
+      }
+    },
+    "last_scan": {
+      "finished_at_unix_ms": 1790000000000,
+      "interval_s": 3600,
+      "rules_evaluated": 42,
+      "rules_unavailable": 1,
+      "rules_failed": 0,
+      "collectors": {
+        "packages": "ok",
+        "ports": "ok",
+        "processes": "permission_denied"
+      }
+    },
+    "rule_sets": [
+      {
+        "id": "baseline",
+        "version": 7,
+        "expires_at_unix_ms": 1790600000000,
+        "refused": null
+      }
+    ],
+    "storage_errors": 0,
+    "clock_jump_s": null,
+    "alarms": {
+      "collector": "ok",
+      "events_dropped_total": 0,
+      "alarms_dropped_total": 3,
+      "pending": 2,
+      "platform_unsupported": false,
+      "rules_accepted": 4,
+      "rules_refused": 1,
+      "rules_without_prefilter": 0
+    }
+  }
+}
