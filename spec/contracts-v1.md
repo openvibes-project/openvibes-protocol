@@ -547,7 +547,7 @@ not configured with one.
 | `event` key | Type |
 |---|---|
 | `process.exe`, `process.name`, `process.cmdline` (args joined by single spaces, at most 256 KiB), `process.cwd` | string |
-| `process.cmdline_truncated` (the command line was longer than 256 KiB and was cut) | boolean |
+| `process.cmdline_truncated` (the command line was cut: at 256 KiB, or earlier where the agent bounds the arguments it holds per event, at least 64 KiB) | boolean |
 | `process.uid` (real user id), `process.euid` (effective user id; differs after a setuid exec such as `sudo`) | integer |
 | `parent.exe`, `parent.name`, `parent.cmdline` (cut like `process.cmdline`) | string |
 | `ancestors.names`, `ancestors.exes` (the parent and up to 4 further ancestors) | string list, sorted, no duplicates |
@@ -568,8 +568,8 @@ cannot read) is missing, and the rule is `Unavailable`, never a match.
 Values come from the kernel as bytes. An agent decodes them as UTF-8,
 replacing each invalid sequence with U+FFFD, before binding, masking or
 sending, and every cut in this section falls on a character boundary.
-Rules see the full, unmasked command line up to the 256 KiB cut; a longer
-one is cut rather than dropped, and a rule may treat
+Rules see the full, unmasked command line up to the agent's cut (at least
+64 KiB, at most 256 KiB); a longer one is cut rather than dropped, and a rule may treat
 `process.cmdline_truncated` itself as suspicious. The optional `programs`
 list (exact exe paths or basenames) lets an agent skip evaluation for
 events no rule names. The evaluation wall-time limit applies to each rule
