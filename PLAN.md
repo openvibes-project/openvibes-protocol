@@ -250,6 +250,8 @@ suppressions. Spec
   for every `event` string; literal limit in decoded bytes.
   Wrapper scripts (`sudo sh -c`, `sudo su - app -c`) masked in any
   process's arguments.
+- [ ] Agent health: `health.alarms` (collector outcome, dropped events
+  and alarms, pending, `platform_unsupported`, rule counts).
 - [ ] Agent: collector, process table, rules, masking, delivery (plan 2;
   before the platform, which takes its wire types from `openvibes-core`).
 - [ ] Platform: store, ingest, console API (plan 3).

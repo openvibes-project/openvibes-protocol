@@ -302,6 +302,17 @@ paths, file contents or finding data:
   `rolled_back`, `invalid`);
 - `storage_errors` since the agent started, and `clock_jump_s`, a
   wall-clock jump the agent detected in the last hour (absent otherwise).
+- `alarms` (P14, absent when the agent does not watch process starts):
+  `collector`, the process-events collector's outcome (`unsupported`
+  without kernel audit, `permission_denied` without `CAP_AUDIT_READ`);
+  `events_dropped_total`, process starts lost before evaluation (a full
+  channel, an unfinished or oversized audit event, or kernel `ENOBUFS`);
+  `alarms_dropped_total`, alarms dropped by the full alarm queue or
+  refused by the platform (400, 413), kept across restarts; `pending`
+  alarms (at most 1,000); `platform_unsupported`, true after the platform
+  answered 404 on `/v1/alarms`; and `rules_accepted`, `rules_refused` and
+  `rules_without_prefilter` for `process_event` rules. A platform before
+  P14 ignores the object.
 
 Collector outcomes and refusal codes are open identifiers, so later
 versions can add values: a reader treats an outcome it does not know as a
