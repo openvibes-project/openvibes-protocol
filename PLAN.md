@@ -30,7 +30,7 @@ Status: **done** (implemented and tested), **todo** (specified, not built),
 | 3 | `Heartbeat` (health, P12) | agent → ingest | online | `/v1/heartbeat`, mTLS | done (health: openvibes-agent #17) | done (health: openvibes-platform #45) |
 | 4 | `FindingBatch` → `DeliveryAcknowledgement` | agent → ingest | online | `/v1/findings`, mTLS | done (`rejected_findings`) | done (per-finding refusal) |
 | 5 | `PlatformError` (`identity_revoked`) | ingest → agent | online | 401/403 body on any mTLS call | done | done |
-| 6 | `RuleBundleRequest` → `SignedRuleEnvelope` (rule bundles) | agent → distribution | online | `/v1/rule-bundle` on the distribution service (port 18424), mTLS | done | done (openvibes-distribution) |
+| 6 | `RuleBundleRequest` → `SignedRuleEnvelope` (rule bundles) | agent → distribution | online | `/v1/rule-bundle` on the distribution service (default port 18424), mTLS | done | done (openvibes-distribution) |
 | 7 | `FindingExport` file | agent → file → ingest | local-only | file import | done | done (`openvibes-admin import`, openvibes-platform #34) |
 | 7a | `InventoryExport` file | agent → file → ingest | local-only | file import | done | done (`openvibes-admin import`, openvibes-platform #34) |
 | 11 | `InventoryChanges` (gzip), `PlatformError` `inventory_resync` | agent → ingest | online | `/v1/inventory/changes`, mTLS; 409 resync | done (gzip, fallbacks; openvibes-agent #16) | done (openvibes-platform #42) |
