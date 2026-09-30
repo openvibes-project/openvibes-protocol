@@ -23,6 +23,7 @@
           "mysql -u app -p*** shop"
         ],
         "uid": 48,
+        "euid": 48,
         "truncated": false
       },
       "ancestors": []

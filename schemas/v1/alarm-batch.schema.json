@@ -17,7 +17,7 @@
   "$defs": {
     "process": {
       "type": "object",
-      "required": ["pid", "exe", "args", "uid", "truncated"],
+      "required": ["pid", "exe", "args", "uid", "euid", "truncated"],
       "properties": {
         "pid": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
         "exe": { "$ref": "common.schema.json#/$defs/boundedString" },
@@ -27,9 +27,10 @@
           "description": "Masked on the agent before sending (contract, \"Process events and alarms\"); cut at an argument boundary to at most 256 arguments and 4096 bytes joined."
         },
         "cwd": { "$ref": "common.schema.json#/$defs/boundedString" },
-        "uid": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "uid": { "type": "integer", "minimum": 0, "maximum": 4294967295, "description": "Real user id." },
+        "euid": { "type": "integer", "minimum": 0, "maximum": 4294967295, "description": "Effective user id; differs from uid after a setuid exec such as sudo." },
         "truncated": { "type": "boolean", "description": "True when args were cut to the limit." },
-        "seeded": { "type": "boolean", "description": "True for a process the agent learnt from /proc at start rather than from an exec event; its exe may be argv[0] or [comm] (contract, \"Process events and alarms\")." }
+        "seeded": { "type": "boolean", "description": "True for a process the agent learnt from /proc rather than from an exec event (it started before the agent, or forked without exec); its exe may be argv[0] or [comm] (contract, \"Process events and alarms\")." }
       }
     },
     "alarm": {

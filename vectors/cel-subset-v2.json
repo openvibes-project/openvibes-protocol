@@ -67,6 +67,16 @@
     "expect": "false"
   },
   {
+    "name": "integer euid (root after a setuid exec)",
+    "kind": "process_event",
+    "expression": "event['process.euid'] == 0 && event['process.uid'] != 0",
+    "bindings": {
+      "process.uid": 1000,
+      "process.euid": 0
+    },
+    "expect": "true"
+  },
+  {
     "name": "an oversized command line is a boolean rules can use",
     "kind": "process_event",
     "expression": "event['process.name'] == 'sh' && event['process.cmdline_truncated']",

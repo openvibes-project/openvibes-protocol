@@ -250,6 +250,8 @@ suppressions. Spec
   for every `event` string; literal limit in decoded bytes.
   Wrapper scripts (`sudo sh -c`, `sudo su - app -c`) masked in any
   process's arguments.
+- [x] `process.euid` and `AlarmProcess.euid` beside the real `uid`
+  (reviewer on 2b; setuid execs such as `sudo`).
 - [ ] Agent health: `health.alarms` (collector outcome, dropped events
   and alarms, pending, `platform_unsupported`, rule counts).
 - [ ] Agent: collector, process table, rules, masking, delivery (plan 2;

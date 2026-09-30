@@ -548,13 +548,15 @@ not configured with one.
 |---|---|
 | `process.exe`, `process.name`, `process.cmdline` (args joined by single spaces, at most 256 KiB), `process.cwd` | string |
 | `process.cmdline_truncated` (the command line was longer than 256 KiB and was cut) | boolean |
-| `process.uid` | integer |
+| `process.uid` (real user id), `process.euid` (effective user id; differs after a setuid exec such as `sudo`) | integer |
 | `parent.exe`, `parent.name`, `parent.cmdline` (cut like `process.cmdline`) | string |
 | `ancestors.names`, `ancestors.exes` (the parent and up to 4 further ancestors) | string list, sorted, no duplicates |
 
 `exe` is the executed file's path and `name` its basename. A process the
-agent learnt from `/proc` when it started, not from an exec event, is
-*seeded*: its `name` is the kernel's `comm` (`/proc/<pid>/stat`, at most 15
+agent learnt from `/proc`, not from an exec event, is
+*seeded* (it started before the agent, or forked without exec, as nginx and
+php-fpm workers do; the agent reads it when a child names it as parent):
+its `name` is the kernel's `comm` (`/proc/<pid>/stat`, at most 15
 bytes, e.g. `nginx` for an nginx worker), and its `exe` is the
 `/proc/<pid>/exe` link when readable, otherwise `argv[0]` when it is an
 absolute path, otherwise `[comm]` in brackets. Neither is ever empty

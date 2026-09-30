@@ -278,6 +278,7 @@
         ],
         "cwd": "/var/www",
         "uid": 48,
+        "euid": 48,
         "truncated": true
       },
       "ancestors": [
@@ -289,6 +290,7 @@
           ],
           "cwd": "/",
           "uid": 48,
+          "euid": 48,
           "truncated": false
         },
         {
@@ -300,6 +302,7 @@
             "--system"
           ],
           "uid": 0,
+          "euid": 0,
           "truncated": false,
           "seeded": true
         }
