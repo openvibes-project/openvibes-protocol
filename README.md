@@ -35,7 +35,7 @@ and air-gapped hosts are supported.
 | Repository | What it is |
 |---|---|
 | [openvibes-agent](https://github.com/openvibes-project/openvibes-agent) | The endpoint agent (Rust; Linux, Windows, macOS): collectors, signed-rule evaluation, a durable local queue, and the mTLS client. |
-| [openvibes-platform](https://github.com/openvibes-project/openvibes-platform) | The server side: ingest (port 18423), rule distribution (18424), vulnerability matching and enrichment, the admin CLI, the built-in PKI, packaging, and, in progress, the web console with its AI assistant. |
+| [openvibes-platform](https://github.com/openvibes-project/openvibes-platform) | The server side: ingest (default port 18423), rule distribution (default 18424), vulnerability matching and enrichment, the admin CLI, the built-in PKI, packaging, and, in progress, the web console with its AI assistant. |
 | **openvibes-protocol** (this one) | Everything that crosses the agent–platform boundary. Both other repositories pin it as their `protocol/` submodule and run its fixtures in their tests, so a contract change lands here first. |
 
 ## What the protocol covers
@@ -49,7 +49,7 @@ Version 1, all specified with schemas and fixtures:
 | Finding batches and per-finding acknowledgement | agent → ingest | `/v1/findings` | Built on both sides |
 | Inventory report (OS, packages, running kernel) | agent → ingest | `/v1/inventory` | Built on both sides |
 | Structured errors, including `identity_revoked` | ingest → agent | any mTLS call | Built on both sides |
-| Signed rule bundles | agent → distribution | `/v1/rule-bundle`, port 18424 | Built on both sides |
+| Signed rule bundles | agent → distribution | `/v1/rule-bundle`, default port 18424 | Built on both sides |
 | Finding and inventory export files | agent → file → platform | file import | Agent built; platform import planned |
 | Enrollment token, platform CA, rule-signing keys | operator → agent | out of band (install time) | Built |
 
@@ -91,6 +91,9 @@ Online:      Agent --- HTTPS + mTLS, port 18423 --->  Ingest service --> platfor
              Agent <-- HTTPS + mTLS, port 18424 ----  Distribution service (signed rule bundles)
 Local-only:  Agent --- export file ---- (import) --->  Ingest service --> platform storage
 ```
+
+18423 and 18424 are the default ports; a platform may listen on others,
+and the agent then names them in `platform_url` and `distribution_url`.
 
 The ingest service (formerly called the collector service; the agent's
 *collectors* are something else: they read host facts) only receives data from
