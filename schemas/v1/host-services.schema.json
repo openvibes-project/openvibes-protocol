@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/host-services.schema.json",
+  "title": "HostServices",
+  "description": "Online route (P15): the host's listening sockets (servers only) and running systemd services, sent to POST /v1/services after a scan when sha256 changed, and at least daily. Each report replaces the previous one. At most 256 KiB uncompressed.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "agent_id",
+    "collected_at_unix_ms",
+    "sha256",
+    "owners",
+    "listeners",
+    "services"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "agent_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "collected_at_unix_ms": {
+      "$ref": "common.schema.json#/$defs/unixMs"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Services digest of listeners and services (contract, \"Services digest\"); compared for equality only."
+    },
+    "owners": {
+      "enum": [
+        "complete",
+        "partial"
+      ],
+      "description": "complete: the agent could read every process's sockets (the opt-in capability) and named an owner wherever one exists; partial: some or all owners are not visible (no capability, or the walk was capped), so a listener without service/program may still have one."
+    },
+    "listeners": {
+      "type": "array",
+      "maxItems": 4096,
+      "items": {
+        "$ref": "#/$defs/listener"
+      }
+    },
+    "services": {
+      "type": "array",
+      "maxItems": 2048,
+      "items": {
+        "$ref": "#/$defs/service"
+      }
+    }
+  },
+  "$defs": {
+    "unit": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^[A-Za-z0-9:_.@\\\\-]+$",
+      "description": "A systemd unit name, e.g. nginx.service."
+    },
+    "program": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]+$",
+      "description": "A process's short name (its comm, at most 15 bytes on Linux)."
+    },
+    "listener": {
+      "type": "object",
+      "required": [
+        "protocol",
+        "address",
+        "port",
+        "exposed"
+      ],
+      "properties": {
+        "protocol": {
+          "enum": [
+            "tcp",
+            "udp"
+          ]
+        },
+        "address": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 45,
+          "pattern": "^[0-9A-Fa-f:.]+$",
+          "description": "The bound IPv4 or IPv6 address, as the kernel reports it (0.0.0.0 and :: for any)."
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "exposed": {
+          "type": "boolean",
+          "description": "Bound to a non-loopback address (not whether a firewall lets it through)."
+        },
+        "service": {
+          "$ref": "#/$defs/unit",
+          "description": "The owning systemd unit; absent when the agent cannot see the owner."
+        },
+        "program": {
+          "$ref": "#/$defs/program",
+          "description": "The owning process's short name; absent when the agent cannot see the owner."
+        }
+      }
+    },
+    "service": {
+      "type": "object",
+      "required": [
+        "unit",
+        "programs",
+        "processes"
+      ],
+      "properties": {
+        "unit": {
+          "$ref": "#/$defs/unit"
+        },
+        "programs": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/program"
+          },
+          "description": "Distinct short names of its processes, sorted, at most 16."
+        },
+        "processes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]+$",
+          "description": "The user its main process runs as (a name, or the uid when it has none)."
+        }
+      }
+    }
+  }
+}

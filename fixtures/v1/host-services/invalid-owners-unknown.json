@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "agent_id": "agent.1",
+  "collected_at_unix_ms": 1790604131000,
+  "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "owners": "some",
+  "listeners": [
+    {
+      "protocol": "tcp",
+      "address": "0.0.0.0",
+      "port": 443,
+      "exposed": true,
+      "service": "nginx.service",
+      "program": "nginx"
+    },
+    {
+      "protocol": "tcp",
+      "address": "::",
+      "port": 22,
+      "exposed": true
+    },
+    {
+      "protocol": "udp",
+      "address": "127.0.0.53",
+      "port": 53,
+      "exposed": false,
+      "service": "systemd-resolved.service",
+      "program": "systemd-resolve"
+    }
+  ],
+  "services": [
+    {
+      "unit": "nginx.service",
+      "programs": [
+        "nginx"
+      ],
+      "processes": 5,
+      "user": "root"
+    },
+    {
+      "unit": "systemd-resolved.service",
+      "programs": [
+        "systemd-resolve"
+      ],
+      "processes": 1,
+      "user": "systemd-resolve"
+    },
+    {
+      "unit": "getty@tty1.service",
+      "programs": [
+        "agetty"
+      ],
+      "processes": 1
+    }
+  ]
+}

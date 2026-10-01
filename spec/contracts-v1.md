@@ -199,6 +199,7 @@ serialized document of response body. Every response is validated before use.
 | `/v1/inventory/changes` | required | `InventoryChanges` | any 2xx; body ignored; 409 `PlatformError` `inventory_resync` |
 | `/v1/findings/changes` | required | `FindingChanges` | any 2xx; body ignored; 409 `PlatformError` `findings_resync` |
 | `/v1/alarms` | required | `AlarmBatch` (P14) | any 2xx; body ignored |
+| `/v1/services` | required | `HostServices` (P15) | any 2xx; body ignored |
 | `/v1/ca` (`GET`) | none | none | the platform's root CA certificate, PEM |
 
 `GET /v1/ca` returns the root certificate that issued the platform's server
@@ -680,6 +681,57 @@ alarms to `dropped_total`, so one bad batch never blocks the queue; on 404
 (a platform before P14) it keeps its alarms and retries hourly; any other
 failure is retried as findings are.
 
+#### Host services (P15)
+
+`HostServices` (`POST /v1/services`, optionally `Content-Encoding: gzip`)
+lists what serves on a host: its listening sockets and its running systemd
+services. Each report replaces the previous one; there are no change sets.
+An agent sends one after a scan when `sha256` (below) differs from the last
+one the platform acknowledged with a 2xx, and at least once a day even when
+it does not, so a platform that lost the list gets it back. `agent_id` must
+be the authenticated agent's own id, or the report is refused with 400.
+
+- **Listeners** are servers only: every TCP socket in `LISTEN`, and every
+  UDP socket with no connected peer bound to a port below the start of the
+  host's ephemeral range (`net.ipv4.ip_local_port_range`), so client
+  sockets are left out. The same protocol, address and port is listed once.
+  `exposed` is true for any address other than loopback (`127.0.0.0/8`,
+  `::1`); it says nothing about firewalls. `address` is the bound address in
+  its usual text form (`0.0.0.0` and `::` for any).
+- **Owners.** `service` (the owning process's systemd unit) and `program`
+  (its short name, `comm`) are present only when the agent could see which
+  process holds the socket. Linking a socket to its process means reading
+  `/proc/<pid>/fd`, which needs the process's own user or
+  `CAP_DAC_READ_SEARCH`; agents do not have that capability unless an
+  administrator adds it (decision C). `owners` says how far to trust an
+  absent owner: `complete` when the agent read every process's sockets
+  and named an owner wherever one exists, `partial` otherwise (no
+  capability, or the agent stopped its walk at a limit). With `partial`,
+  a listener without an owner may still have one.
+- **Services** are the systemd service units with at least one process:
+  `unit`, its processes' distinct short names (`programs`, sorted, at most
+  16), the number of `processes`, and the `user` its main process runs as,
+  as a name, or the decimal uid when the name is unknown (never empty).
+
+Readers refuse a report over 4,096 listeners, 2,048 services, or 256 KiB
+uncompressed (413). An agent that would exceed a list limit keeps the
+first entries in the digest order below.
+On 404 (a platform before P15) the agent stops sending until it restarts;
+400 and 413 are not retried until the content changes; any other failure is
+retried at the next scan.
+
+#### Services digest (P15)
+
+The agent and the platform compute the same `sha256`. A listener is the
+JSON array `[protocol, address, port, exposed, service, program]`, with
+`null` for an absent owner; a service is `[unit, programs, processes,
+user]`, with `programs` deduplicated and sorted in byte order and `null`
+for an absent user. Each list is deduplicated and sorted by the compact
+JSON text of its entries in byte order, and the digest is the lowercase hex
+SHA-256 of `[[listeners…],[services…]]`, compact JSON as for the
+inventory fingerprint. `owners`, `agent_id` and `collected_at_unix_ms` are
+not part of it. Test vectors are in `vectors/services-digest.json`.
+
 ## Rule Distribution
 
 Signed rule bundles come from the platform's **distribution service**, never
@@ -824,6 +876,10 @@ export of findings. Online inventory reports are `InventoryReport` (P8).
 | `process.cmdline` and `parent.cmdline` in the `event` binding | 256 KiB (longer is cut; `process.cmdline_truncated`) |
 | Other strings in the `event` binding (`*.exe`, `*.name`, `process.cwd`, each `ancestors` entry) | 4 KiB (longer is cut) |
 | String literal argument of a subset v2 method | 256 bytes, decoded UTF-8 |
+| Listeners per `HostServices` (P15) | 4,096 |
+| Services per `HostServices` | 2,048 |
+| Programs per service | 16 |
+| `HostServices` document, uncompressed | 256 KiB |
 
 These are security limits, not performance targets. Raising them requires test
 coverage and a resource-exhaustion review.
