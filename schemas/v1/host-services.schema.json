@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/host-services.schema.json",
   "title": "HostServices",
-  "description": "Online route (P15): the host's listening sockets (servers only) and running systemd services, sent to POST /v1/services after a scan when sha256 changed, and at least daily. Each report replaces the previous one. At most 256 KiB uncompressed.",
+  "description": "Online route (P15): the host's listening sockets (servers only) and running systemd services, sent to POST /v1/services after a scan when sha256 changed, and at least daily. Each report replaces the previous one. At most 512 KiB uncompressed.",
   "type": "object",
   "required": [
     "schema_version",
@@ -34,6 +34,10 @@
         "partial"
       ],
       "description": "complete: the agent could read every process's sockets (the opt-in capability) and named an owner wherever one exists; partial: some or all owners are not visible (no capability, or the walk was capped), so a listener without service/program may still have one."
+    },
+    "truncated": {
+      "type": "boolean",
+      "description": "The agent cut a list to the limits (in digest order); absent or false when the lists are complete."
     },
     "listeners": {
       "type": "array",

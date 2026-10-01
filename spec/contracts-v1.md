@@ -713,9 +713,11 @@ be the authenticated agent's own id, or the report is refused with 400.
   16), the number of `processes`, and the `user` its main process runs as,
   as a name, or the decimal uid when the name is unknown (never empty).
 
-Readers refuse a report over 4,096 listeners, 2,048 services, or 256 KiB
-uncompressed (413). An agent that would exceed a list limit keeps the
-first entries in the digest order below.
+Readers refuse a report over 4,096 listeners, 2,048 services, or 512 KiB
+uncompressed (413). An agent that would exceed a list or the size limit
+keeps the first entries in the digest order below, listeners before
+services, and sets `truncated`; it never cuts silently. `truncated` is
+absent (false) on a complete report.
 On 404 (a platform before P15) the agent stops sending until it restarts;
 400 and 413 are not retried until the content changes; any other failure is
 retried at the next scan.
@@ -729,8 +731,8 @@ user]`, with `programs` deduplicated and sorted in byte order and `null`
 for an absent user. Each list is deduplicated and sorted by the compact
 JSON text of its entries in byte order, and the digest is the lowercase hex
 SHA-256 of `[[listeners…],[services…]]`, compact JSON as for the
-inventory fingerprint. `owners`, `agent_id` and `collected_at_unix_ms` are
-not part of it. Test vectors are in `vectors/services-digest.json`.
+inventory fingerprint. `owners`, `truncated`, `agent_id` and
+`collected_at_unix_ms` are not part of it. Test vectors are in `vectors/services-digest.json`.
 
 ## Rule Distribution
 
@@ -879,7 +881,7 @@ export of findings. Online inventory reports are `InventoryReport` (P8).
 | Listeners per `HostServices` (P15) | 4,096 |
 | Services per `HostServices` | 2,048 |
 | Programs per service | 16 |
-| `HostServices` document, uncompressed | 256 KiB |
+| `HostServices` document, uncompressed | 512 KiB |
 
 These are security limits, not performance targets. Raising them requires test
 coverage and a resource-exhaustion review.
