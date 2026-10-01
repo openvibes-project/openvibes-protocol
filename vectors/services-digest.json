@@ -1,0 +1,85 @@
+[
+  {
+    "name": "nothing listening, no services",
+    "listeners": [],
+    "services": [],
+    "sha256": "643d5437104296e21d906ecb15b2c96ad278f20cfc4af53b12bb6069bd853726"
+  },
+  {
+    "name": "one listener with its owner, one service",
+    "listeners": [
+      {
+        "protocol": "tcp",
+        "address": "0.0.0.0",
+        "port": 443,
+        "exposed": true,
+        "service": "nginx.service",
+        "program": "nginx"
+      }
+    ],
+    "services": [
+      {
+        "unit": "nginx.service",
+        "programs": [
+          "nginx"
+        ],
+        "processes": 5,
+        "user": "root"
+      }
+    ],
+    "sha256": "338043a231968504c0a40b4521a72a705732e5a179351b0e2ab1452f593fb1c2"
+  },
+  {
+    "name": "unordered entries, an owner not visible, duplicate and unordered programs, no user, non-ASCII user",
+    "listeners": [
+      {
+        "protocol": "udp",
+        "address": "127.0.0.53",
+        "port": 53,
+        "exposed": false,
+        "service": "systemd-resolved.service",
+        "program": "systemd-resolve"
+      },
+      {
+        "protocol": "tcp",
+        "address": "::",
+        "port": 22,
+        "exposed": true
+      },
+      {
+        "protocol": "tcp",
+        "address": "0.0.0.0",
+        "port": 443,
+        "exposed": true,
+        "service": "nginx.service",
+        "program": "nginx"
+      },
+      {
+        "protocol": "tcp",
+        "address": "::",
+        "port": 22,
+        "exposed": true
+      }
+    ],
+    "services": [
+      {
+        "unit": "web.service",
+        "programs": [
+          "php-fpm",
+          "nginx",
+          "nginx"
+        ],
+        "processes": 12,
+        "user": "wébuser"
+      },
+      {
+        "unit": "getty@tty1.service",
+        "programs": [
+          "agetty"
+        ],
+        "processes": 1
+      }
+    ],
+    "sha256": "8a06872e53bd5ca62a2f6336f896dad05ee8b207160b9584227004b093b44600"
+  }
+]

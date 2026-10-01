@@ -64,6 +64,33 @@ def match_digest(matches: list) -> str:
     return hashlib.sha256(("[" + ",".join(rows) + "]").encode()).hexdigest()
 
 
+def services_digest(listeners: list, services: list) -> str:
+    """spec/contracts-v1.md, "Services digest (P15)"."""
+
+    def compact(value) -> str:
+        return json.dumps(value, separators=(",", ":"), ensure_ascii=False)
+
+    listener_rows = sorted(
+        {
+            compact(
+                [
+                    l["protocol"], l["address"], l["port"], l["exposed"],
+                    l.get("service"), l.get("program"),
+                ]
+            )
+            for l in listeners
+        }
+    )
+    service_rows = sorted(
+        {
+            compact([s["unit"], sorted(set(s["programs"])), s["processes"], s.get("user")])
+            for s in services
+        }
+    )
+    text = "[[" + ",".join(listener_rows) + "],[" + ",".join(service_rows) + "]]"
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
 def main() -> int:
     schemas = {
         path.name.removesuffix(".schema.json"): json.loads(path.read_text())
@@ -123,6 +150,23 @@ def main() -> int:
         if valid != expect_valid:
             print(f"FAIL generated alarm-batch with {name}: valid={valid}")
             failures += 1
+    # Generated, not checked in: host services at their limits (P15).
+    base = json.loads((ROOT / "fixtures/v1/host-services/valid.json").read_text())
+    services_validator = Draft202012Validator(schemas["host-services"], registry=registry)
+    listener = base["listeners"][0]
+    service = base["services"][0]
+    cases = [
+        ("4096 listeners", dict(base, listeners=[dict(listener, port=1 + i % 65535, address=f"10.0.{i // 250}.{i % 250}") for i in range(4096)]), True),
+        ("4097 listeners", dict(base, listeners=[dict(listener, port=1 + i % 65535) for i in range(4097)]), False),
+        ("2048 services", dict(base, services=[dict(service, unit=f"u{i}.service") for i in range(2048)]), True),
+        ("2049 services", dict(base, services=[dict(service, unit=f"u{i}.service") for i in range(2049)]), False),
+    ]
+    for name, document, expect_valid in cases:
+        valid = services_validator.is_valid(document)
+        checked += 1
+        if valid != expect_valid:
+            print(f"FAIL generated host-services with {name}: valid={valid}")
+            failures += 1
     # The inventory fingerprint (protocol P11): each vector's digest must be
     # the SHA-256 of the canonical JSON the contract defines.
     for vector in json.loads((ROOT / "vectors/inventory-fingerprint.json").read_text()):
@@ -135,6 +179,12 @@ def main() -> int:
         checked += 1
         if match_digest(vector["matches"]) != vector["sha256"]:
             print(f"FAIL match digest vector {vector['name']}")
+            failures += 1
+    # The services digest (protocol P15).
+    for vector in json.loads((ROOT / "vectors/services-digest.json").read_text()):
+        checked += 1
+        if services_digest(vector["listeners"], vector["services"]) != vector["sha256"]:
+            print(f"FAIL services digest vector {vector['name']}")
             failures += 1
     # CEL subset v2 (P14): semantics are checked by the agent's tests; here
     # only the shape, so a malformed vector cannot silently test nothing.
