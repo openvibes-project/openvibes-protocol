@@ -259,6 +259,9 @@ suppressions. Spec
   before the platform, which takes its wire types from `openvibes-core`).
 - [ ] Platform: store, ingest, console API (plan 3).
 - [ ] Console UI: Alarms screen, detail, suppressions (plan 4).
+- [ ] Aggregate CEL budget per process start across all `process_event`
+  rules (50,000 operations), `events_budget_cut_total` in health
+  (board #105; step 1 of own rules, platform #151).
 
 ### P15: Assets v2, ports and services (user, 2026-10-01)
 

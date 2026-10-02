@@ -312,8 +312,18 @@ paths, file contents or finding data:
   refused by the platform (400, 413), kept across restarts; `pending`
   alarms (at most 1,000); `platform_unsupported`, true after the platform
   answered 404 on `/v1/alarms`; and `rules_accepted`, `rules_refused` and
-  `rules_without_prefilter` for `process_event` rules. A platform before
+  `rules_without_prefilter` for `process_event` rules; and, optionally,
+  `events_budget_cut_total`, process starts whose evaluation stopped at
+  the per-event budget below, since the agent started. A platform before
   P14 ignores the object.
+
+  Each process start gets **one CEL budget across all `process_event`
+  rules**, of every rule set: 50,000 operations, the same as one rule's
+  own limit. Each rule still stops at its own limit too. When a start's
+  budget is spent, its remaining rules aren't evaluated and the start
+  counts once in `events_budget_cut_total`; a rule cut there is neither a
+  failure nor unavailable. Many rules can then never multiply the cost of
+  one start beyond what one maximal rule may cost.
 
 Collector outcomes and refusal codes are open identifiers, so later
 versions can add values: a reader treats an outcome it does not know as a
@@ -875,6 +885,7 @@ export of findings. Online inventory reports are `InventoryReport` (P8).
 | One alarm, serialized | 64 KiB |
 | `args` per process in an alarm | 256 entries, 4 KiB joined |
 | Ancestors per alarm | 5 |
+| CEL operations per process start, across all `process_event` rules | 50,000 |
 | `process.cmdline` and `parent.cmdline` in the `event` binding | 256 KiB (longer is cut; `process.cmdline_truncated`) |
 | Other strings in the `event` binding (`*.exe`, `*.name`, `process.cwd`, each `ancestors` entry) | 4 KiB (longer is cut) |
 | String literal argument of a subset v2 method | 256 bytes, decoded UTF-8 |
