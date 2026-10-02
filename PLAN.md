@@ -264,6 +264,9 @@ suppressions. Spec
   `events_budget_cut_total` in health, and the agent-built
   `openvibes-agent`/`evaluation.cut` alarm (board #105; step 1 of own
   rules, platform #151).
+- [ ] Restricted rule sets see masked command lines and need a capped
+  `programs` prefilter (8 per rule, 32 distinct per set), refused by the
+  agent per rule (the rest of own rules' step 1, platform #151).
 
 ### P15: Assets v2, ports and services (user, 2026-10-01)
 

@@ -591,11 +591,32 @@ Values come from the kernel as bytes. An agent decodes them as UTF-8,
 replacing each invalid sequence with U+FFFD, before binding, masking or
 sending, and every cut in this section falls on a character boundary.
 Rules see the full, unmasked command line up to the agent's cut (at least
-64 KiB, at most 256 KiB); a longer one is cut rather than dropped, and a rule may treat
+64 KiB, at most 256 KiB), except those of a restricted rule set (below); a longer one is cut rather than dropped, and a rule may treat
 `process.cmdline_truncated` itself as suspicious. The optional `programs`
 list (exact exe paths or basenames) lets an agent skip evaluation for
 events no rule names. The evaluation wall-time limit applies to each rule
 on each event.
+
+**Restricted rule sets.** A set the agent's own configuration marks
+restricted (absent means restricted, except `baseline-alarms`; see the
+per-start budget under `health.alarms`) is held to more than the shared
+budget, so that a rule-signing key kept online can't turn alarm rules into
+a general exec logger or a way to read secrets:
+- **Masked command lines.** Its rules see `process.cmdline` and
+  `parent.cmdline` masked exactly as an alarm carries the arguments (the
+  masking below, applied to each argument before they are joined).
+  Unrestricted sets see the full form. A rule therefore can't test for a
+  secret in argv, even one bit at a time.
+- **A required, capped prefilter.** Each of its `process_event` rules must
+  carry `programs`, with at most 8 entries, and the set's rules together
+  may name at most 32 distinct entries. An agent refuses a rule without
+  `programs` or with more than 8 entries, and refuses every
+  `process_event` rule of a set naming more than 32; each counts in
+  `rules_refused`, and the set's other rules still load. A rule-writing
+  tool refuses the same before signing.
+- These checks are the agent's, not the bundle's: a stolen signing key
+  never passes through the console, and can't change an agent's
+  configuration.
 
 A match becomes an alarm, identified by an `alarm_id` the agent makes once.
 Repeats collapse: a match with the same rule set, rule, `process.exe`,
@@ -912,6 +933,8 @@ export of findings. Online inventory reports are `InventoryReport` (P8).
 | `args` per process in an alarm | 256 entries, 4 KiB joined |
 | Ancestors per alarm | 5 |
 | CEL operations per process start, across the `process_event` rules of restricted rule sets | 50,000 |
+| `programs` entries per `process_event` rule of a restricted set (required) | 8 |
+| Distinct `programs` entries across a restricted set | 32 |
 | `process.cmdline` and `parent.cmdline` in the `event` binding | 256 KiB (longer is cut; `process.cmdline_truncated`) |
 | Other strings in the `event` binding (`*.exe`, `*.name`, `process.cwd`, each `ancestors` entry) | 4 KiB (longer is cut) |
 | String literal argument of a subset v2 method | 256 bytes, decoded UTF-8 |
