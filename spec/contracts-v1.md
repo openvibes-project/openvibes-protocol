@@ -317,13 +317,24 @@ paths, file contents or finding data:
   the per-event budget below, since the agent started. A platform before
   P14 ignores the object.
 
-  Each process start gets **one CEL budget across all `process_event`
-  rules**, of every rule set: 50,000 operations, the same as one rule's
-  own limit. Each rule still stops at its own limit too. When a start's
-  budget is spent, its remaining rules aren't evaluated and the start
-  counts once in `events_budget_cut_total`; a rule cut there is neither a
-  failure nor unavailable. Many rules can then never multiply the cost of
-  one start beyond what one maximal rule may cost.
+  **One budget per start for restricted rule sets.** An agent marks each
+  configured rule set restricted or not in its own configuration (not in
+  the bundle, so a signing key can't change it). A set without the
+  setting is restricted, except `baseline-alarms`.
+  - Unrestricted sets (`baseline-alarms`, and sets the operator signs
+    offline and marks `restricted = false`) keep each rule's own limit
+    only, and are evaluated first.
+  - Then the `process_event` rules of all **restricted** sets share one
+    budget per start: 50,000 operations, the same as one rule's own limit.
+    Each rule still stops at its own limit too.
+  - When a start's budget is spent, its remaining restricted rules aren't
+    evaluated, and the start counts once in `events_budget_cut_total`. A
+    rule cut there is neither a failure nor unavailable, and the start
+    raises an `evaluation.cut` alarm (below).
+  - So many restricted rules can't multiply the cost of one start beyond
+    one maximal rule. And no command line, however long, can cut an
+    unrestricted rule: a padded start makes string methods dearer, but
+    only for the restricted rules.
 
 Collector outcomes and refusal codes are open identifiers, so later
 versions can add values: a reader treats an outcome it does not know as a
@@ -598,6 +609,21 @@ keeps one record per agent and `alarm_id`: a repeat updates `count` and
 `last_seen_unix_ms` to the larger values and keeps everything else from the
 first delivery, so a retry or a late update never creates a second alarm and
 never lowers the count.
+
+**Agent-built alarms.** The rule set id `openvibes-agent` is reserved for
+alarms the agent raises itself. An agent refuses a configured rule set with
+that id, and a platform accepts its alarms like any others (they belong to
+no published bundle). Its one rule:
+
+- `evaluation.cut`, `rule_set_version` 1, `rule_version` 1, severity low,
+  confidence 50. It's raised for a start whose restricted-set budget ran
+  out, with that start's process and ancestors as for any alarm. Message:
+  "Not every alarm rule was evaluated for this process start; its budget
+  ran out (an unusually long command line can cause this)."
+- It collapses per agent on `process.exe` and `parent.exe` only, without
+  the command line. A loop that varies its padding is then one alarm whose
+  `count` rises, not one alarm per start.
+- Versions change only when the meaning of an agent-built rule changes.
 
 Before an alarm is queued, the agent masks every `args` entry of the process
 and its ancestors (vectors: `vectors/alarm-masking.json`). Each rule below
@@ -885,7 +911,7 @@ export of findings. Online inventory reports are `InventoryReport` (P8).
 | One alarm, serialized | 64 KiB |
 | `args` per process in an alarm | 256 entries, 4 KiB joined |
 | Ancestors per alarm | 5 |
-| CEL operations per process start, across all `process_event` rules | 50,000 |
+| CEL operations per process start, across the `process_event` rules of restricted rule sets | 50,000 |
 | `process.cmdline` and `parent.cmdline` in the `event` binding | 256 KiB (longer is cut; `process.cmdline_truncated`) |
 | Other strings in the `event` binding (`*.exe`, `*.name`, `process.cwd`, each `ancestors` entry) | 4 KiB (longer is cut) |
 | String literal argument of a subset v2 method | 256 bytes, decoded UTF-8 |
