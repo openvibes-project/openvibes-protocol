@@ -952,3 +952,45 @@ The evaluator enforces the CEL expression, operation, depth, evidence, fact
 input, and wall-time limits. The SQLite queue enforces the queue, retention, batch, and retry limits, and
 the transport enforces the document and network limits on every request. Scan
 deadlines will be enforced by the scan scheduler.
+# Detection explanations (P17)
+
+Findings (including changes, resync and exports) and alarms may carry
+`detection`, as specified by `detection.schema.json`. Older senders omit it;
+older receivers ignore it. It identifies the original signed bundle by
+`rule_set_version` and the SHA-256 of its signing preimage, using the existing
+signing-preimage algorithm. It is not a signature supplied by the agent.
+
+`inputs` records keys actually read, with a scalar `value` (boolean, signed
+64-bit integer, or string of at most 256 UTF-8 bytes), or an explicit status:
+`masked` omits the value, `summarized` omits list contents and supplies
+`item_count`, and `truncated` marks a clipped scalar string. Complete list
+inputs may be summarized; a false recorded membership condition proves
+absence in the complete fact snapshot, not in a displayed list sample.
+Event command-line input values are always omitted as `masked`, including
+for unrestricted rules which evaluated an unmasked command line. Displayed
+process arguments continue to use P14 masking. No unmasked value is copied
+into step expressions: those contain only rule literals and binding keys.
+
+`steps` contains Boolean condition results from the original evaluation in
+completion order. Expressions are canonical CEL using the original keys
+and rule literals. Short-circuited branches have no entry and must not be
+shown as false or matched. A clipped expression ends in an ellipsis and
+sets the top-level `truncated` flag. This is an explanation, not replayable
+source; the complete source comes from the identified signed bundle.
+
+There are at most 32 inputs and 32 steps, step expressions are at most 512
+UTF-8 bytes, and the entire object is at most 8192 bytes as compact JSON.
+Capture is bounded and uses the rule's remaining work budget. When capture
+cannot finish, preserve the detection result and set `truncated`; never
+turn a match into a non-match or upload an entire inventory. Existing batch,
+queue, nesting and per-alarm byte ceilings still apply. Senders may remove
+optional explanation content to fit an existing envelope, retaining bundle
+identity and `truncated` where possible.
+
+P13's match digest is unchanged for compatibility. Senders also compare
+explanations when deciding whether a match changed, excluding observation
+timestamps. A stored explanation belongs to its recorded finding observation,
+not to the time of the most recent heartbeat. Alarm explanations belong to
+the same latest sample as `process`/`ancestors`; collapsing across different
+bundle identities is forbidden. Legacy data is explicitly unavailable,
+never inferred from current host facts or silently linked to today's rule.
