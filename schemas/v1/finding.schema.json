@@ -55,6 +55,9 @@
         "$ref": "common.schema.json#/$defs/identifier"
       },
       "description": "Fact keys supporting the finding."
+    },
+    "detection": {
+      "$ref": "detection.schema.json"
     }
   }
 }

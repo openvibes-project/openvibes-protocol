@@ -344,3 +344,10 @@ the agent's match digest (spec
    certificate as ingest.
 6. **Trust-root rotation.** How rule-signing keys and the platform CA are
    rotated without reinstalling agents.
+# P17 — Detection explanations
+
+- [x] Optional bounded `detection` schema and positive/negative fixtures.
+- [ ] Agent: original evaluation trace, bundle identity, masked event inputs,
+  changed-match comparison and bounded delivery, including offline export.
+- [ ] Platform: persist original evidence, resolve historical rule content,
+  scoped finding/alarm detail and rule drill-down.

@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/detection.schema.json",
+  "title": "Detection evidence",
+  "description": "At most 8192 UTF-8 bytes as compact JSON. Optional original evaluation details; never reconstructed from later inventory.",
+  "type": "object",
+  "required": [
+    "rule_set_version",
+    "preimage_sha256",
+    "inputs",
+    "steps",
+    "truncated",
+    "observed_at_unix_ms"
+  ],
+  "properties": {
+    "rule_set_version": {
+      "$ref": "common.schema.json#/$defs/positiveVersion"
+    },
+    "preimage_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "inputs": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "required": [
+          "key",
+          "status"
+        ],
+        "properties": {
+          "key": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "status": {
+            "enum": [
+              "complete",
+              "masked",
+              "summarized",
+              "truncated"
+            ]
+          },
+          "value": {
+            "type": [
+              "string",
+              "integer",
+              "boolean"
+            ],
+            "maxLength": 256,
+            "minimum": -9223372036854775808,
+            "maximum": 9223372036854775807
+          },
+          "item_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 50000
+          }
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "required": [
+          "expression",
+          "result"
+        ],
+        "properties": {
+          "expression": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "result": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "truncated": {
+      "type": "boolean"
+    },
+    "observed_at_unix_ms": {
+      "$ref": "common.schema.json#/$defs/unixMs"
+    }
+  }
+}
