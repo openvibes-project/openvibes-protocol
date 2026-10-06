@@ -9,7 +9,8 @@
     "preimage_sha256",
     "inputs",
     "steps",
-    "truncated"
+    "truncated",
+    "observed_at_unix_ms"
   ],
   "properties": {
     "rule_set_version": {
@@ -46,7 +47,9 @@
               "integer",
               "boolean"
             ],
-            "maxLength": 256
+            "maxLength": 256,
+            "minimum": -9223372036854775808,
+            "maximum": 9223372036854775807
           },
           "item_count": {
             "type": "integer",
@@ -78,6 +81,9 @@
     },
     "truncated": {
       "type": "boolean"
+    },
+    "observed_at_unix_ms": {
+      "$ref": "common.schema.json#/$defs/unixMs"
     }
   }
 }
