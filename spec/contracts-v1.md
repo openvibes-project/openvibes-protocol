@@ -317,6 +317,14 @@ paths, file contents or finding data:
   the per-event budget below, since the agent started. A platform before
   P14 ignores the object.
 
+  Optionally, `source` (`ebpf`, `audit` or `none`) says where process
+  starts come from, and `fallback` (`detail`: `no_btf`, `capability`,
+  `lockdown`, `lsm_denied`, `verifier` or `other`; `audit_rule_loaded`,
+  boolean) is present when eBPF could not be used. A missing `source`
+  means `audit` (agents before the eBPF watcher). `source: none` with
+  `fallback.audit_rule_loaded: false` means alarms are off until the audit
+  fallback is set up. Unknown keys in `alarms` are refused.
+
   **One budget per start for restricted rule sets.** An agent marks each
   configured rule set restricted or not in its own configuration (not in
   the bundle, so a signing key can't change it). A set without the
