@@ -253,6 +253,7 @@ suppressions. Spec
   process's arguments.
 - [x] `process.euid` and `AlarmProcess.euid` beside the real `uid`
   (reviewer on 2b; setuid execs such as `sudo`).
+- [ ] eBPF process watcher: health.alarms.source and fallback (spec openvibes-agent docs/specs/2026-10-08-ebpf-process-watcher-design.md)
 - [ ] Agent health: `health.alarms` (collector outcome, dropped events
   and alarms, pending, `platform_unsupported`, rule counts).
 - [ ] Agent: collector, process table, rules, masking, delivery (plan 2;

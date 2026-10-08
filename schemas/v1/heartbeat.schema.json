@@ -176,6 +176,7 @@
         },
         "alarms": {
           "type": "object",
+          "additionalProperties": false,
           "description": "Optional (P14): process-event alarms. collector is the process_events collector's outcome (unsupported without audit or CAP_AUDIT_READ).",
           "required": [
             "collector",
@@ -229,6 +230,21 @@
               "minimum": 0,
               "maximum": 9223372036854775807,
               "description": "Optional: process starts whose evaluation stopped at the per-event CEL budget, since the agent started."
+            },
+            "source": {
+              "type": "string",
+              "enum": ["ebpf", "audit", "none"],
+              "description": "Optional: where process starts come from. Missing means audit (agents before the eBPF watcher)."
+            },
+            "fallback": {
+              "type": "object",
+              "description": "Optional: present when eBPF could not be used.",
+              "additionalProperties": false,
+              "required": ["detail", "audit_rule_loaded"],
+              "properties": {
+                "detail": {"type": "string", "enum": ["no_btf", "capability", "lockdown", "lsm_denied", "verifier", "other"]},
+                "audit_rule_loaded": {"type": "boolean", "description": "false: alarms are off until the audit fallback is set up."}
+              }
             }
           }
         }
