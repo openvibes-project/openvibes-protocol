@@ -561,6 +561,19 @@ inventory fingerprint: no whitespace, non-ASCII characters not escaped,
 decimal. When a match started is not part of it. Test
 vectors (match set → digest) are in `vectors/match-digest.json`.
 
+#### ATT&CK mapping (P18)
+
+A rule may carry `attack`: 1 to 16 distinct MITRE ATT&CK pairs, each a
+`tactic` (`TA` and four digits) and optionally a `technique` (`T`, four
+digits, and an optional `.` and three digits for a sub-technique). Pairs,
+because one technique can belong to several tactics and the rule means one;
+the first pair is the primary one. It is metadata for people and is signed
+with the rule: agents do not use it, and an agent before P18 ignores it as
+an unknown field. Signers and checkers refuse IDs that are not in the ATT&CK
+release they ship; receivers show an ID they do not know as given. The
+Lockheed Martin kill-chain phase is derived from the tactic by the
+platform and is never part of a rule.
+
 #### Process events and alarms (P14)
 
 A rule's optional `kind` is `snapshot` (the default) or `process_event`;
