@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "id": "web-server-spawns-shell",
+      "version": 1,
+      "kind": "process_event",
+      "title": "Web server started a shell",
+      "severity": "high",
+      "confidence": 80,
+      "programs": [
+        "sh",
+        "bash",
+        "dash"
+      ],
+      "expression": "event['parent.name'] == 'nginx' || event['parent.name'] == 'httpd'",
+      "finding_message": "A web server started a shell",
+      "attack": []
+    },
+    {
+      "id": "shell-from-tmp",
+      "version": 1,
+      "kind": "process_event",
+      "title": "Shell started from a temporary directory",
+      "severity": "high",
+      "confidence": 70,
+      "programs": [
+        "sh",
+        "bash",
+        "dash"
+      ],
+      "expression": "event['process.cwd'].startsWith('/tmp/') || event['process.cwd'].startsWith('/dev/shm/')",
+      "finding_message": "A shell was started from /tmp or /dev/shm"
+    }
+  ]
+}

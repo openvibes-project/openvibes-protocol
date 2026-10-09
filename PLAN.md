@@ -352,3 +352,16 @@ the agent's match digest (spec
   changed-match comparison and bounded delivery, including offline export.
 - [ ] Platform: persist original evidence, resolve historical rule content,
   scoped finding/alarm detail and rule drill-down.
+
+# P18 — ATT&CK mapping on rules (user, 2026-10-09)
+
+Rules carry optional MITRE ATT&CK tactic/technique pairs; the console shows
+coverage as a matrix with a kill-chain view. Spec
+`openvibes-platform/docs/specs/2026-10-09-attack-coverage-design.md`.
+
+- [x] Spec and schema: optional `attack` on a rule, fixtures.
+- [ ] Agent: `openvibes-core` `Rule.attack` (kept on round trip, ignored
+  by evaluation), so the platform's drafts do not drop it.
+- [ ] Rules: map the baseline and alarm sets; checkers refuse unknown IDs.
+- [ ] Platform: ATT&CK data file, coverage endpoint, Coverage page, chips,
+  rule editor picker.

@@ -57,6 +57,22 @@
             "enum": ["snapshot", "process_event"],
             "description": "snapshot (default when absent): evaluated against the scan's facts. process_event (P14): evaluated once per process start against the event binding; ships in its own rule set, which older agents are not configured to load."
           },
+          "attack": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 16,
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["tactic"],
+              "properties": {
+                "tactic": { "type": "string", "pattern": "^TA[0-9]{4}$" },
+                "technique": { "type": "string", "pattern": "^T[0-9]{4}(\\.[0-9]{3})?$" }
+              }
+            },
+            "description": "P18, optional: MITRE ATT&CK tactic/technique pairs the rule covers, first = primary. Metadata only: agents ignore it, and agents before P18 ignore it as an unknown field."
+          },
           "programs": {
             "type": "array",
             "minItems": 1,
