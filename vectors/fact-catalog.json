@@ -1527,7 +1527,7 @@
    "type": "string_list",
    "collector": "hardening",
    "since": "P19",
-   "note": "kernel command-line words (/proc/cmdline), e.g. audit=1"
+   "note": "security-relevant kernel parameters from /proc/cmdline, a fixed list (audit, selinux, lockdown, mitigations, …); never other words, which can carry secrets"
   },
   {
    "key": "auditd.max_log_file_action",
