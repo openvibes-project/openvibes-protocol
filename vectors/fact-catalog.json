@@ -1506,7 +1506,7 @@
    "type": "string_list",
    "collector": "hardening",
    "since": "P19",
-   "note": "system accounts (uid below 1000, not root) with a login shell"
+   "note": "system accounts (uid 1 to 999) with a login shell; uid 0 is accounts.uid0"
   },
   {
    "key": "kernel.modules.loaded",
