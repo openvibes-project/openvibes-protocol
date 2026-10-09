@@ -8,6 +8,7 @@ on any mismatch. Requires the packages pinned in tools/requirements.txt.
 
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -181,6 +182,27 @@ def main() -> int:
             print(f"FAIL match digest vector {vector['name']}")
             failures += 1
     # The services digest (protocol P15).
+    # The fact catalog (P19): unique identifier keys, known types, and an
+    # `unset` value of the fact's own type where one is given.
+    catalog = json.loads((ROOT / "vectors/fact-catalog.json").read_text())["facts"]
+    keys = [fact["key"] for fact in catalog]
+    if len(keys) != len(set(keys)):
+        print("FAIL fact catalog: duplicate keys")
+        failures += 1
+    for fact in catalog:
+        problem = None
+        if not re.fullmatch(r"[A-Za-z0-9._:-]{1,128}", fact["key"]):
+            problem = "key is not an identifier"
+        elif fact["type"] not in ("bool", "int", "string", "string_list"):
+            problem = f"unknown type {fact['type']}"
+        elif "unset" in fact and {"int": "-1", "string": ""}.get(fact["type"]) != fact["unset"]:
+            problem = f"unset {fact['unset']!r} does not fit {fact['type']}"
+        elif set(fact) - {"key", "type", "collector", "since", "note", "unset"}:
+            problem = "unknown field"
+        if problem:
+            print(f"FAIL fact catalog {fact['key']}: {problem}")
+            failures += 1
+
     for vector in json.loads((ROOT / "vectors/services-digest.json").read_text()):
         checked += 1
         if services_digest(vector["listeners"], vector["services"]) != vector["sha256"]:

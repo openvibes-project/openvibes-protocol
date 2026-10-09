@@ -365,3 +365,21 @@ coverage as a matrix with a kill-chain view. Spec
 - [ ] Rules: map the baseline and alarm sets; checkers refuse unknown IDs.
 - [ ] Platform: ATT&CK data file, coverage endpoint, Coverage page, chips,
   rule editor picker.
+
+# P19 — Hardening facts and the fact catalog (user, 2026-10-09)
+
+Configuration hardening per OS with our own scanner: curated, typed facts
+from the agent package's root helper, judged by signed CEL rules. Spec
+`openvibes-platform/docs/specs/2026-10-09-hardening-rules-design.md`.
+
+- [x] Contract: fact catalog (`vectors/fact-catalog.json`, existing and
+  P19 facts), hardening fact rules (always present, unset values,
+  unavailable sources, encodings, privacy), root-facts file limit.
+- [ ] Agent: the `hardening` collector in the root-facts helper; the agent
+  merges its facts and reports the collector; a catalog test (no fact
+  outside it).
+- [ ] Rules: `hardening/linux-l1` (and later `-l2`) with cases; checker pin
+  and allowlist from the catalog.
+- [ ] Platform: Setup/Update publish the sets, per-group L1/L2 switches,
+  host page; the rule editor lists facts from the catalog.
+
