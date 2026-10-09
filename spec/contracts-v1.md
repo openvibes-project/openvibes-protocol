@@ -97,7 +97,9 @@ with no input, and runs no programs. Rules:
   could read is emitted. A setting that is not configured is `""`
   (string) or `-1` (int), as the catalog's `unset` says, never left out:
   a missing fact makes the whole rule unavailable, while "not set" is
-  something rules judge (OpenSSH's defaults, for example).
+  something rules judge (OpenSSH's defaults, for example). A string fact
+  may therefore be empty; list items and every other string in the
+  contract stay non-empty.
 - **Unavailable, never false.** A source the helper cannot read (no
   `sshd_config`, no auditd) gives none of its facts and one collector
   error (`hardening.sshd`, `hardening.auditd`, …); rules over them are
