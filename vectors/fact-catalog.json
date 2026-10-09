@@ -1,0 +1,1609 @@
+{
+ "description": "Fact catalog: every fact key a rule may read, its CEL type and its collector. v1 = collected since the first agent; P19 = the hardening collector (root-facts helper).",
+ "facts": [
+  {
+   "key": "process.names",
+   "type": "string_list",
+   "collector": "process",
+   "since": "v1",
+   "note": "distinct process short names"
+  },
+  {
+   "key": "process.count",
+   "type": "int",
+   "collector": "process",
+   "since": "v1",
+   "note": "processes"
+  },
+  {
+   "key": "package.names",
+   "type": "string_list",
+   "collector": "package",
+   "since": "v1",
+   "note": "installed package names"
+  },
+  {
+   "key": "package.count",
+   "type": "int",
+   "collector": "package",
+   "since": "v1",
+   "note": "installed packages"
+  },
+  {
+   "key": "port.tcp.exposed",
+   "type": "string_list",
+   "collector": "ports",
+   "since": "v1",
+   "note": "TCP ports listening on a non-loopback address"
+  },
+  {
+   "key": "port.tcp.local",
+   "type": "string_list",
+   "collector": "ports",
+   "since": "v1",
+   "note": "TCP ports listening on loopback only"
+  },
+  {
+   "key": "port.tcp.listeners",
+   "type": "string_list",
+   "collector": "ports",
+   "since": "v1",
+   "note": "TCP listeners as address:port"
+  },
+  {
+   "key": "port.tcp.exposed.count",
+   "type": "int",
+   "collector": "ports",
+   "since": "v1",
+   "note": "exposed TCP ports"
+  },
+  {
+   "key": "port.udp.exposed",
+   "type": "string_list",
+   "collector": "ports",
+   "since": "v1",
+   "note": "UDP ports bound to a non-loopback address"
+  },
+  {
+   "key": "port.udp.local",
+   "type": "string_list",
+   "collector": "ports",
+   "since": "v1",
+   "note": "UDP ports bound to loopback only"
+  },
+  {
+   "key": "port.udp.listeners",
+   "type": "string_list",
+   "collector": "ports",
+   "since": "v1",
+   "note": "UDP listeners as address:port"
+  },
+  {
+   "key": "port.udp.exposed.count",
+   "type": "int",
+   "collector": "ports",
+   "since": "v1",
+   "note": "exposed UDP ports"
+  },
+  {
+   "key": "os.id",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "os-release ID (fedora, rhel, almalinux, debian, ubuntu, arch, \u2026)"
+  },
+  {
+   "key": "os.id_like",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "os-release ID_LIKE words, plus ID"
+  },
+  {
+   "key": "os.version_id",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "os-release VERSION_ID; \"\" on rolling releases",
+   "unset": ""
+  },
+  {
+   "key": "sshd.permitrootlogin",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `permitrootlogin` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.passwordauthentication",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `passwordauthentication` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.permitemptypasswords",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `permitemptypasswords` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.pubkeyauthentication",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `pubkeyauthentication` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.kbdinteractiveauthentication",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `kbdinteractiveauthentication` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.hostbasedauthentication",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `hostbasedauthentication` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.ignorerhosts",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `ignorerhosts` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.usepam",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `usepam` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.x11forwarding",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `x11forwarding` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.allowtcpforwarding",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `allowtcpforwarding` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.allowagentforwarding",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `allowagentforwarding` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.permituserenvironment",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `permituserenvironment` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.permittunnel",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `permittunnel` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.gssapiauthentication",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `gssapiauthentication` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.loglevel",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `loglevel` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.banner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `banner` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.ciphers",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `ciphers` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.macs",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `macs` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.kexalgorithms",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `kexalgorithms` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.maxstartups",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `maxstartups` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.allowusers",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `allowusers` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.allowgroups",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `allowgroups` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.denyusers",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `denyusers` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.denygroups",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `denygroups` as set (first value wins, includes followed); \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "sshd.maxauthtries",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `maxauthtries` in seconds or a count; -1 when not set or not a plain number",
+   "unset": "-1"
+  },
+  {
+   "key": "sshd.maxsessions",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `maxsessions` in seconds or a count; -1 when not set or not a plain number",
+   "unset": "-1"
+  },
+  {
+   "key": "sshd.logingracetime",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `logingracetime` in seconds or a count; -1 when not set or not a plain number",
+   "unset": "-1"
+  },
+  {
+   "key": "sshd.clientaliveinterval",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `clientaliveinterval` in seconds or a count; -1 when not set or not a plain number",
+   "unset": "-1"
+  },
+  {
+   "key": "sshd.clientalivecountmax",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "sshd_config `clientalivecountmax` in seconds or a count; -1 when not set or not a plain number",
+   "unset": "-1"
+  },
+  {
+   "key": "sshd.match_blocks",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "Match blocks in the effective configuration (their settings are not merged)"
+  },
+  {
+   "key": "sysctl.net.ipv4.ip_forward",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.ip_forward; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv4.conf.all.send_redirects",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.conf.all.send_redirects; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv4.conf.default.send_redirects",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.conf.default.send_redirects; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv4.conf.all.accept_source_route",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.conf.all.accept_source_route; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv4.conf.default.accept_source_route",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.conf.default.accept_source_route; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv4.conf.all.accept_redirects",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.conf.all.accept_redirects; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv4.conf.default.accept_redirects",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.conf.default.accept_redirects; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv4.conf.all.secure_redirects",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.conf.all.secure_redirects; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv4.conf.default.secure_redirects",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.conf.default.secure_redirects; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv4.conf.all.log_martians",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.conf.all.log_martians; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv4.conf.default.log_martians",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.conf.default.log_martians; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv4.conf.all.rp_filter",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.conf.all.rp_filter; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv4.conf.default.rp_filter",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.conf.default.rp_filter; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv4.icmp_echo_ignore_broadcasts",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.icmp_echo_ignore_broadcasts; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv4.icmp_ignore_bogus_error_responses",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.icmp_ignore_bogus_error_responses; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv4.tcp_syncookies",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv4.tcp_syncookies; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv6.conf.all.forwarding",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv6.conf.all.forwarding; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv6.conf.all.accept_ra",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv6.conf.all.accept_ra; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv6.conf.default.accept_ra",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv6.conf.default.accept_ra; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv6.conf.all.accept_redirects",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv6.conf.all.accept_redirects; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv6.conf.default.accept_redirects",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv6.conf.default.accept_redirects; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv6.conf.all.accept_source_route",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv6.conf.all.accept_source_route; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv6.conf.default.accept_source_route",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv6.conf.default.accept_source_route; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.net.ipv6.conf.all.disable_ipv6",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.ipv6.conf.all.disable_ipv6; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.kernel.randomize_va_space",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of kernel.randomize_va_space; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.kernel.kptr_restrict",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of kernel.kptr_restrict; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.kernel.dmesg_restrict",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of kernel.dmesg_restrict; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.kernel.yama.ptrace_scope",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of kernel.yama.ptrace_scope; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.kernel.unprivileged_bpf_disabled",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of kernel.unprivileged_bpf_disabled; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.kernel.perf_event_paranoid",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of kernel.perf_event_paranoid; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.kernel.sysrq",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of kernel.sysrq; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.kernel.core_pattern_pipe",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "kernel.core_pattern starts with | (cores go to a handler such as systemd-coredump)"
+  },
+  {
+   "key": "sysctl.net.core.bpf_jit_harden",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of net.core.bpf_jit_harden; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.fs.suid_dumpable",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of fs.suid_dumpable; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.fs.protected_hardlinks",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of fs.protected_hardlinks; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.fs.protected_symlinks",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of fs.protected_symlinks; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.fs.protected_fifos",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of fs.protected_fifos; absent when the kernel has no such setting"
+  },
+  {
+   "key": "sysctl.fs.protected_regular",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/proc/sys value of fs.protected_regular; absent when the kernel has no such setting"
+  },
+  {
+   "key": "file.etc_passwd.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/passwd exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_passwd.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/passwd permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_passwd.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/passwd owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_passwd_backup.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/passwd- exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_passwd_backup.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/passwd- permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_passwd_backup.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/passwd- owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_shadow.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/shadow exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_shadow.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/shadow permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_shadow.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/shadow owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_shadow_backup.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/shadow- exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_shadow_backup.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/shadow- permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_shadow_backup.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/shadow- owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_group.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/group exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_group.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/group permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_group.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/group owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_group_backup.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/group- exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_group_backup.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/group- permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_group_backup.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/group- owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_gshadow.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/gshadow exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_gshadow.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/gshadow permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_gshadow.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/gshadow owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_gshadow_backup.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/gshadow- exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_gshadow_backup.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/gshadow- permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_gshadow_backup.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/gshadow- owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_sshd_config.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/ssh/sshd_config exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_sshd_config.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/ssh/sshd_config permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_sshd_config.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/ssh/sshd_config owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_crontab.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/crontab exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_crontab.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/crontab permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_crontab.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/crontab owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_cron_d.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.d exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_cron_d.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.d permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_cron_d.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.d owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_cron_hourly.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.hourly exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_cron_hourly.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.hourly permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_cron_hourly.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.hourly owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_cron_daily.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.daily exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_cron_daily.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.daily permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_cron_daily.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.daily owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_cron_weekly.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.weekly exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_cron_weekly.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.weekly permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_cron_weekly.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.weekly owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_cron_monthly.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.monthly exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_cron_monthly.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.monthly permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_cron_monthly.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.monthly owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_cron_allow.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.allow exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_cron_allow.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.allow permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_cron_allow.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.allow owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_at_allow.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/at.allow exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_at_allow.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/at.allow permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_at_allow.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/at.allow owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_cron_deny.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.deny exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_cron_deny.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.deny permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_cron_deny.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/cron.deny owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_at_deny.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/at.deny exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_at_deny.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/at.deny permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_at_deny.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/at.deny owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.boot_grub2_grub_cfg.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/boot/grub2/grub.cfg exists (not followed if a link)"
+  },
+  {
+   "key": "file.boot_grub2_grub_cfg.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/boot/grub2/grub.cfg permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.boot_grub2_grub_cfg.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/boot/grub2/grub.cfg owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.boot_grub_grub_cfg.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/boot/grub/grub.cfg exists (not followed if a link)"
+  },
+  {
+   "key": "file.boot_grub_grub_cfg.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/boot/grub/grub.cfg permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.boot_grub_grub_cfg.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/boot/grub/grub.cfg owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_issue.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/issue exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_issue.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/issue permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_issue.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/issue owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_issue_net.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/issue.net exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_issue_net.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/issue.net permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_issue_net.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/issue.net owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_motd.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/motd exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_motd.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/motd permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_motd.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/motd owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_security_opasswd.exists",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/security/opasswd exists (not followed if a link)"
+  },
+  {
+   "key": "file.etc_security_opasswd.mode",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/security/opasswd permission bits, four octal digits (\"0640\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "file.etc_security_opasswd.owner",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/security/opasswd owner as uid:gid (\"0:0\"); \"\" when it does not exist",
+   "unset": ""
+  },
+  {
+   "key": "mount.tmp.separate",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/tmp is its own mount point"
+  },
+  {
+   "key": "mount.tmp.options",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "mount options of the filesystem holding /tmp (nodev, nosuid, noexec, ro, \u2026)"
+  },
+  {
+   "key": "mount.var.separate",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/var is its own mount point"
+  },
+  {
+   "key": "mount.var.options",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "mount options of the filesystem holding /var (nodev, nosuid, noexec, ro, \u2026)"
+  },
+  {
+   "key": "mount.var_tmp.separate",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/var/tmp is its own mount point"
+  },
+  {
+   "key": "mount.var_tmp.options",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "mount options of the filesystem holding /var/tmp (nodev, nosuid, noexec, ro, \u2026)"
+  },
+  {
+   "key": "mount.var_log.separate",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/var/log is its own mount point"
+  },
+  {
+   "key": "mount.var_log.options",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "mount options of the filesystem holding /var/log (nodev, nosuid, noexec, ro, \u2026)"
+  },
+  {
+   "key": "mount.var_log_audit.separate",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/var/log/audit is its own mount point"
+  },
+  {
+   "key": "mount.var_log_audit.options",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "mount options of the filesystem holding /var/log/audit (nodev, nosuid, noexec, ro, \u2026)"
+  },
+  {
+   "key": "mount.home.separate",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/home is its own mount point"
+  },
+  {
+   "key": "mount.home.options",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "mount options of the filesystem holding /home (nodev, nosuid, noexec, ro, \u2026)"
+  },
+  {
+   "key": "mount.dev_shm.separate",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/dev/shm is its own mount point"
+  },
+  {
+   "key": "mount.dev_shm.options",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "mount options of the filesystem holding /dev/shm (nodev, nosuid, noexec, ro, \u2026)"
+  },
+  {
+   "key": "mount.boot.separate",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/boot is its own mount point"
+  },
+  {
+   "key": "mount.boot.options",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "mount options of the filesystem holding /boot (nodev, nosuid, noexec, ro, \u2026)"
+  },
+  {
+   "key": "service.enabled",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "unit names enabled in /etc/systemd/system/*.wants and /usr/lib/systemd/system/*.wants (services, sockets, timers)"
+  },
+  {
+   "key": "service.active",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "*.service units with at least one process (cgroup tree)"
+  },
+  {
+   "key": "login_defs.pass_max_days",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/login.defs PASS_MAX_DAYS; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "login_defs.pass_min_days",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/login.defs PASS_MIN_DAYS; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "login_defs.pass_warn_age",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/login.defs PASS_WARN_AGE; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "login_defs.sha_crypt_min_rounds",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/login.defs SHA_CRYPT_MIN_ROUNDS; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "login_defs.sha_crypt_max_rounds",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/login.defs SHA_CRYPT_MAX_ROUNDS; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "login_defs.encrypt_method",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/login.defs ENCRYPT_METHOD; \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "login_defs.umask",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/login.defs UMASK; \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "pam.pwquality.minlen",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "pwquality.conf(.d) minlen, last value wins; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "pam.pwquality.minclass",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "pwquality.conf(.d) minclass, last value wins; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "pam.pwquality.dcredit",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "pwquality.conf(.d) dcredit, last value wins; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "pam.pwquality.ucredit",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "pwquality.conf(.d) ucredit, last value wins; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "pam.pwquality.lcredit",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "pwquality.conf(.d) lcredit, last value wins; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "pam.pwquality.ocredit",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "pwquality.conf(.d) ocredit, last value wins; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "pam.pwquality.maxrepeat",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "pwquality.conf(.d) maxrepeat, last value wins; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "pam.pwquality.maxsequence",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "pwquality.conf(.d) maxsequence, last value wins; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "pam.pwquality.difok",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "pwquality.conf(.d) difok, last value wins; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "pam.pwquality.dictcheck",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "pwquality.conf(.d) dictcheck, last value wins; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "pam.faillock.deny",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "faillock.conf deny; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "pam.faillock.unlock_time",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "faillock.conf unlock_time; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "pam.faillock.fail_interval",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "faillock.conf fail_interval; -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "pam.faillock.even_deny_root",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "faillock.conf even_deny_root is set"
+  },
+  {
+   "key": "pam.modules",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "PAM modules named in /etc/pam.d/system-auth, password-auth, common-auth, common-password (pam_faillock.so, pam_pwquality.so, \u2026)"
+  },
+  {
+   "key": "accounts.uid0",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "account names with uid 0 (/etc/passwd)"
+  },
+  {
+   "key": "accounts.empty_password",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "account names whose /etc/shadow password field is empty (names only, never hashes)"
+  },
+  {
+   "key": "accounts.shell_users",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "system accounts (uid below 1000, not root) with a login shell"
+  },
+  {
+   "key": "kernel.modules.loaded",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "loaded kernel modules (/proc/modules)"
+  },
+  {
+   "key": "kernel.modules.disabled",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "modules modprobe.d blacklists or installs as /bin/false or /bin/true"
+  },
+  {
+   "key": "kernel.cmdline.args",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "kernel command-line words (/proc/cmdline), e.g. audit=1"
+  },
+  {
+   "key": "auditd.max_log_file_action",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/audit/auditd.conf max_log_file_action, lowercase; \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "auditd.space_left_action",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/audit/auditd.conf space_left_action, lowercase; \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "auditd.admin_space_left_action",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/audit/auditd.conf admin_space_left_action, lowercase; \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "auditd.disk_full_action",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/audit/auditd.conf disk_full_action, lowercase; \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "auditd.disk_error_action",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/audit/auditd.conf disk_error_action, lowercase; \"\" when not set",
+   "unset": ""
+  },
+  {
+   "key": "auditd.max_log_file",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "/etc/audit/auditd.conf max_log_file (MB); -1 when not set",
+   "unset": "-1"
+  },
+  {
+   "key": "audit.rules.keys",
+   "type": "string_list",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "-k / key= values in /etc/audit/rules.d/*.rules"
+  },
+  {
+   "key": "audit.rules.immutable",
+   "type": "bool",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "the rules end with -e 2"
+  },
+  {
+   "key": "lsm.selinux",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "enforcing, permissive or disabled (/sys/fs/selinux/enforce)"
+  },
+  {
+   "key": "lsm.apparmor",
+   "type": "string",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "enabled or disabled (/sys/module/apparmor/parameters/enabled)"
+  }
+ ]
+}

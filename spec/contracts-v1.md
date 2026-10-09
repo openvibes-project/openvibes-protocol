@@ -78,6 +78,47 @@ invalid expression, per rule, so a rule set that older agents load must not
 use them. Test vectors: `vectors/cel-subset-v2.json` (`refused` = the loader
 rejects the rule; `unavailable` = a referenced value is missing).
 
+### Fact catalog and hardening facts (P19)
+
+`vectors/fact-catalog.json` lists every fact key a rule may read, its CEL
+type (`bool`, `int`, `string`, `string_list`), its collector, and the
+protocol step that added it. It is the contract between agents, rule
+checkers and the console's rule editor: an agent sends no fact outside it,
+and a checker refuses a rule that reads one. New facts are added there
+first.
+
+**Hardening facts (P19)** come from the `hardening` collector, which runs
+in the agent package's root-facts helper (platform spec
+`2026-10-09-hardening-rules-design.md` §3–4) and reaches the agent through
+`/run/openvibes-agent-facts/root-facts.json`. The helper reads them as root,
+with no input, and runs no programs. Rules:
+
+- **Fixed keys, always present.** Every catalog key of a source the helper
+  could read is emitted. A setting that is not configured is `""`
+  (string) or `-1` (int), as the catalog's `unset` says, never left out:
+  a missing fact makes the whole rule unavailable, while "not set" is
+  something rules judge (OpenSSH's defaults, for example).
+- **Unavailable, never false.** A source the helper cannot read (no
+  `sshd_config`, no auditd) gives none of its facts and one collector
+  error (`hardening.sshd`, `hardening.auditd`, …); rules over them are
+  unavailable and raise no finding. The same holds for every hardening
+  fact when the helper's file is missing or stale.
+- **Paths are not keys.** Keys are identifiers, so files and mount points
+  have fixed names in the catalog (`file.etc_shadow.mode`,
+  `mount.var_tmp.options`); the helper checks only those.
+- **Encodings.** File modes are four octal digits (`"0640"`), owners
+  `uid:gid` (`"0:0"`), with links not followed. `sshd.*` keywords are
+  lowercase, the value as written with surrounding whitespace removed,
+  the first value winning as in sshd, `Include` followed (globs sorted),
+  and `Match` blocks only counted (`sshd.match_blocks`). Integer settings
+  that are not a plain decimal number are `-1`. String lists follow the
+  usual rule (sorted, unique, at most 10,000).
+- **Privacy.** Account facts carry names only, never password hashes;
+  file facts carry metadata only, never contents.
+- Agents before P19 do not collect these facts; rule sets that read them
+  are published only to agents that report the `hardening` collector, and
+  rule checkers pin the first agent release that has it.
+
 ## Rules and Findings
 
 A rule set contains declarative CEL rules with stable IDs, positive monotonic
@@ -930,6 +971,7 @@ export of findings. Online inventory reports are `InventoryReport` (P8).
 | CEL expression | 16 KiB |
 | General list | 1,024 items |
 | String-list fact | 10,000 items, sorted and unique (`package.names`: 50,000) |
+| Root-facts file (`root-facts.json`, P19) | 4 MiB |
 | Inventory packages (`InventoryReport`, `InventoryExport`; `InventoryChanges` added and removed together) | 50,000 |
 | Inventory document (one `InventoryReport`, `InventoryChanges` or `FindingChanges` body, compressed and expanded, or `InventoryExport` file); the 1 MiB document and aggregate string limits do not apply to these | 8 MiB |
 | Evidence per finding | 128 keys |
