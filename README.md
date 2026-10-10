@@ -45,12 +45,16 @@ Version 1, all specified with schemas and fixtures:
 | Message | Direction | Endpoint | Status |
 |---|---|---|---|
 | Enrollment and renewal | agent → ingest | `/v1/enroll` (token), `/v1/renew` (mTLS) | Built on both sides |
-| Heartbeat, with enabled collectors | agent → ingest | `/v1/heartbeat` | Built on both sides |
+| Heartbeat, with enabled collectors and health (P12) | agent → ingest | `/v1/heartbeat` | Built on both sides |
 | Finding batches and per-finding acknowledgement | agent → ingest | `/v1/findings` | Built on both sides |
+| Finding changes: a match's start, change and end (P13) | agent → ingest | `/v1/findings/changes` | Built on both sides |
 | Inventory report (OS, packages, running kernel) | agent → ingest | `/v1/inventory` | Built on both sides |
+| Inventory changes, gzip (P11) | agent → ingest | `/v1/inventory/changes` | Built on both sides |
+| Threat alarms from process starts (P14) | agent → ingest | `/v1/alarms` | Built on both sides |
+| Listening ports and services (P15) | agent → ingest | `/v1/services` | Built on both sides |
 | Structured errors, including `identity_revoked` | ingest → agent | any mTLS call | Built on both sides |
 | Signed rule bundles | agent → distribution | `/v1/rule-bundle`, default port 18424 | Built on both sides |
-| Finding and inventory export files | agent → file → platform | file import | Agent built; platform import planned |
+| Finding and inventory export files | agent → file → platform | file import (`openvibes-admin import`) | Built on both sides |
 | Enrollment token, platform CA, rule-signing keys | operator → agent | out of band (install time) | Built |
 
 Also fixed by the spec:
@@ -60,20 +64,19 @@ Also fixed by the spec:
 - **Resource limits:** bytes, depth, strings, and collections, in V1.
 - **Identity:** a random `install_id` per installation for local-only
   agents.
+- **Rules:** schema 1 rule sets, `process_event` alarm rules (P14), an
+  optional MITRE ATT&CK mapping per rule (P18), and the fact catalog that
+  names every fact a rule may read (P19, `vectors/fact-catalog.json`).
 
 Rule-signing keys never travel over the protocol, so a compromised platform
 cannot make agents trust new rules.
 
 ## Planned
 
-- **P10, dpkg source packages:** the spec and schema are done, and the
-  agent reports them (openvibes-project/openvibes-agent#11). The platform
-  will match Debian and Ubuntu hosts by source package via OSV.dev.
-- **Platform import of export files** (P3): findings and inventory from
-  air-gapped hosts, stored as imported and unauthenticated. Agent-signed
-  exports may come in a later version.
-- **Match start and end:** report when a match starts and ends instead of
-  on every scan, to cut finding volume at 50,000 hosts.
+- **Hardening facts** (P19): the agent's collector for the catalog's
+  hardening facts (sshd, sysctls, file modes, mounts, services and more).
+- **Agent-signed export files:** imported exports are stored as
+  unauthenticated today.
 - **Trust-root rotation:** rotate rule-signing keys and the platform CA
   without reinstalling agents (open question 6 in [`PLAN.md`](PLAN.md)).
 - **Online upload of further fact families** beyond packages (open
