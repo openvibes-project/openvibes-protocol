@@ -1495,6 +1495,13 @@
    "note": "account names with uid 0 (/etc/passwd)"
   },
   {
+   "key": "accounts.uid0.count",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "accounts with uid 0 (accounts.uid0); a rule can say `== 1` without listing root"
+  },
+  {
    "key": "accounts.empty_password",
    "type": "string_list",
    "collector": "hardening",
@@ -1502,11 +1509,25 @@
    "note": "account names whose /etc/shadow password field is empty (names only, never hashes)"
   },
   {
+   "key": "accounts.empty_password.count",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "accounts with an empty password field (accounts.empty_password)"
+  },
+  {
    "key": "accounts.shell_users",
    "type": "string_list",
    "collector": "hardening",
    "since": "P19",
    "note": "system accounts (uid 1 to 999) with a login shell; uid 0 is accounts.uid0"
+  },
+  {
+   "key": "accounts.shell_users.count",
+   "type": "int",
+   "collector": "hardening",
+   "since": "P19",
+   "note": "system accounts with a login shell (accounts.shell_users)"
   },
   {
    "key": "kernel.modules.loaded",
