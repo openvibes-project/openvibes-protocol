@@ -260,13 +260,25 @@ def main() -> int:
     for case in project["cases"]:
         checked += 1
         added = not case["configured"]
+        switched = added and assignable.get(case["rule_set_id"])
+        # Only an added assignable set can be held as not assigned.
+        withdrawn = case.get("withdrawn", False)
         if case["status"] == 404:
-            want = "not_offered" if added else "refused"
+            if not added:
+                want = "refused"
+            elif withdrawn:
+                want = "not_assigned"
+            else:
+                want = "refused" if case.get("accepted", False) else "not_offered"
         elif case["status"] == 410:
-            want = "not_assigned" if added and assignable.get(case["rule_set_id"]) else "refused"
+            want = "not_assigned" if switched else "refused"
         else:
             want = None
-        if (added and case["rule_set_id"] not in assignable) or case["agent"] != want:
+        if (
+            (added and case["rule_set_id"] not in assignable)
+            or (withdrawn and not switched)
+            or case["agent"] != want
+        ):
             print(f"FAIL project rule sets case {case['name']!r}")
             failures += 1
     print(f"{checked} fixtures checked, {failures} failures")

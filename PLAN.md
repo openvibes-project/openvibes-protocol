@@ -395,7 +395,7 @@ by answering `410` per host. Spec
 - [x] Contract: `410` on `/v1/rule-bundle`, health `rule_sets[].state`
   `not_assigned`, `vectors/project-rule-sets.json` (table and cases).
 - [ ] Agent: compiled-in project sets added with a `distribution_url`, a
-  quiet `404` for them, `410` for assignable ones, health.
+  quiet `404` for them on first use, `410` for assignable ones, health.
 - [ ] Rules: the RPM ships `hardening-linux-l1`.
 - [ ] Platform: assignment tables and audit, distribution `410`, ingest
   closes findings on `not_assigned`, Setup/`rules-apply` publish the

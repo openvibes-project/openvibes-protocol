@@ -347,7 +347,7 @@ paths, file contents or finding data:
   when the distribution service answered `410` for this assignable
   project set; absent or `null` means in use, and readers ignore a value
   they do not know. A project set the service does not publish (`404`)
-  is not listed;
+  is not listed until a bundle for it was accepted;
 - `storage_errors` since the agent started, and `clock_jump_s`, a
   wall-clock jump the agent detected in the last hour (absent otherwise).
 - `alarms` (P14, absent when the agent does not watch process starts):
@@ -888,8 +888,13 @@ like every rule-signing key it reaches the host out of band, in the agent
 release, never over this protocol. The agent polls once before every scan.
 
 - `404` for a project set the agent added means the service does not
-  publish it: the agent runs nothing for it, lists nothing for it in
-  health, and asks again at the next scan.
+  publish it. It is quiet only on first use: with no bundle accepted for
+  the set, the agent runs nothing for it, lists nothing for it in health,
+  and asks again at the next scan. Once a bundle was accepted, a `404` is
+  refused like any other `4xx` and the stored bundle keeps running, so a
+  distribution service cannot stop the baseline by not publishing it. A
+  `404` for a set the agent holds as not assigned keeps it not assigned:
+  only a `410` withdraws a set, and only a `200` brings it back.
 - `410 Gone`, no body, means the set is not assigned to this host. The
   agent honours it only for an **assignable** project set it added: it
   stops evaluating the set, stops using its stored bundle (the rollback
