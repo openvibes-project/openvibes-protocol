@@ -53,9 +53,9 @@ Version 1, all specified with schemas and fixtures:
 | Threat alarms from process starts (P14) | agent → ingest | `/v1/alarms` | Built on both sides |
 | Listening ports and services (P15) | agent → ingest | `/v1/services` | Built on both sides |
 | Structured errors, including `identity_revoked` | ingest → agent | any mTLS call | Built on both sides |
-| Signed rule bundles | agent → distribution | `/v1/rule-bundle`, default port 18424 | Built on both sides |
+| Signed rule bundles | agent → distribution | `/v1/rule-bundle`, default port 18424; `410`: not assigned to this host (P20) | Built on both sides (P20: in progress) |
 | Finding and inventory export files | agent → file → platform | file import (`openvibes-admin import`) | Built on both sides |
-| Enrollment token, platform CA, rule-signing keys | operator → agent | out of band (install time) | Built |
+| Enrollment token, platform CA, rule-signing keys | operator → agent | out of band (install time; the project's own rule key ships in the agent package, P20) | Built |
 
 Also fixed by the spec:
 

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/rule-bundle-request.schema.json",
   "title": "RuleBundleRequest",
-  "description": "POST /v1/rule-bundle to the distribution service over mTLS. 200 answers with the SignedRuleEnvelope exactly as signed; 204 means nothing newer than current_version.",
+  "description": "POST /v1/rule-bundle to the distribution service over mTLS. 200 answers with the SignedRuleEnvelope exactly as signed; 204 means nothing newer than current_version; 404 means the service does not publish this set; 410 with no body (P20) means the set is not assigned to this host. The agent honours 410 only for an assignable project set it added itself (vectors/project-rule-sets.json); for any other set 404 and 410 are refused answers.",
   "type": "object",
   "required": [
     "schema_version",

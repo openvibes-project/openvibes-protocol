@@ -30,7 +30,7 @@ Status: **done** (implemented and tested), **todo** (specified, not built),
 | 3 | `Heartbeat` (health, P12) | agent → ingest | online | `/v1/heartbeat`, mTLS | done (health: openvibes-agent #17) | done (health: openvibes-platform #45) |
 | 4 | `FindingBatch` → `DeliveryAcknowledgement` | agent → ingest | online | `/v1/findings`, mTLS | done (`rejected_findings`) | done (per-finding refusal) |
 | 5 | `PlatformError` (`identity_revoked`) | ingest → agent | online | 401/403 body on any mTLS call | done | done |
-| 6 | `RuleBundleRequest` → `SignedRuleEnvelope` (rule bundles) | agent → distribution | online | `/v1/rule-bundle` on the distribution service (default port 18424), mTLS | done | done (openvibes-distribution) |
+| 6 | `RuleBundleRequest` → `SignedRuleEnvelope` (rule bundles) | agent → distribution | online | `/v1/rule-bundle` on the distribution service (default port 18424), mTLS | done; P20 project sets and 410 todo | done (openvibes-distribution); P20 410 todo |
 | 7 | `FindingExport` file | agent → file → ingest | local-only | file import | done | done (`openvibes-admin import`, openvibes-platform #34) |
 | 7a | `InventoryExport` file | agent → file → ingest | local-only | file import | done | done (`openvibes-admin import`, openvibes-platform #34) |
 | 11 | `InventoryChanges` (gzip), `PlatformError` `inventory_resync` | agent → ingest | online | `/v1/inventory/changes`, mTLS; 409 resync | done (gzip, fallbacks; openvibes-agent #16) | done (openvibes-platform #42) |
@@ -39,7 +39,7 @@ Status: **done** (implemented and tested), **todo** (specified, not built),
 | 14 | `HostServices` (P15) | agent → ingest | online | `/v1/services`, mTLS | done (owners from the root-facts helper; v0.2.6) | done |
 | 8 | Enrollment token | operator → agent | out of band | token file | done | done (issuance, single- and multi-use) |
 | 9 | Platform CA bundle | operator → agent; installer → ingest | out of band; online | config file; `GET /v1/ca`, no client cert, checked by fingerprint | done | done (built-in PKI; `/v1/ca`, openvibes-platform #47) |
-| 10 | Rule-signing trust keys | operator → agent | out of band | agent config | done (per rule set) | n/a |
+| 10 | Rule-signing trust keys | operator → agent | out of band | agent config | done (per rule set; the project's own key ships in the agent package, P20) | n/a |
 
 Items 8–10 never travel over the agent protocol: they are provisioned at
 install time. In particular, rule-signing keys are not distributed by the
@@ -339,7 +339,9 @@ the agent's match digest (spec
    change sets (P11). Other fact families are still open.
 4. ~~**Rule-set assignment.**~~ Decided 2026-09-23: local. Each agent's
    configuration names its rule sets and their trusted keys; the agent asks
-   the distribution service for exactly those.
+   the distribution service for exactly those. Extended 2026-10-14 by P20: the
+   agent also adds the project's own sets, and the distribution service may
+   answer 410 for an assignable one.
 5. ~~**Distribution service address.**~~ Decided 2026-09-23: configured as
    `distribution_url`, default port 18424, same platform CA and client
    certificate as ingest.
@@ -383,3 +385,18 @@ from the agent package's root helper, judged by signed CEL rules. Spec
 - [ ] Platform: Setup/Update publish the sets, per-group L1/L2 switches,
   host page; the rule editor lists facts from the catalog.
 
+# P20 — Rule-set assignment: "not assigned" (user, 2026-10-14)
+
+The agent package knows the project's own rule sets and their key; the
+platform switches the assignable ones (hardening L1, L2) per asset group
+by answering `410` per host. Spec
+`openvibes-platform/docs/specs/2026-10-14-rule-set-assignment-design.md`.
+
+- [x] Contract: `410` on `/v1/rule-bundle`, health `rule_sets[].state`
+  `not_assigned`, `vectors/project-rule-sets.json` (table and cases).
+- [ ] Agent: compiled-in project sets added with a `distribution_url`, a
+  quiet `404` for them on first use, `410` for assignable ones, health.
+- [ ] Rules: the RPM ships `hardening-linux-l1`.
+- [ ] Platform: assignment tables and audit, distribution `410`, ingest
+  closes findings on `not_assigned`, Setup/`rules-apply` publish the
+  hardening sets, console switches.

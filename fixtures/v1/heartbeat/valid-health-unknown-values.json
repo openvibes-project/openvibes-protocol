@@ -33,7 +33,8 @@
         "id": "baseline",
         "version": 7,
         "expires_at_unix_ms": 1790600000000,
-        "refused": "quarantined"
+        "refused": "quarantined",
+        "state": "paused"
       }
     ],
     "storage_errors": 0,

@@ -248,6 +248,39 @@ def main() -> int:
         if not ok:
             print(f"FAIL masking vector {vector.get('name')!r}")
             failures += 1
+    # Project rule sets (P20): the agent's tests run the cases; here the
+    # shape, and that every case follows the rule in spec/contracts-v1.md.
+    project = json.loads((ROOT / "vectors/project-rule-sets.json").read_text())
+    assignable = {s["id"]: s["assignable"] for s in project["sets"]}
+    if len(assignable) != len(project["sets"]) or any(
+        s["os_family"] not in ("any", "linux") for s in project["sets"]
+    ):
+        print("FAIL project rule sets: duplicate id or unknown os_family")
+        failures += 1
+    for case in project["cases"]:
+        checked += 1
+        added = not case["configured"]
+        switched = added and assignable.get(case["rule_set_id"])
+        # Only an added assignable set can be held as not assigned.
+        withdrawn = case.get("withdrawn", False)
+        if case["status"] == 404:
+            if not added:
+                want = "refused"
+            elif withdrawn:
+                want = "not_assigned"
+            else:
+                want = "refused" if case.get("accepted", False) else "not_offered"
+        elif case["status"] == 410:
+            want = "not_assigned" if switched else "refused"
+        else:
+            want = None
+        if (
+            (added and case["rule_set_id"] not in assignable)
+            or (withdrawn and not switched)
+            or case["agent"] != want
+        ):
+            print(f"FAIL project rule sets case {case['name']!r}")
+            failures += 1
     print(f"{checked} fixtures checked, {failures} failures")
     return 1 if failures else 0
 

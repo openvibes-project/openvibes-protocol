@@ -1,0 +1,20 @@
+{
+  "note": "Protocol P20. The project's own rule sets, which an agent with a distribution_url adds when its configuration does not name them, and what a 404 or 410 from /v1/rule-bundle means to the agent. configured: the agent's configuration names the set. accepted (default false): the agent holds an accepted bundle for the set. withdrawn (default false): the agent holds the set as not assigned (it was last answered 410). agent: not_offered (runs nothing, reports nothing, asks again next scan), not_assigned (stops evaluating, stops using its stored bundle while keeping the rollback floor, health state not_assigned, asks again next scan without current_version) or refused (like any other 4xx: the last accepted bundle keeps running).",
+  "sets": [
+    { "id": "baseline", "os_family": "any", "assignable": false },
+    { "id": "baseline-alarms", "os_family": "linux", "assignable": false },
+    { "id": "hardening-linux-l1", "os_family": "linux", "assignable": true },
+    { "id": "hardening-linux-l2", "os_family": "linux", "assignable": true }
+  ],
+  "cases": [
+    { "name": "an assignable set the agent added, answered 410", "rule_set_id": "hardening-linux-l1", "configured": false, "status": 410, "agent": "not_assigned" },
+    { "name": "the baseline answered 410", "rule_set_id": "baseline", "configured": false, "status": 410, "agent": "refused" },
+    { "name": "the alarms answered 410", "rule_set_id": "baseline-alarms", "configured": false, "status": 410, "agent": "refused" },
+    { "name": "an assignable set named in the configuration, answered 410", "rule_set_id": "hardening-linux-l2", "configured": true, "status": 410, "agent": "refused" },
+    { "name": "a site set answered 410", "rule_set_id": "site.web", "configured": true, "status": 410, "agent": "refused" },
+    { "name": "an added set the platform does not publish", "rule_set_id": "hardening-linux-l2", "configured": false, "status": 404, "agent": "not_offered" },
+    { "name": "an added set with an accepted bundle the platform no longer publishes", "rule_set_id": "baseline", "configured": false, "accepted": true, "status": 404, "agent": "refused" },
+    { "name": "an added set not assigned to this host, answered 404", "rule_set_id": "hardening-linux-l1", "configured": false, "accepted": true, "withdrawn": true, "status": 404, "agent": "not_assigned" },
+    { "name": "a configured set the platform does not publish", "rule_set_id": "baseline", "configured": true, "status": 404, "agent": "refused" }
+  ]
+}

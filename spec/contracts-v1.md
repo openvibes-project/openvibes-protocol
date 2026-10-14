@@ -340,10 +340,14 @@ paths, file contents or finding data:
   `unsupported` and `not_found` mean the host has nothing that collector
   can read (another operating system, no supported package database) and
   are not failures;
-- `rule_sets`: each configured rule set's version in use and its expiry
-  (`null` before a bundle was accepted) and `refused`: `null`, or why the
+- `rule_sets`: each rule set's version in use and its expiry
+  (`null` before a bundle was accepted), `refused`: `null`, or why the
   last provisioned bundle was refused (`signature`, `expired`,
-  `rolled_back`, `invalid`);
+  `rolled_back`, `invalid`), and `state` (P20, optional): `not_assigned`
+  when the distribution service answered `410` for this assignable
+  project set; absent or `null` means in use, and readers ignore a value
+  they do not know. A project set the service does not publish (`404`)
+  is not listed until a bundle for it was accepted;
 - `storage_errors` since the agent started, and `clock_jump_s`, a
   wall-clock jump the agent detected in the last hour (absent otherwise).
 - `alarms` (P14, absent when the agent does not watch process starts):
@@ -865,7 +869,7 @@ CA bundle and authenticates with the same client certificate as for ingest.
 
 | Path | Client certificate | Request | Success response |
 |---|---|---|---|
-| `/v1/rule-bundle` | required | `RuleBundleRequest` | `200`: `SignedRuleEnvelope`; `204`: none |
+| `/v1/rule-bundle` | required | `RuleBundleRequest` | `200`: `SignedRuleEnvelope`; `204`: none; `404`: not published; `410`: not assigned to this host (P20) |
 
 `RuleBundleRequest` names one `rule_set_id` and, when the agent has accepted
 that rule set before, its `current_version`. The service answers `200` with
@@ -874,11 +878,38 @@ higher than `current_version` (or `current_version` is absent), and `204`
 with no body otherwise. A rule set the service does not know is `404`.
 Status handling, including revocation, is the same as for the ingest service.
 
-Assignment is local. The agent asks only for the rule sets named in its own
-configuration, each with its own trusted keys, and polls once before every
-scan. A distribution service therefore cannot add, remove, or re-scope rule
-sets, and cannot sign rules: it serves envelopes signed offline. The worst it
-can do is withhold updates or serve refused bundles.
+Assignment (P20). The agent asks for the rule sets named in its own
+configuration, each with its own trusted keys, and, with a
+`distribution_url`, for the project's own rule sets of its OS family that
+its configuration does not name (`vectors/project-rule-sets.json`: id, OS
+family, assignable). The agent package carries those sets' public key
+(issuer `openvibes-1`, the key the rules repository signs every set with);
+like every rule-signing key it reaches the host out of band, in the agent
+release, never over this protocol. The agent polls once before every scan.
+
+- `404` for a project set the agent added means the service does not
+  publish it. It is quiet only on first use: with no bundle accepted for
+  the set, the agent runs nothing for it, lists nothing for it in health,
+  and asks again at the next scan. Once a bundle was accepted, a `404` is
+  refused like any other `4xx` and the stored bundle keeps running, so a
+  distribution service cannot stop the baseline by not publishing it. A
+  `404` for a set the agent holds as not assigned keeps it not assigned:
+  only a `410` withdraws a set, and only a `200` brings it back.
+- `410 Gone`, no body, means the set is not assigned to this host. The
+  agent honours it only for an **assignable** project set it added: it
+  stops evaluating the set, stops using its stored bundle (the rollback
+  floor is kept), reports `state: not_assigned` in health, and asks again
+  at every scan without `current_version`, so a later `200` brings the set
+  back. That bundle is accepted only at or above the kept floor: a
+  switch-off and on cannot roll a set back.
+- For any other set (the baseline, the alarms, a site set, or any set
+  named in the agent's configuration) `404` and `410` are refused answers
+  like any other `4xx`, and the last accepted bundle keeps running.
+
+A distribution service therefore cannot add rule sets, re-scope keys or
+sign rules: it serves envelopes signed offline. Per host it can withdraw
+only the assignable project sets, never the baseline. Otherwise the worst
+it can do is withhold updates or serve refused bundles.
 
 Every fetched envelope goes through the same loader and rollback floor as a
 provisioned file. A refused envelope (bad signature, untrusted issuer,
