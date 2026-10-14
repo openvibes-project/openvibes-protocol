@@ -157,6 +157,17 @@
                   }
                 ],
                 "description": "signature, expired, rolled_back or invalid; readers treat a value they do not know as invalid (later versions may add values)."
+              },
+              "state": {
+                "anyOf": [
+                  {
+                    "$ref": "common.schema.json#/$defs/identifier"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Optional (P20): not_assigned when the distribution service answered 410 for this assignable project set; the agent runs nothing for it and no longer uses its stored bundle (the rollback floor is kept). Absent or null: in use. Readers ignore a value they do not know (later versions may add values)."
               }
             }
           }
