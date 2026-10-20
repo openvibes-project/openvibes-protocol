@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "id": "process.ssh.running",
+      "version": 1,
+      "title": "SSH server is running",
+      "severity": "medium",
+      "confidence": 100,
+      "expression": "'sshd' in facts['process.names']",
+      "finding_message": "An SSH server process was observed",
+      "explain": "An SSH server is running on this host, so it accepts remote logins.",
+      "check": "Confirm the host is meant to accept SSH, and who may log in."
+    }
+  ]
+}

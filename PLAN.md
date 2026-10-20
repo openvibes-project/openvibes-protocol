@@ -368,6 +368,16 @@ coverage as a matrix with a kill-chain view. Spec
 - [ ] Platform: ATT&CK data file, coverage endpoint, Coverage page, chips,
   rule editor picker.
 
+# Rule explain and check text (user, 2026-10-20)
+
+Rules carry optional `explain` and `check` text (at most 600 characters
+each) for the console's alarm page. Metadata for people; agents ignore it.
+
+- [x] Spec and schema: optional `explain` and `check` on a rule, fixtures.
+- [ ] Agent: `openvibes-core` `Rule` keeps them on round trip (optional; the
+  agent does not need them to load a rule set).
+- [ ] Platform: index them from verified bundles; show them on the alarm page.
+
 # P19 — Hardening facts and the fact catalog (user, 2026-10-09)
 
 Configuration hardening per OS with our own scanner: curated, typed facts

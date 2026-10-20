@@ -73,6 +73,16 @@
             },
             "description": "P18, optional: MITRE ATT&CK tactic/technique pairs the rule covers, first = primary. Metadata only: agents ignore it, and agents before P18 ignore it as an unknown field."
           },
+          "explain": {
+            "type": "string",
+            "maxLength": 600,
+            "description": "Optional, for people: what a match means, in plain words. Agents ignore it, and older agents ignore it as an unknown field."
+          },
+          "check": {
+            "type": "string",
+            "maxLength": 600,
+            "description": "Optional, for people: what a person should look at after a match. Agents ignore it, and older agents ignore it as an unknown field."
+          },
           "programs": {
             "type": "array",
             "minItems": 1,

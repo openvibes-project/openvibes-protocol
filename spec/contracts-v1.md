@@ -621,6 +621,15 @@ release they ship; receivers show an ID they do not know as given. The
 Lockheed Martin kill-chain phase is derived from the tactic by the
 platform and is never part of a rule.
 
+#### Explain and check text on rules
+
+A rule may carry `explain` (what a match means, in plain words) and `check`
+(what a person should look at), each a string of at most 600 characters.
+Both are for people and are signed with the rule: agents ignore them, and an
+older agent ignores them as unknown fields, so a rule set that carries them
+loads everywhere. The platform reads them from the verified bundle; until a
+rule has them it shows the rule's title and finding message.
+
 #### Process events and alarms (P14)
 
 A rule's optional `kind` is `snapshot` (the default) or `process_event`;
