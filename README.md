@@ -22,10 +22,11 @@
 ## What OpenVIBES is
 
 OpenVIBES (Open Vulnerability Inspection &amp; Baseline Evaluation System) is
-an open-source, self-hosted vulnerability and configuration auditing system
-for fleets of **1,000 to 50,000 hosts**. A small, read-only agent on every
-host collects facts, evaluates signed audit rules against them, and reports
-the results over mutually authenticated TLS. The platform keeps agent
+a free, open-source, self-hosted security tool for homelabs, small
+businesses and security enthusiasts, built to stay light as it grows to
+many agents. A small, read-only agent on every host collects facts,
+evaluates signed rules against them (compliance, hardening, threat alarms),
+and reports the results over mutually authenticated TLS. The platform keeps agent
 identities, distributes rules, matches every host's packages against
 security advisories, and ranks what to fix. No vendor cloud, no telemetry,
 and air-gapped hosts are supported.
@@ -35,7 +36,8 @@ and air-gapped hosts are supported.
 | Repository | What it is |
 |---|---|
 | [openvibes-agent](https://github.com/openvibes-project/openvibes-agent) | The endpoint agent (Rust; Linux, Windows, macOS): collectors, signed-rule evaluation, a durable local queue, and the mTLS client. |
-| [openvibes-platform](https://github.com/openvibes-project/openvibes-platform) | The server side: ingest (default port 18423), rule distribution (default 18424), vulnerability matching and enrichment, the admin CLI, the built-in PKI, packaging, and, in progress, the web console with its AI assistant. |
+| [openvibes-platform](https://github.com/openvibes-project/openvibes-platform) | The server side: ingest (default port 18423), rule distribution (default 18424), vulnerability matching and enrichment, the admin TUI and CLI, the built-in PKI, packaging, and the web console with its AI assistant. |
+| [openvibes-rules](https://github.com/openvibes-project/openvibes-rules) | The project's signed rule sets (baseline, threat alarms, Linux hardening level 1), checked against this repository's fact catalog. |
 | **openvibes-protocol** (this one) | Everything that crosses the agent–platform boundary. Both other repositories pin it as their `protocol/` submodule and run its fixtures in their tests, so a contract change lands here first. |
 
 ## What the protocol covers
@@ -53,7 +55,7 @@ Version 1, all specified with schemas and fixtures:
 | Threat alarms from process starts (P14) | agent → ingest | `/v1/alarms` | Built on both sides |
 | Listening ports and services (P15) | agent → ingest | `/v1/services` | Built on both sides |
 | Structured errors, including `identity_revoked` | ingest → agent | any mTLS call | Built on both sides |
-| Signed rule bundles | agent → distribution | `/v1/rule-bundle`, default port 18424; `410`: not assigned to this host (P20) | Built on both sides (P20: in progress) |
+| Signed rule bundles | agent → distribution | `/v1/rule-bundle`, default port 18424; `410`: not assigned to this host (P20) | Built on both sides |
 | Finding and inventory export files | agent → file → platform | file import (`openvibes-admin import`) | Built on both sides |
 | Enrollment token, platform CA, rule-signing keys | operator → agent | out of band (install time; the project's own rule key ships in the agent package, P20) | Built |
 
@@ -65,16 +67,16 @@ Also fixed by the spec:
 - **Identity:** a random `install_id` per installation for local-only
   agents.
 - **Rules:** schema 1 rule sets, `process_event` alarm rules (P14), an
-  optional MITRE ATT&CK mapping per rule (P18), and the fact catalog that
-  names every fact a rule may read (P19, `vectors/fact-catalog.json`).
+  optional MITRE ATT&CK mapping per rule (P18), optional `explain` and
+  `check` text for people, the fact catalog that names every fact a rule
+  may read, hardening facts included (P19, `vectors/fact-catalog.json`),
+  and the project's own rule sets (P20, `vectors/project-rule-sets.json`).
 
 Rule-signing keys never travel over the protocol, so a compromised platform
 cannot make agents trust new rules.
 
 ## Planned
 
-- **Hardening facts** (P19): the agent's collector for the catalog's
-  hardening facts (sshd, sysctls, file modes, mounts, services and more).
 - **Agent-signed export files:** imported exports are stored as
   unauthenticated today.
 - **Trust-root rotation:** rotate rule-signing keys and the platform CA
