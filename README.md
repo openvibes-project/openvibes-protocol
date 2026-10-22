@@ -131,4 +131,7 @@ python3 -m venv .venv && .venv/bin/pip install --no-deps -r tools/requirements.t
 .venv/bin/python tools/validate.py
 ```
 
+The check's packages and versions are listed in
+[`docs/dependencies.md`](docs/dependencies.md).
+
 Licensed under the [Apache License 2.0](LICENSE).
