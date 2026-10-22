@@ -4,7 +4,22 @@ This repository holds the wire contracts: the spec, JSON Schemas, fixtures
 and test vectors. It is not built into a program of its own.
 
 Checked against `main` on 2026-10-22. Update this page in the same change
-that adds, removes or bumps a dependency.
+that adds, removes or bumps a dependency, and update everything before
+each release ([Before each release](#before-each-release)).
+
+## Before each release
+
+This repository has no releases of its own: do this with each platform
+and agent release.
+
+Bring all dependencies up to date first, in a pull request of its own.
+
+1. The Python packages in `tools/requirements.txt`, with their hashes.
+2. CI: the commit pin of `actions/checkout`.
+
+A dependency may stay behind only with the reason written next to it on
+this page. The same pull request then updates this page: versions,
+counts and the date.
 
 ## 1. In the finished builds
 
