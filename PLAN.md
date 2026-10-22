@@ -30,7 +30,7 @@ Status: **done** (implemented and tested), **todo** (specified, not built),
 | 3 | `Heartbeat` (health, P12) | agent → ingest | online | `/v1/heartbeat`, mTLS | done (health: openvibes-agent #17) | done (health: openvibes-platform #45) |
 | 4 | `FindingBatch` → `DeliveryAcknowledgement` | agent → ingest | online | `/v1/findings`, mTLS | done (`rejected_findings`) | done (per-finding refusal) |
 | 5 | `PlatformError` (`identity_revoked`) | ingest → agent | online | 401/403 body on any mTLS call | done | done |
-| 6 | `RuleBundleRequest` → `SignedRuleEnvelope` (rule bundles) | agent → distribution | online | `/v1/rule-bundle` on the distribution service (default port 18424), mTLS | done; P20 project sets and 410 todo | done (openvibes-distribution); P20 410 todo |
+| 6 | `RuleBundleRequest` → `SignedRuleEnvelope` (rule bundles) | agent → distribution | online | `/v1/rule-bundle` on the distribution service (default port 18424), mTLS | done (P20 project sets and 410: openvibes-agent #74) | done (openvibes-distribution; P20 410: openvibes-platform #283) |
 | 7 | `FindingExport` file | agent → file → ingest | local-only | file import | done | done (`openvibes-admin import`, openvibes-platform #34) |
 | 7a | `InventoryExport` file | agent → file → ingest | local-only | file import | done | done (`openvibes-admin import`, openvibes-platform #34) |
 | 11 | `InventoryChanges` (gzip), `PlatformError` `inventory_resync` | agent → ingest | online | `/v1/inventory/changes`, mTLS; 409 resync | done (gzip, fallbacks; openvibes-agent #16) | done (openvibes-platform #42) |
@@ -362,10 +362,10 @@ coverage as a matrix with a kill-chain view. Spec
 `openvibes-platform/docs/specs/2026-10-09-attack-coverage-design.md`.
 
 - [x] Spec and schema: optional `attack` on a rule, fixtures.
-- [ ] Agent: `openvibes-core` `Rule.attack` (kept on round trip, ignored
+- [x] Agent: `openvibes-core` `Rule.attack` (kept on round trip, ignored
   by evaluation), so the platform's drafts do not drop it.
-- [ ] Rules: map the baseline and alarm sets; checkers refuse unknown IDs.
-- [ ] Platform: ATT&CK data file, coverage endpoint, Coverage page, chips,
+- [x] Rules: map the baseline and alarm sets; checkers refuse unknown IDs.
+- [x] Platform: ATT&CK data file, coverage endpoint, Coverage page, chips,
   rule editor picker.
 
 # Rule explain and check text (user, 2026-10-20)
@@ -376,7 +376,7 @@ each) for the console's alarm page. Metadata for people; agents ignore it.
 - [x] Spec and schema: optional `explain` and `check` on a rule, fixtures.
 - [ ] Agent: `openvibes-core` `Rule` keeps them on round trip (optional; the
   agent does not need them to load a rule set).
-- [ ] Platform: index them from verified bundles; show them on the alarm page.
+- [x] Platform: index them from verified bundles; show them on the alarm page.
 
 # P19 — Hardening facts and the fact catalog (user, 2026-10-09)
 
@@ -387,13 +387,14 @@ from the agent package's root helper, judged by signed CEL rules. Spec
 - [x] Contract: fact catalog (`vectors/fact-catalog.json`, existing and
   P19 facts), hardening fact rules (always present, unset values,
   unavailable sources, encodings, privacy), root-facts file limit.
-- [ ] Agent: the `hardening` collector in the root-facts helper; the agent
+- [x] Agent: the `hardening` collector in the root-facts helper; the agent
   merges its facts and reports the collector; a catalog test (no fact
   outside it).
-- [ ] Rules: `hardening/linux-l1` (and later `-l2`) with cases; checker pin
-  and allowlist from the catalog.
+- [x] Rules: `hardening/linux-l1` with cases; checker pin and allowlist
+  from the catalog (`-l2` still to come).
 - [ ] Platform: Setup/Update publish the sets, per-group L1/L2 switches,
-  host page; the rule editor lists facts from the catalog.
+  host page (done: openvibes-platform #283, #284); the rule editor lists
+  facts from the catalog (todo).
 
 # P20 — Rule-set assignment: "not assigned" (user, 2026-10-14)
 
@@ -404,9 +405,9 @@ by answering `410` per host. Spec
 
 - [x] Contract: `410` on `/v1/rule-bundle`, health `rule_sets[].state`
   `not_assigned`, `vectors/project-rule-sets.json` (table and cases).
-- [ ] Agent: compiled-in project sets added with a `distribution_url`, a
+- [x] Agent: compiled-in project sets added with a `distribution_url`, a
   quiet `404` for them on first use, `410` for assignable ones, health.
-- [ ] Rules: the RPM ships `hardening-linux-l1`.
-- [ ] Platform: assignment tables and audit, distribution `410`, ingest
+- [x] Rules: the RPM ships `hardening-linux-l1`.
+- [x] Platform: assignment tables and audit, distribution `410`, ingest
   closes findings on `not_assigned`, Setup/`rules-apply` publish the
   hardening sets, console switches.
