@@ -253,21 +253,21 @@ suppressions. Spec
   process's arguments.
 - [x] `process.euid` and `AlarmProcess.euid` beside the real `uid`
   (reviewer on 2b; setuid execs such as `sudo`).
-- [ ] eBPF process watcher: health.alarms.source and fallback (spec openvibes-agent docs/specs/2026-10-08-ebpf-process-watcher-design.md)
-- [ ] Agent health: `health.alarms` (collector outcome, dropped events
-  and alarms, pending, `platform_unsupported`, rule counts).
-- [ ] Agent: collector, process table, rules, masking, delivery (plan 2;
-  before the platform, which takes its wire types from `openvibes-core`).
-- [ ] Platform: store, ingest, console API (plan 3).
-- [ ] Console UI: Alarms screen, detail, suppressions (plan 4).
-- [ ] CEL budget per process start across the rules of restricted rule
+- [x] eBPF process watcher: health.alarms.source and fallback (spec openvibes-agent docs/specs/2026-10-08-ebpf-process-watcher-design.md) (openvibes-agent #56, #57; openvibes-platform #211)
+- [x] Agent health: `health.alarms` (collector outcome, dropped events
+  and alarms, pending, `platform_unsupported`, rule counts). (openvibes-agent #32)
+- [x] Agent: collector, process table, rules, masking, delivery (plan 2;
+  before the platform, which takes its wire types from `openvibes-core`). (openvibes-agent #21, #32)
+- [x] Platform: store, ingest, console API (plan 3). (openvibes-platform #117, #124, #127, #128)
+- [x] Console UI: Alarms screen, detail, suppressions (plan 4). (openvibes-platform #130, #132)
+- [x] CEL budget per process start across the rules of restricted rule
   sets (50,000 operations; unrestricted sets keep per-rule limits),
   `events_budget_cut_total` in health, and the agent-built
   `openvibes-agent`/`evaluation.cut` alarm (board #105; step 1 of own
-  rules, platform #151).
-- [ ] Restricted rule sets see masked command lines and need a capped
+  rules, platform #151). (openvibes-agent #40)
+- [x] Restricted rule sets see masked command lines and need a capped
   `programs` prefilter (8 per rule, 32 distinct per set), refused by the
-  agent per rule (the rest of own rules' step 1, platform #151).
+  agent per rule (the rest of own rules' step 1, platform #151). (openvibes-agent #42)
 
 ### P15: Assets v2, ports and services (user, 2026-10-01)
 
@@ -280,8 +280,8 @@ documented drop-in, not shipped enabled). Spec
 - [x] Spec and schema: `HostServices` on `POST /v1/services`, `owners`
   (`complete`/`partial`), the services digest and its vectors
   (`vectors/services-digest.json`), limits.
-- [ ] Agent: collector, delivery, the opt-in drop-in (board #99).
-- [ ] Platform: store, ingest, console API and UI (board #100).
+- [x] Agent: collector, delivery, the opt-in drop-in (board #99). (openvibes-agent #37)
+- [x] Platform: store, ingest, console API and UI (board #100). (openvibes-platform #145, #146, #149)
 
 ### P12: Agent health and the rotating queue (user, 2026-09-27)
 
@@ -322,8 +322,9 @@ the agent's match digest (spec
   and its vectors (`vectors/match-digest.json`), heartbeat `match_sha256`,
   `health.matches_truncated`.
 - [ ] Platform: store changes, digest check and replace, heartbeat resync,
-  match status (Matching, Fixed, Stale, Seen while offline) in the console.
-- [ ] Agent: match table, change sets, transients, 409 and 404 fallbacks.
+  match status (Matching, Fixed, Stale, Seen while offline) in the console. Done (openvibes-platform #71): store, digest check and replace, heartbeat resync;
+  left: the console shows only a `fixed <date>` badge, not Matching, Stale or Seen while offline.
+- [x] Agent: match table, change sets, transients, 409 and 404 fallbacks. (openvibes-agent #20)
 
 ## Open Questions
 
@@ -350,10 +351,10 @@ the agent's match digest (spec
 # P17 — Detection explanations
 
 - [x] Optional bounded `detection` schema and positive/negative fixtures.
-- [ ] Agent: original evaluation trace, bundle identity, masked event inputs,
-  changed-match comparison and bounded delivery, including offline export.
-- [ ] Platform: persist original evidence, resolve historical rule content,
-  scoped finding/alarm detail and rule drill-down.
+- [x] Agent: original evaluation trace, bundle identity, masked event inputs,
+  changed-match comparison and bounded delivery, including offline export. (openvibes-agent #50)
+- [x] Platform: persist original evidence, resolve historical rule content,
+  scoped finding/alarm detail and rule drill-down. (openvibes-platform #191)
 
 # P18 — ATT&CK mapping on rules (user, 2026-10-09)
 
