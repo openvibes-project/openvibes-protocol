@@ -148,21 +148,49 @@ _BASE = _decode(((4 * pow(5, -1, _P)) % _P).to_bytes(32, "little"))
 
 
 def ed25519_verify(public: bytes, message: bytes, signature: bytes) -> bool:
-    """Strict: canonical encodings, S < L, and no small-order public key."""
+    """ed25519-dalek's `verify_strict`: canonical A and R, S < L, and neither
+    A nor R of small order."""
     if len(signature) != 64:
         return False
     a, r = _decode(public), _decode(signature[:32])
     s = int.from_bytes(signature[32:], "little")
-    if a is None or r is None or s >= _L or _same(_mul(8, a), (0, 1, 1, 0)):
+    identity = (0, 1, 1, 0)
+    if (
+        a is None or r is None or s >= _L
+        or _same(_mul(8, a), identity) or _same(_mul(8, r), identity)
+    ):
         return False
     k = int.from_bytes(hashlib.sha512(signature[:32] + public + message).digest(), "little") % _L
     return _same(_mul(s, _BASE), _add(r, _mul(k, a)))
 
 
 def b64url(text: str) -> bytes:
+    """Canonical unpadded base64url only: no padding, no other alphabet, and
+    zero spare bits (like the Rust `base64` crate's URL_SAFE_NO_PAD)."""
     import base64
 
-    return base64.urlsafe_b64decode(text + "=" * (-len(text) % 4))
+    if not re.fullmatch(r"[A-Za-z0-9_-]*", text) or len(text) % 4 == 1:
+        raise ValueError("not base64url")
+    data = base64.urlsafe_b64decode(text + "=" * (-len(text) % 4))
+    if base64.urlsafe_b64encode(data).rstrip(b"=").decode() != text:
+        raise ValueError("non-canonical base64url")
+    return data
+
+
+def strict_json(text: str):
+    """JSON as serde reads it for these structs: duplicate keys and numbers
+    that are not integers are errors."""
+
+    def pairs(items):
+        keys = [k for k, _ in items]
+        if len(keys) != len(set(keys)):
+            raise ValueError("duplicate key")
+        return dict(items)
+
+    def refuse(_):
+        raise ValueError("non-integer number")
+
+    return json.loads(text, object_pairs_hook=pairs, parse_float=refuse)
 
 
 def feed_preimage(fmt: int, feed_id: str, key_id: str, manifest: bytes) -> bytes:
@@ -183,16 +211,22 @@ def verify_feed(envelope, trusted, state, now, validators):
     envelope_validator, manifest_validator = validators
     if not envelope_validator.is_valid(envelope):
         return ("refused", "bad_format")
+    try:
+        signature = b64url(envelope["signature"])
+    except ValueError:
+        return ("refused", "bad_format")
     key = f"{envelope['feed_id']}/{envelope['key_id']}"
     if key not in trusted:
         return ("refused", "unknown_key")
     text = envelope["manifest"].encode()
     pre = feed_preimage(1, envelope["feed_id"], envelope["key_id"], text)
-    if not ed25519_verify(b64url(trusted[key]), pre, b64url(envelope["signature"])):
+    if not ed25519_verify(b64url(trusted[key]), pre, signature):
         return ("refused", "bad_signature")
     try:
-        manifest = json.loads(envelope["manifest"])
+        manifest = strict_json(envelope["manifest"])
     except ValueError:
+        return ("refused", "bad_manifest")
+    if not isinstance(manifest, dict):
         return ("refused", "bad_manifest")
     names = [(f["source"], f["name"]) for f in manifest.get("files", []) if isinstance(f, dict)]
     if (
@@ -213,6 +247,21 @@ def verify_feed(envelope, trusted, state, now, validators):
         if manifest["sequence"] == applied["sequence"] and hashlib.sha256(pre).hexdigest() != applied["manifest_digest"]:
             return ("refused", "sequence_conflict")
     return ("accepted", None)
+
+
+def check_file(entry, blob: bytes, applied_fetched_at, reader_limit: int):
+    """Step 7 of "Verification order" for one file. Returns "ok" or a reason:
+    `too_large` (the entry's size or the blob is over the reader's limit),
+    `size_mismatch`, `hash_mismatch`, or `older_than_applied`."""
+    if entry["size"] > reader_limit or len(blob) > reader_limit:
+        return "too_large"
+    if len(blob) != entry["size"]:
+        return "size_mismatch"
+    if hashlib.sha256(blob).hexdigest() != entry["sha256"]:
+        return "hash_mismatch"
+    if applied_fetched_at is not None and entry["fetched_at"] < applied_fetched_at:
+        return "older_than_applied"
+    return "ok"
 
 
 def main() -> int:
@@ -424,6 +473,33 @@ def main() -> int:
         if (outcome, reason) != (case["expect"], case.get("reason")):
             print(f"FAIL feed verification case {case['name']!r}: got {outcome} {reason}")
             failures += 1
+    for case in json.loads((ROOT / "vectors/feed-files.json").read_text())["cases"]:
+        checked += 1
+        got = check_file(case["entry"], bytes.fromhex(case["blob_hex"]), case.get("applied_fetched_at"), case["reader_limit"])
+        if got != case["expect"]:
+            print(f"FAIL feed file case {case['name']!r}: got {got}")
+            failures += 1
+    # Generated, not checked in: an envelope over 1 MiB is bad_format.
+    good = json.loads((ROOT / "fixtures/v1/feed-envelope/valid.json").read_text())
+    checked += 1
+    big = dict(good, manifest="x" * 1048577)
+    if verify_feed(big, {}, {}, 0, feed_validators) != ("refused", "bad_format"):
+        print("FAIL generated oversized feed envelope")
+        failures += 1
+    # Generated, not checked in: every kind at its largest size, and one over.
+    maxima = {"repomd": 1 << 20, "updateinfo": 256 << 20, "osv": 8 << 30, "kev": 64 << 20,
+              "epss": 128 << 20, "euvd": 64 << 20, "nvd": 512 << 20}
+    sources = {"repomd": "fedora-44-x86_64", "updateinfo": "fedora-44-x86_64", "osv": "ubuntu",
+               "kev": "kev", "epss": "epss", "euvd": "euvd", "nvd": "nvd"}
+    base = json.loads((ROOT / "fixtures/v1/feed-manifest/valid.json").read_text())
+    by_kind = {f["kind"]: f for f in base["files"]}
+    for kind, limit in maxima.items():
+        for size, expect_valid in [(limit, True), (limit + 1, False)]:
+            document = dict(base, files=[dict(by_kind[kind], source=sources[kind], size=size)])
+            checked += 1
+            if feed_validators[1].is_valid(document) != expect_valid:
+                print(f"FAIL generated feed-manifest with {kind} of {size} bytes")
+                failures += 1
     # Generated, not checked in: a manifest at its file limit (64) and over.
     base = json.loads((ROOT / "fixtures/v1/feed-manifest/valid.json").read_text())
     for count, expect_valid in [(64, True), (65, False)]:

@@ -167,7 +167,10 @@
                   "almalinux"
                 ]
               }
-            }
+            },
+            "required": [
+              "releases"
+            ]
           }
         },
         {
