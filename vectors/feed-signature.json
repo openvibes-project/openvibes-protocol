@@ -1,0 +1,108 @@
+{
+  "note": "Test keys only: seeds are SHA-256 of 'openvibes feed test key N (public, tests only)'. preimage is spec/feed-v1.md 'Signature preimage'.",
+  "keys": {
+    "1": "3EoF_EbzrDA2cD6CaEzd3Uo-LTpupmndr2xpv6xZ9O8",
+    "2": "82wf6kf0KiS32iITDaquEW4cbum5c2AeKCSBKcALmSs"
+  },
+  "cases": [
+    {
+      "name": "minimal manifest",
+      "format": 1,
+      "feed_id": "acme-dmz",
+      "key_id": "k1",
+      "manifest": "{\"sequence\":1,\"created_at\":1,\"expires_at\":2,\"files\":[]}",
+      "public_key": "3EoF_EbzrDA2cD6CaEzd3Uo-LTpupmndr2xpv6xZ9O8",
+      "preimage_sha256": "aef2499c073fee568578993ad60dd2ef4bf72c3bba640a74b12b6c04f8db055e",
+      "signature": "MzGbQMBi4X6Ukeflr-Ra2pKB8jyiaZ9LTOsu6rpRCU1dLxcyZ-eJe2GqKWWXnvD-74cKtAcgEjhZv-eVrJb-DQ",
+      "valid": true
+    },
+    {
+      "name": "full manifest",
+      "format": 1,
+      "feed_id": "acme-dmz",
+      "key_id": "k1",
+      "manifest": "{\"sequence\":412,\"created_at\":1793360000,\"expires_at\":1793964800,\"files\":[{\"source\":\"fedora-44-x86_64\",\"kind\":\"repomd\",\"name\":\"repomd.xml\",\"sha256\":\"d0df476353bf7bd128a22e414a59d0baebd1fb57d11d6a197ad839227e02dad0\",\"size\":6,\"fetched_at\":1793359400,\"upstream\":\"https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64\"},{\"source\":\"fedora-44-x86_64\",\"kind\":\"updateinfo\",\"name\":\"updateinfo.xml.zst\",\"sha256\":\"ab773b06f5060cc1598fcb2b94a3c6fb9dad49ce39038ee57c5363f6c359fe5d\",\"size\":10,\"fetched_at\":1793359400,\"upstream\":\"https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64\"},{\"source\":\"ubuntu\",\"kind\":\"osv\",\"name\":\"all.zip\",\"sha256\":\"11d86558733f238bfcac4a4744ce0848d649e8419476423de3f53d515238ce8d\",\"size\":10,\"fetched_at\":1793359400,\"upstream\":\"https://osv-vulnerabilities.storage.googleapis.com/Ubuntu/all.zip\",\"releases\":[\"ubuntu-24.04\"]},{\"source\":\"kev\",\"kind\":\"kev\",\"name\":\"known_exploited_vulnerabilities.json\",\"sha256\":\"40309695f0b0d960b154c704c21901cde4d94e7e9e4852ca08aa453105ed6f5c\",\"size\":3,\"fetched_at\":1793359400,\"upstream\":\"https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json\"},{\"source\":\"epss\",\"kind\":\"epss\",\"name\":\"epss_scores-current.csv.gz\",\"sha256\":\"6683b96e92d7b4e84b6169b4bee0ff214b4c0e58ee3cc1f82805de3e0612ce51\",\"size\":4,\"fetched_at\":1793359400,\"upstream\":\"https://epss.empiricalsecurity.com/epss_scores-current.csv.gz\"},{\"source\":\"euvd\",\"kind\":\"euvd\",\"name\":\"exploited.json\",\"sha256\":\"5f07a2892f1f442541b26eb34d40e37f65631f0b9968b3b3164377aa155dedee\",\"size\":4,\"fetched_at\":1793359400,\"upstream\":\"https://euvdservices.enisa.europa.eu/api/search\"},{\"source\":\"nvd\",\"kind\":\"nvd\",\"name\":\"nvd-2024.json.gz\",\"sha256\":\"3910735a3542e3fba993fa9de6827e9879c5ea687e09634f0c429c0e2f2a0050\",\"size\":8,\"fetched_at\":1793359400,\"upstream\":\"https://services.nvd.nist.gov/rest/json/cves/2.0\"}]}",
+      "public_key": "3EoF_EbzrDA2cD6CaEzd3Uo-LTpupmndr2xpv6xZ9O8",
+      "preimage_sha256": "c6d4bd92e8a6c7cbec98b05a8f2e5db6ebeacd0556ef6b47dcb3e87fc1359783",
+      "signature": "rRoznETEnzf5R16_ecFFc6-p-o1dNK93zZ1lOUDmIcUzRAgc595vHOQrOG-aeHA4IrimqFrNymoZcadTvzuIDA",
+      "valid": true
+    },
+    {
+      "name": "non-ASCII feed id bytes are counted as UTF-8",
+      "format": 1,
+      "feed_id": "café",
+      "key_id": "k1",
+      "manifest": "{\"x\":\"é\"}",
+      "public_key": "3EoF_EbzrDA2cD6CaEzd3Uo-LTpupmndr2xpv6xZ9O8",
+      "preimage_sha256": "080b4e9f3492131c9bf54d6c9ea358460dbe69f1af18179b697afbc01b2f3b53",
+      "signature": "dqlIpdivh4ug33PNi85-njR0TY4zJQgPx9M09gKlOzgkz7VrtUa43oduHOjm5FQK2wkZBdcD0T5Tb0QFf4fzBw",
+      "valid": true
+    },
+    {
+      "name": "whitespace and field order are signed",
+      "format": 1,
+      "feed_id": "acme-dmz",
+      "key_id": "k2",
+      "manifest": "{ \"files\" : [] ,\n\"sequence\":1 }",
+      "public_key": "82wf6kf0KiS32iITDaquEW4cbum5c2AeKCSBKcALmSs",
+      "preimage_sha256": "decc99bbfa1bb4f53d21dac0783f645966026f0fd959efdb6922db05bae8818f",
+      "signature": "pnVMSA3svfqgMfR2LqZnj707IRx1YoP-mN72T0MGkVIZ3DP4jUOddKb3g3C6hSJJT18lqQomUuTX820_-YZcDg",
+      "valid": true
+    },
+    {
+      "name": "one byte of the manifest changed",
+      "format": 1,
+      "feed_id": "acme-dmz",
+      "key_id": "k1",
+      "manifest": "{\"sequence\":413,\"created_at\":1793360000,\"expires_at\":1793964800,\"files\":[{\"source\":\"fedora-44-x86_64\",\"kind\":\"repomd\",\"name\":\"repomd.xml\",\"sha256\":\"d0df476353bf7bd128a22e414a59d0baebd1fb57d11d6a197ad839227e02dad0\",\"size\":6,\"fetched_at\":1793359400,\"upstream\":\"https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64\"},{\"source\":\"fedora-44-x86_64\",\"kind\":\"updateinfo\",\"name\":\"updateinfo.xml.zst\",\"sha256\":\"ab773b06f5060cc1598fcb2b94a3c6fb9dad49ce39038ee57c5363f6c359fe5d\",\"size\":10,\"fetched_at\":1793359400,\"upstream\":\"https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64\"},{\"source\":\"ubuntu\",\"kind\":\"osv\",\"name\":\"all.zip\",\"sha256\":\"11d86558733f238bfcac4a4744ce0848d649e8419476423de3f53d515238ce8d\",\"size\":10,\"fetched_at\":1793359400,\"upstream\":\"https://osv-vulnerabilities.storage.googleapis.com/Ubuntu/all.zip\",\"releases\":[\"ubuntu-24.04\"]},{\"source\":\"kev\",\"kind\":\"kev\",\"name\":\"known_exploited_vulnerabilities.json\",\"sha256\":\"40309695f0b0d960b154c704c21901cde4d94e7e9e4852ca08aa453105ed6f5c\",\"size\":3,\"fetched_at\":1793359400,\"upstream\":\"https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json\"},{\"source\":\"epss\",\"kind\":\"epss\",\"name\":\"epss_scores-current.csv.gz\",\"sha256\":\"6683b96e92d7b4e84b6169b4bee0ff214b4c0e58ee3cc1f82805de3e0612ce51\",\"size\":4,\"fetched_at\":1793359400,\"upstream\":\"https://epss.empiricalsecurity.com/epss_scores-current.csv.gz\"},{\"source\":\"euvd\",\"kind\":\"euvd\",\"name\":\"exploited.json\",\"sha256\":\"5f07a2892f1f442541b26eb34d40e37f65631f0b9968b3b3164377aa155dedee\",\"size\":4,\"fetched_at\":1793359400,\"upstream\":\"https://euvdservices.enisa.europa.eu/api/search\"},{\"source\":\"nvd\",\"kind\":\"nvd\",\"name\":\"nvd-2024.json.gz\",\"sha256\":\"3910735a3542e3fba993fa9de6827e9879c5ea687e09634f0c429c0e2f2a0050\",\"size\":8,\"fetched_at\":1793359400,\"upstream\":\"https://services.nvd.nist.gov/rest/json/cves/2.0\"}]}",
+      "public_key": "3EoF_EbzrDA2cD6CaEzd3Uo-LTpupmndr2xpv6xZ9O8",
+      "preimage_sha256": "676f5c8438c6dcbc25919ba88dd636c9b01c5130c481e618fa47e2b092c5da04",
+      "signature": "rRoznETEnzf5R16_ecFFc6-p-o1dNK93zZ1lOUDmIcUzRAgc595vHOQrOG-aeHA4IrimqFrNymoZcadTvzuIDA",
+      "valid": false
+    },
+    {
+      "name": "signed for another feed id",
+      "format": 1,
+      "feed_id": "other",
+      "key_id": "k1",
+      "manifest": "{\"sequence\":412,\"created_at\":1793360000,\"expires_at\":1793964800,\"files\":[{\"source\":\"fedora-44-x86_64\",\"kind\":\"repomd\",\"name\":\"repomd.xml\",\"sha256\":\"d0df476353bf7bd128a22e414a59d0baebd1fb57d11d6a197ad839227e02dad0\",\"size\":6,\"fetched_at\":1793359400,\"upstream\":\"https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64\"},{\"source\":\"fedora-44-x86_64\",\"kind\":\"updateinfo\",\"name\":\"updateinfo.xml.zst\",\"sha256\":\"ab773b06f5060cc1598fcb2b94a3c6fb9dad49ce39038ee57c5363f6c359fe5d\",\"size\":10,\"fetched_at\":1793359400,\"upstream\":\"https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64\"},{\"source\":\"ubuntu\",\"kind\":\"osv\",\"name\":\"all.zip\",\"sha256\":\"11d86558733f238bfcac4a4744ce0848d649e8419476423de3f53d515238ce8d\",\"size\":10,\"fetched_at\":1793359400,\"upstream\":\"https://osv-vulnerabilities.storage.googleapis.com/Ubuntu/all.zip\",\"releases\":[\"ubuntu-24.04\"]},{\"source\":\"kev\",\"kind\":\"kev\",\"name\":\"known_exploited_vulnerabilities.json\",\"sha256\":\"40309695f0b0d960b154c704c21901cde4d94e7e9e4852ca08aa453105ed6f5c\",\"size\":3,\"fetched_at\":1793359400,\"upstream\":\"https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json\"},{\"source\":\"epss\",\"kind\":\"epss\",\"name\":\"epss_scores-current.csv.gz\",\"sha256\":\"6683b96e92d7b4e84b6169b4bee0ff214b4c0e58ee3cc1f82805de3e0612ce51\",\"size\":4,\"fetched_at\":1793359400,\"upstream\":\"https://epss.empiricalsecurity.com/epss_scores-current.csv.gz\"},{\"source\":\"euvd\",\"kind\":\"euvd\",\"name\":\"exploited.json\",\"sha256\":\"5f07a2892f1f442541b26eb34d40e37f65631f0b9968b3b3164377aa155dedee\",\"size\":4,\"fetched_at\":1793359400,\"upstream\":\"https://euvdservices.enisa.europa.eu/api/search\"},{\"source\":\"nvd\",\"kind\":\"nvd\",\"name\":\"nvd-2024.json.gz\",\"sha256\":\"3910735a3542e3fba993fa9de6827e9879c5ea687e09634f0c429c0e2f2a0050\",\"size\":8,\"fetched_at\":1793359400,\"upstream\":\"https://services.nvd.nist.gov/rest/json/cves/2.0\"}]}",
+      "public_key": "3EoF_EbzrDA2cD6CaEzd3Uo-LTpupmndr2xpv6xZ9O8",
+      "preimage_sha256": "1fbe8b17c1c879875d254049359177f7caff22a29e1dc4beaf4284ddd4089a74",
+      "signature": "rRoznETEnzf5R16_ecFFc6-p-o1dNK93zZ1lOUDmIcUzRAgc595vHOQrOG-aeHA4IrimqFrNymoZcadTvzuIDA",
+      "valid": false
+    },
+    {
+      "name": "signed by another key",
+      "format": 1,
+      "feed_id": "acme-dmz",
+      "key_id": "k1",
+      "manifest": "{\"sequence\":412,\"created_at\":1793360000,\"expires_at\":1793964800,\"files\":[{\"source\":\"fedora-44-x86_64\",\"kind\":\"repomd\",\"name\":\"repomd.xml\",\"sha256\":\"d0df476353bf7bd128a22e414a59d0baebd1fb57d11d6a197ad839227e02dad0\",\"size\":6,\"fetched_at\":1793359400,\"upstream\":\"https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64\"},{\"source\":\"fedora-44-x86_64\",\"kind\":\"updateinfo\",\"name\":\"updateinfo.xml.zst\",\"sha256\":\"ab773b06f5060cc1598fcb2b94a3c6fb9dad49ce39038ee57c5363f6c359fe5d\",\"size\":10,\"fetched_at\":1793359400,\"upstream\":\"https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64\"},{\"source\":\"ubuntu\",\"kind\":\"osv\",\"name\":\"all.zip\",\"sha256\":\"11d86558733f238bfcac4a4744ce0848d649e8419476423de3f53d515238ce8d\",\"size\":10,\"fetched_at\":1793359400,\"upstream\":\"https://osv-vulnerabilities.storage.googleapis.com/Ubuntu/all.zip\",\"releases\":[\"ubuntu-24.04\"]},{\"source\":\"kev\",\"kind\":\"kev\",\"name\":\"known_exploited_vulnerabilities.json\",\"sha256\":\"40309695f0b0d960b154c704c21901cde4d94e7e9e4852ca08aa453105ed6f5c\",\"size\":3,\"fetched_at\":1793359400,\"upstream\":\"https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json\"},{\"source\":\"epss\",\"kind\":\"epss\",\"name\":\"epss_scores-current.csv.gz\",\"sha256\":\"6683b96e92d7b4e84b6169b4bee0ff214b4c0e58ee3cc1f82805de3e0612ce51\",\"size\":4,\"fetched_at\":1793359400,\"upstream\":\"https://epss.empiricalsecurity.com/epss_scores-current.csv.gz\"},{\"source\":\"euvd\",\"kind\":\"euvd\",\"name\":\"exploited.json\",\"sha256\":\"5f07a2892f1f442541b26eb34d40e37f65631f0b9968b3b3164377aa155dedee\",\"size\":4,\"fetched_at\":1793359400,\"upstream\":\"https://euvdservices.enisa.europa.eu/api/search\"},{\"source\":\"nvd\",\"kind\":\"nvd\",\"name\":\"nvd-2024.json.gz\",\"sha256\":\"3910735a3542e3fba993fa9de6827e9879c5ea687e09634f0c429c0e2f2a0050\",\"size\":8,\"fetched_at\":1793359400,\"upstream\":\"https://services.nvd.nist.gov/rest/json/cves/2.0\"}]}",
+      "public_key": "82wf6kf0KiS32iITDaquEW4cbum5c2AeKCSBKcALmSs",
+      "preimage_sha256": "c6d4bd92e8a6c7cbec98b05a8f2e5db6ebeacd0556ef6b47dcb3e87fc1359783",
+      "signature": "rRoznETEnzf5R16_ecFFc6-p-o1dNK93zZ1lOUDmIcUzRAgc595vHOQrOG-aeHA4IrimqFrNymoZcadTvzuIDA",
+      "valid": false
+    },
+    {
+      "name": "signature of 63 bytes",
+      "format": 1,
+      "feed_id": "acme-dmz",
+      "key_id": "k1",
+      "manifest": "{\"sequence\":412,\"created_at\":1793360000,\"expires_at\":1793964800,\"files\":[{\"source\":\"fedora-44-x86_64\",\"kind\":\"repomd\",\"name\":\"repomd.xml\",\"sha256\":\"d0df476353bf7bd128a22e414a59d0baebd1fb57d11d6a197ad839227e02dad0\",\"size\":6,\"fetched_at\":1793359400,\"upstream\":\"https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64\"},{\"source\":\"fedora-44-x86_64\",\"kind\":\"updateinfo\",\"name\":\"updateinfo.xml.zst\",\"sha256\":\"ab773b06f5060cc1598fcb2b94a3c6fb9dad49ce39038ee57c5363f6c359fe5d\",\"size\":10,\"fetched_at\":1793359400,\"upstream\":\"https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64\"},{\"source\":\"ubuntu\",\"kind\":\"osv\",\"name\":\"all.zip\",\"sha256\":\"11d86558733f238bfcac4a4744ce0848d649e8419476423de3f53d515238ce8d\",\"size\":10,\"fetched_at\":1793359400,\"upstream\":\"https://osv-vulnerabilities.storage.googleapis.com/Ubuntu/all.zip\",\"releases\":[\"ubuntu-24.04\"]},{\"source\":\"kev\",\"kind\":\"kev\",\"name\":\"known_exploited_vulnerabilities.json\",\"sha256\":\"40309695f0b0d960b154c704c21901cde4d94e7e9e4852ca08aa453105ed6f5c\",\"size\":3,\"fetched_at\":1793359400,\"upstream\":\"https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json\"},{\"source\":\"epss\",\"kind\":\"epss\",\"name\":\"epss_scores-current.csv.gz\",\"sha256\":\"6683b96e92d7b4e84b6169b4bee0ff214b4c0e58ee3cc1f82805de3e0612ce51\",\"size\":4,\"fetched_at\":1793359400,\"upstream\":\"https://epss.empiricalsecurity.com/epss_scores-current.csv.gz\"},{\"source\":\"euvd\",\"kind\":\"euvd\",\"name\":\"exploited.json\",\"sha256\":\"5f07a2892f1f442541b26eb34d40e37f65631f0b9968b3b3164377aa155dedee\",\"size\":4,\"fetched_at\":1793359400,\"upstream\":\"https://euvdservices.enisa.europa.eu/api/search\"},{\"source\":\"nvd\",\"kind\":\"nvd\",\"name\":\"nvd-2024.json.gz\",\"sha256\":\"3910735a3542e3fba993fa9de6827e9879c5ea687e09634f0c429c0e2f2a0050\",\"size\":8,\"fetched_at\":1793359400,\"upstream\":\"https://services.nvd.nist.gov/rest/json/cves/2.0\"}]}",
+      "public_key": "3EoF_EbzrDA2cD6CaEzd3Uo-LTpupmndr2xpv6xZ9O8",
+      "preimage_sha256": "c6d4bd92e8a6c7cbec98b05a8f2e5db6ebeacd0556ef6b47dcb3e87fc1359783",
+      "signature": "rRoznETEnzf5R16_ecFFc6-p-o1dNK93zZ1lOUDmIcUzRAgc595vHOQrOG-aeHA4IrimqFrNymoZcadTvzuI",
+      "valid": false
+    },
+    {
+      "name": "public key of small order (all zero point)",
+      "format": 1,
+      "feed_id": "acme-dmz",
+      "key_id": "k1",
+      "manifest": "{\"sequence\":412,\"created_at\":1793360000,\"expires_at\":1793964800,\"files\":[{\"source\":\"fedora-44-x86_64\",\"kind\":\"repomd\",\"name\":\"repomd.xml\",\"sha256\":\"d0df476353bf7bd128a22e414a59d0baebd1fb57d11d6a197ad839227e02dad0\",\"size\":6,\"fetched_at\":1793359400,\"upstream\":\"https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64\"},{\"source\":\"fedora-44-x86_64\",\"kind\":\"updateinfo\",\"name\":\"updateinfo.xml.zst\",\"sha256\":\"ab773b06f5060cc1598fcb2b94a3c6fb9dad49ce39038ee57c5363f6c359fe5d\",\"size\":10,\"fetched_at\":1793359400,\"upstream\":\"https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64\"},{\"source\":\"ubuntu\",\"kind\":\"osv\",\"name\":\"all.zip\",\"sha256\":\"11d86558733f238bfcac4a4744ce0848d649e8419476423de3f53d515238ce8d\",\"size\":10,\"fetched_at\":1793359400,\"upstream\":\"https://osv-vulnerabilities.storage.googleapis.com/Ubuntu/all.zip\",\"releases\":[\"ubuntu-24.04\"]},{\"source\":\"kev\",\"kind\":\"kev\",\"name\":\"known_exploited_vulnerabilities.json\",\"sha256\":\"40309695f0b0d960b154c704c21901cde4d94e7e9e4852ca08aa453105ed6f5c\",\"size\":3,\"fetched_at\":1793359400,\"upstream\":\"https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json\"},{\"source\":\"epss\",\"kind\":\"epss\",\"name\":\"epss_scores-current.csv.gz\",\"sha256\":\"6683b96e92d7b4e84b6169b4bee0ff214b4c0e58ee3cc1f82805de3e0612ce51\",\"size\":4,\"fetched_at\":1793359400,\"upstream\":\"https://epss.empiricalsecurity.com/epss_scores-current.csv.gz\"},{\"source\":\"euvd\",\"kind\":\"euvd\",\"name\":\"exploited.json\",\"sha256\":\"5f07a2892f1f442541b26eb34d40e37f65631f0b9968b3b3164377aa155dedee\",\"size\":4,\"fetched_at\":1793359400,\"upstream\":\"https://euvdservices.enisa.europa.eu/api/search\"},{\"source\":\"nvd\",\"kind\":\"nvd\",\"name\":\"nvd-2024.json.gz\",\"sha256\":\"3910735a3542e3fba993fa9de6827e9879c5ea687e09634f0c429c0e2f2a0050\",\"size\":8,\"fetched_at\":1793359400,\"upstream\":\"https://services.nvd.nist.gov/rest/json/cves/2.0\"}]}",
+      "public_key": "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "preimage_sha256": "c6d4bd92e8a6c7cbec98b05a8f2e5db6ebeacd0556ef6b47dcb3e87fc1359783",
+      "signature": "rRoznETEnzf5R16_ecFFc6-p-o1dNK93zZ1lOUDmIcUzRAgc595vHOQrOG-aeHA4IrimqFrNymoZcadTvzuIDA",
+      "valid": false
+    }
+  ]
+}

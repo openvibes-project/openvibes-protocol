@@ -412,3 +412,20 @@ by answering `410` per host. Spec
 - [x] Platform: assignment tables and audit, distribution `410`, ingest
   closes findings on `not_assigned`, Setup/`rules-apply` publish the
   hardening sets, console switches.
+
+# P21 — Signed feed for a mirror or an air-gapped import (user, 2026-10-30)
+
+The platform's vulnerability data (Fedora, OSV, KEV, EPSS, NVD, EUVD) can come
+from a signed feed built by `openvibes-feed`, served by a site's own mirror or
+carried in as a tar. No agent change and no change to schema version 1's
+agent messages. Spec `spec/feed-v1.md`; design
+`planning/airgap-feed-spec-2026-10-30.md` (project files).
+
+- [x] Contract: `spec/feed-v1.md`, `schemas/v1/feed-envelope` and
+  `feed-manifest`, fixtures, `vectors/feed-signature.json` and
+  `vectors/feed-verification.json`, reference verifier in `tools/validate.py`.
+- [ ] Platform: verifier, trust keys (`feeds trust`), `feeds import-bundle`.
+- [ ] `openvibes-feed`: builder, `bundle`, timer, package.
+- [ ] Platform: `feed_mirror_url` in the vulns service and console settings.
+- [ ] Console: "vulnerability data as of ..." and stale warning.
+

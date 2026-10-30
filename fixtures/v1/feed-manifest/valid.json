@@ -1,0 +1,73 @@
+{
+  "sequence": 412,
+  "created_at": 1793360000,
+  "expires_at": 1793964800,
+  "files": [
+    {
+      "source": "fedora-44-x86_64",
+      "kind": "repomd",
+      "name": "repomd.xml",
+      "sha256": "d0df476353bf7bd128a22e414a59d0baebd1fb57d11d6a197ad839227e02dad0",
+      "size": 6,
+      "fetched_at": 1793359400,
+      "upstream": "https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64"
+    },
+    {
+      "source": "fedora-44-x86_64",
+      "kind": "updateinfo",
+      "name": "updateinfo.xml.zst",
+      "sha256": "ab773b06f5060cc1598fcb2b94a3c6fb9dad49ce39038ee57c5363f6c359fe5d",
+      "size": 10,
+      "fetched_at": 1793359400,
+      "upstream": "https://mirrors.fedoraproject.org/metalink?repo=updates-released-f44&arch=x86_64"
+    },
+    {
+      "source": "ubuntu",
+      "kind": "osv",
+      "name": "all.zip",
+      "sha256": "11d86558733f238bfcac4a4744ce0848d649e8419476423de3f53d515238ce8d",
+      "size": 10,
+      "fetched_at": 1793359400,
+      "upstream": "https://osv-vulnerabilities.storage.googleapis.com/Ubuntu/all.zip",
+      "releases": [
+        "ubuntu-24.04"
+      ]
+    },
+    {
+      "source": "kev",
+      "kind": "kev",
+      "name": "known_exploited_vulnerabilities.json",
+      "sha256": "40309695f0b0d960b154c704c21901cde4d94e7e9e4852ca08aa453105ed6f5c",
+      "size": 3,
+      "fetched_at": 1793359400,
+      "upstream": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
+    },
+    {
+      "source": "epss",
+      "kind": "epss",
+      "name": "epss_scores-current.csv.gz",
+      "sha256": "6683b96e92d7b4e84b6169b4bee0ff214b4c0e58ee3cc1f82805de3e0612ce51",
+      "size": 4,
+      "fetched_at": 1793359400,
+      "upstream": "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
+    },
+    {
+      "source": "euvd",
+      "kind": "euvd",
+      "name": "exploited.json",
+      "sha256": "5f07a2892f1f442541b26eb34d40e37f65631f0b9968b3b3164377aa155dedee",
+      "size": 4,
+      "fetched_at": 1793359400,
+      "upstream": "https://euvdservices.enisa.europa.eu/api/search"
+    },
+    {
+      "source": "nvd",
+      "kind": "nvd",
+      "name": "nvd-2024.json.gz",
+      "sha256": "3910735a3542e3fba993fa9de6827e9879c5ea687e09634f0c429c0e2f2a0050",
+      "size": 8,
+      "fetched_at": 1793359400,
+      "upstream": "https://services.nvd.nist.gov/rest/json/cves/2.0"
+    }
+  ]
+}
