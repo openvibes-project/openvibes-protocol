@@ -1,0 +1,127 @@
+{
+  "note": "Step 7 of spec/feed-v1.md for one file: reader_limit is the reader's own size limit in bytes; applied_fetched_at is what the reader applied before for the same source.",
+  "cases": [
+    {
+      "name": "matching blob",
+      "entry": {
+        "source": "fedora-44-x86_64",
+        "kind": "updateinfo",
+        "name": "updateinfo.xml.zst",
+        "sha256": "b0b0953e62ba4f9564d4d364d5903b48bdd37b6f3114cebcce766bc70379efd4",
+        "size": 16,
+        "fetched_at": 1793359400,
+        "upstream": "https://example.org/x"
+      },
+      "blob_hex": "757064617465696e666f206279746573",
+      "reader_limit": 1048576,
+      "expect": "ok"
+    },
+    {
+      "name": "blob with one byte changed",
+      "entry": {
+        "source": "fedora-44-x86_64",
+        "kind": "updateinfo",
+        "name": "updateinfo.xml.zst",
+        "sha256": "b0b0953e62ba4f9564d4d364d5903b48bdd37b6f3114cebcce766bc70379efd4",
+        "size": 16,
+        "fetched_at": 1793359400,
+        "upstream": "https://example.org/x"
+      },
+      "blob_hex": "757064617465696e666f20627974657a",
+      "reader_limit": 1048576,
+      "expect": "hash_mismatch"
+    },
+    {
+      "name": "blob shorter than the manifest says",
+      "entry": {
+        "source": "fedora-44-x86_64",
+        "kind": "updateinfo",
+        "name": "updateinfo.xml.zst",
+        "sha256": "b0b0953e62ba4f9564d4d364d5903b48bdd37b6f3114cebcce766bc70379efd4",
+        "size": 16,
+        "fetched_at": 1793359400,
+        "upstream": "https://example.org/x"
+      },
+      "blob_hex": "757064617465696e666f2062797465",
+      "reader_limit": 1048576,
+      "expect": "size_mismatch"
+    },
+    {
+      "name": "blob longer than the manifest says",
+      "entry": {
+        "source": "fedora-44-x86_64",
+        "kind": "updateinfo",
+        "name": "updateinfo.xml.zst",
+        "sha256": "b0b0953e62ba4f9564d4d364d5903b48bdd37b6f3114cebcce766bc70379efd4",
+        "size": 16,
+        "fetched_at": 1793359400,
+        "upstream": "https://example.org/x"
+      },
+      "blob_hex": "757064617465696e666f20627974657378",
+      "reader_limit": 1048576,
+      "expect": "size_mismatch"
+    },
+    {
+      "name": "entry larger than the reader's own limit",
+      "entry": {
+        "source": "fedora-44-x86_64",
+        "kind": "updateinfo",
+        "name": "updateinfo.xml.zst",
+        "sha256": "b0b0953e62ba4f9564d4d364d5903b48bdd37b6f3114cebcce766bc70379efd4",
+        "size": 2097152,
+        "fetched_at": 1793359400,
+        "upstream": "https://example.org/x"
+      },
+      "blob_hex": "757064617465696e666f206279746573",
+      "reader_limit": 1048576,
+      "expect": "too_large"
+    },
+    {
+      "name": "blob larger than the reader's own limit",
+      "entry": {
+        "source": "fedora-44-x86_64",
+        "kind": "updateinfo",
+        "name": "updateinfo.xml.zst",
+        "sha256": "b0b0953e62ba4f9564d4d364d5903b48bdd37b6f3114cebcce766bc70379efd4",
+        "size": 16,
+        "fetched_at": 1793359400,
+        "upstream": "https://example.org/x"
+      },
+      "blob_hex": "757064617465696e666f206279746573",
+      "reader_limit": 4,
+      "expect": "too_large"
+    },
+    {
+      "name": "fetched_at older than the one applied",
+      "entry": {
+        "source": "fedora-44-x86_64",
+        "kind": "updateinfo",
+        "name": "updateinfo.xml.zst",
+        "sha256": "b0b0953e62ba4f9564d4d364d5903b48bdd37b6f3114cebcce766bc70379efd4",
+        "size": 16,
+        "fetched_at": 1793359400,
+        "upstream": "https://example.org/x"
+      },
+      "blob_hex": "757064617465696e666f206279746573",
+      "reader_limit": 1048576,
+      "expect": "older_than_applied",
+      "applied_fetched_at": 1793359401
+    },
+    {
+      "name": "fetched_at equal to the one applied",
+      "entry": {
+        "source": "fedora-44-x86_64",
+        "kind": "updateinfo",
+        "name": "updateinfo.xml.zst",
+        "sha256": "b0b0953e62ba4f9564d4d364d5903b48bdd37b6f3114cebcce766bc70379efd4",
+        "size": 16,
+        "fetched_at": 1793359400,
+        "upstream": "https://example.org/x"
+      },
+      "blob_hex": "757064617465696e666f206279746573",
+      "reader_limit": 1048576,
+      "expect": "ok",
+      "applied_fetched_at": 1793359400
+    }
+  ]
+}

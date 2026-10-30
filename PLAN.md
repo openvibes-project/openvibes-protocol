@@ -422,8 +422,8 @@ agent messages. Spec `spec/feed-v1.md`; design
 `planning/airgap-feed-spec-2026-10-30.md` (project files).
 
 - [x] Contract: `spec/feed-v1.md`, `schemas/v1/feed-envelope` and
-  `feed-manifest`, fixtures, `vectors/feed-signature.json` and
-  `vectors/feed-verification.json`, reference verifier in `tools/validate.py`.
+  `feed-manifest`, fixtures, `vectors/feed-signature.json`,
+  `vectors/feed-verification.json` and `vectors/feed-files.json`, reference verifier in `tools/validate.py`.
 - [ ] Platform: verifier, trust keys (`feeds trust`), `feeds import-bundle`.
 - [ ] `openvibes-feed`: builder, `bundle`, timer, package.
 - [ ] Platform: `feed_mirror_url` in the vulns service and console settings.

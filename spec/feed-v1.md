@@ -31,7 +31,7 @@ A plain POSIX tar (no compression; the blobs are already compressed), entries
 in this order: `feed.json`, then `blobs/<sha256-hex>` for each blob. Only
 regular files with exactly those names are allowed. A reader refuses the whole
 bundle on any other entry type (links, devices, directories other than the
-implicit `blobs/`), any other name, a duplicate name, an absolute or `..`
+implicit `blobs/` path component, so no directory entries at all), any other name, a duplicate name, an absolute or `..`
 path, or a total size above its limits. Entries are never extracted by their
 own paths: a reader copies each into its own state directory under the name it
 computed. A bundle may omit blobs of sources the builder was told to skip
@@ -78,7 +78,7 @@ of what is signed and a reader parses it only after the signature verifies.
 |---|---|---|---|
 | `repomd` | `fedora-<release>-<arch>` | Fedora `repomd.xml`, raw bytes | 1 MiB |
 | `updateinfo` | `fedora-<release>-<arch>` | `updateinfo.xml` or `.xml.zst`, raw bytes | 256 MiB |
-| `osv` | `debian`, `ubuntu`, `rocky-linux` or `almalinux` | the ecosystem's OSV `all.zip`, raw bytes; `releases` lists the platform sources it feeds (`ubuntu-24.04`, ...) | 8 GiB |
+| `osv` | `debian`, `ubuntu`, `rocky-linux` or `almalinux` | the ecosystem's OSV `all.zip`, raw bytes; `releases` (required) lists the platform sources it feeds (`ubuntu-24.04`, ...) | 8 GiB |
 | `kev` | `kev` | CISA KEV JSON, raw bytes | 64 MiB |
 | `epss` | `epss` | EPSS CSV (`.csv.gz` or plain), raw bytes | 128 MiB |
 | `euvd` | `euvd` | one JSON document `{"items":[...],"total":N}` in the shape of ENISA's EUVD search response, all exploited entries joined | 64 MiB |
@@ -91,7 +91,7 @@ of what is signed and a reader parses it only after the signature verifies.
 - `sha256`: lowercase hex of the blob. `size`: the blob's length in bytes.
 - `fetched_at`: Unix seconds, when the builder obtained the bytes.
 - `upstream`: where it came from, for people and audit. A reader never fetches it.
-- `releases`: only on `osv` files; unique release names of 1 to 32 characters
+- `releases`: required on `osv` files and allowed on no other; unique release names of 1 to 32 characters
   from `[a-z0-9.-]`, naming the platform sources the file feeds.
 
 ### Slim NVD (`kind: nvd`)
@@ -129,10 +129,15 @@ The signed bytes are the concatenation of:
 5. The manifest string as an unsigned 64-bit big-endian byte length plus its
    exact UTF-8 bytes.
 
-The algorithm is Ed25519 (RFC 8032), verified strictly: canonical point
-encodings, `S < L`, and public keys of small order refused. Keys are 32 bytes
-and signatures 64 bytes, unpadded base64url on the wire, the same encoding
-the rule envelope uses. The `signature` field is not part of the preimage.
+The algorithm is Ed25519 (RFC 8032), verified as `ed25519-dalek`'s
+`verify_strict` does, with its `is_weak` check on the public key: canonical
+encodings of `A` and `R`, `S < L`, and neither `A` nor `R` of small order.
+Keys are 32 bytes and signatures 64 bytes, in **canonical** unpadded
+base64url on the wire (no padding, the URL-safe alphabet only, zero spare
+bits; the same rule as the Rust `base64` crate's `URL_SAFE_NO_PAD`), the same
+encoding the rule envelope uses. A non-canonical string is refused wherever it
+is read: a signature in an envelope is `bad_format`, a public key given to
+`feeds trust add` is an error. The `signature` field is not part of the preimage.
 The **manifest digest** is the SHA-256 of the whole preimage; it identifies a
 manifest for the equal-sequence rule below.
 
@@ -141,7 +146,10 @@ manifest for the equal-sequence rule below.
 A reader holds trusted keys, each scoped to a `(feed_id, key_id)` and added
 by its administrator. A key is never taken from a feed. Several keys may be
 trusted at once, so a builder can rotate: trust the new key, switch the
-builder, then remove the old one. Key ids are not re-used for a different key.
+builder, then remove the old one as soon as the new one has been applied:
+sequence state is kept per key, so while both are trusted the last manifest
+signed by the old key is still accepted again (its files are bounded by the
+`fetched_at` rule and its expiry). Key ids are not re-used for a different key.
 A key's **fingerprint** is the SHA-256 of its 32 public-key bytes, shown as 8
 groups of 4 lowercase hex characters (the first 128 bits) wherever a key is
 displayed or compared.
@@ -151,14 +159,16 @@ displayed or compared.
 A reader checks, in this order, and stops at the first failure. The reasons
 are fixed strings used by `vectors/feed-verification.json`.
 
-1. The envelope has at most 1 MiB, parses, and matches
-   `feed-envelope.schema.json`: otherwise `bad_format`.
+1. The envelope has at most 1 MiB, parses (duplicate keys and numbers that
+   are not integers are errors), matches `feed-envelope.schema.json`, and its
+   signature is canonical base64url: otherwise `bad_format`.
 2. A key is trusted for `(feed_id, key_id)`: otherwise `unknown_key`.
 3. The signature verifies over the preimage: otherwise `bad_signature`.
    **Nothing in the manifest is parsed before this.**
-4. The manifest parses and matches `feed-manifest.schema.json`;
-   `expires_at > created_at`; `(source, name)` are unique; `releases` appears
-   only on `osv` files: otherwise `bad_manifest`.
+4. The manifest parses as JSON (duplicate keys and numbers that are not
+   integers are errors, as `412.0`), is an object, and matches
+   `feed-manifest.schema.json`; `expires_at > created_at`; `(source, name)`
+   are unique; `releases` appears only on `osv` files: otherwise `bad_manifest`.
 5. `created_at <= now + 600` (a builder's clock may run up to 10 minutes
    ahead): otherwise `not_yet_valid`. `now < expires_at`: otherwise `expired`.
 6. Sequence, against the highest accepted for the same `(feed_id, key_id)`:
@@ -173,6 +183,11 @@ are fixed strings used by `vectors/feed-verification.json`.
 
 A reader records a feed as accepted after step 6, so a replayed older
 manifest stays refused even when a file failed in step 7.
+
+Step 7 is exercised by `vectors/feed-files.json` (reasons `too_large`,
+`size_mismatch`, `hash_mismatch`, `older_than_applied`); the other steps by
+`vectors/feed-verification.json`, whose cases include ones with two defects, to
+show which check must win.
 
 Per source, a reader also skips a file whose `fetched_at` is older than the
 one it applied before for that source, and reports it as older than applied.
@@ -190,7 +205,11 @@ upstream sources are not signed.
 ## Vectors
 
 - `vectors/feed-signature.json`: preimage digests and signatures with their
-  public keys, valid and invalid, from test keys that are public.
+  public keys, valid and invalid, from test keys that are public. The invalid
+  strictness cases (non-canonical `S`, `R` and `A`, small-order `R` and `A`)
+  all pass a lax RFC 8032 check, so each tests strictness; they were checked
+  against `ed25519-dalek` 3.0.0 `verify_strict` with `is_weak`.
+- `vectors/feed-files.json`: the per-file checks of step 7.
 - `vectors/feed-verification.json`: whole-feed cases with trusted keys,
   state and `now`, each with the expected outcome and reason. `tools/validate.py`
   runs a reference verifier over them, and implementations run the same cases.
