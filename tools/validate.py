@@ -92,6 +92,129 @@ def services_digest(listeners: list, services: list) -> str:
     return hashlib.sha256(text.encode()).hexdigest()
 
 
+# --- Signed feeds (spec/feed-v1.md): Ed25519 per RFC 8032, written out so the
+# checker needs no package beyond the pinned validator.
+
+_P = 2**255 - 19
+_L = 2**252 + 27742317777372353535851937790883648493
+_D = -121665 * pow(121666, -1, _P) % _P
+_I = pow(2, (_P - 1) // 4, _P)
+
+
+def _add(a, b):
+    (x1, y1, z1, t1), (x2, y2, z2, t2) = a, b
+    aa, bb = (y1 - x1) * (y2 - x2) % _P, (y1 + x1) * (y2 + x2) % _P
+    cc, dd = 2 * t1 * t2 * _D % _P, 2 * z1 * z2 % _P
+    e, f, g, h = bb - aa, dd - cc, dd + cc, bb + aa
+    return (e * f % _P, g * h % _P, f * g % _P, e * h % _P)
+
+
+def _mul(n, point):
+    result = (0, 1, 1, 0)
+    while n:
+        if n & 1:
+            result = _add(result, point)
+        point = _add(point, point)
+        n >>= 1
+    return result
+
+
+def _decode(data: bytes):
+    """A canonical point encoding, or None."""
+    if len(data) != 32:
+        return None
+    y = int.from_bytes(data, "little")
+    sign, y = y >> 255, y & (2**255 - 1)
+    if y >= _P:
+        return None
+    x2 = (y * y - 1) * pow(_D * y * y + 1, -1, _P) % _P
+    x = pow(x2, (_P + 3) // 8, _P)
+    if (x * x - x2) % _P:
+        x = x * _I % _P
+    if (x * x - x2) % _P:
+        return None
+    if x == 0 and sign:
+        return None
+    if x & 1 != sign:
+        x = _P - x
+    return (x, y, 1, x * y % _P)
+
+
+def _same(a, b):
+    return (a[0] * b[2] - b[0] * a[2]) % _P == 0 and (a[1] * b[2] - b[1] * a[2]) % _P == 0
+
+
+_BASE = _decode(((4 * pow(5, -1, _P)) % _P).to_bytes(32, "little"))
+
+
+def ed25519_verify(public: bytes, message: bytes, signature: bytes) -> bool:
+    """Strict: canonical encodings, S < L, and no small-order public key."""
+    if len(signature) != 64:
+        return False
+    a, r = _decode(public), _decode(signature[:32])
+    s = int.from_bytes(signature[32:], "little")
+    if a is None or r is None or s >= _L or _same(_mul(8, a), (0, 1, 1, 0)):
+        return False
+    k = int.from_bytes(hashlib.sha512(signature[:32] + public + message).digest(), "little") % _L
+    return _same(_mul(s, _BASE), _add(r, _mul(k, a)))
+
+
+def b64url(text: str) -> bytes:
+    import base64
+
+    return base64.urlsafe_b64decode(text + "=" * (-len(text) % 4))
+
+
+def feed_preimage(fmt: int, feed_id: str, key_id: str, manifest: bytes) -> bytes:
+    """spec/feed-v1.md, "Signature preimage"."""
+    import struct
+
+    f, k = feed_id.encode(), key_id.encode()
+    return (
+        b"OPENVIBES-FEED-MANIFEST-V1\0" + struct.pack(">H", fmt)
+        + struct.pack(">I", len(f)) + f + struct.pack(">I", len(k)) + k
+        + struct.pack(">Q", len(manifest)) + manifest
+    )
+
+
+def verify_feed(envelope, trusted, state, now, validators):
+    """The reference verifier of spec/feed-v1.md, "Verification order".
+    Returns ("accepted", None) or ("refused", reason)."""
+    envelope_validator, manifest_validator = validators
+    if not envelope_validator.is_valid(envelope):
+        return ("refused", "bad_format")
+    key = f"{envelope['feed_id']}/{envelope['key_id']}"
+    if key not in trusted:
+        return ("refused", "unknown_key")
+    text = envelope["manifest"].encode()
+    pre = feed_preimage(1, envelope["feed_id"], envelope["key_id"], text)
+    if not ed25519_verify(b64url(trusted[key]), pre, b64url(envelope["signature"])):
+        return ("refused", "bad_signature")
+    try:
+        manifest = json.loads(envelope["manifest"])
+    except ValueError:
+        return ("refused", "bad_manifest")
+    names = [(f["source"], f["name"]) for f in manifest.get("files", []) if isinstance(f, dict)]
+    if (
+        not manifest_validator.is_valid(manifest)
+        or manifest["expires_at"] <= manifest["created_at"]
+        or len(names) != len(set(names))
+        or any("releases" in f and f["kind"] != "osv" for f in manifest["files"])
+    ):
+        return ("refused", "bad_manifest")
+    if manifest["created_at"] > now + 600:
+        return ("refused", "not_yet_valid")
+    if now >= manifest["expires_at"]:
+        return ("refused", "expired")
+    applied = state.get(key)
+    if applied:
+        if manifest["sequence"] < applied["sequence"]:
+            return ("refused", "sequence_replay")
+        if manifest["sequence"] == applied["sequence"] and hashlib.sha256(pre).hexdigest() != applied["manifest_digest"]:
+            return ("refused", "sequence_conflict")
+    return ("accepted", None)
+
+
 def main() -> int:
     schemas = {
         path.name.removesuffix(".schema.json"): json.loads(path.read_text())
@@ -280,6 +403,34 @@ def main() -> int:
             or case["agent"] != want
         ):
             print(f"FAIL project rule sets case {case['name']!r}")
+            failures += 1
+    # Signed feeds (spec/feed-v1.md): signature vectors, then the reference
+    # verifier against every verification case.
+    for case in json.loads((ROOT / "vectors/feed-signature.json").read_text())["cases"]:
+        checked += 1
+        pre = feed_preimage(case["format"], case["feed_id"], case["key_id"], case["manifest"].encode())
+        if hashlib.sha256(pre).hexdigest() != case["preimage_sha256"] or (
+            ed25519_verify(b64url(case["public_key"]), pre, b64url(case["signature"])) != case["valid"]
+        ):
+            print(f"FAIL feed signature vector {case['name']!r}")
+            failures += 1
+    feed_validators = (
+        Draft202012Validator(schemas["feed-envelope"], registry=registry),
+        Draft202012Validator(schemas["feed-manifest"], registry=registry),
+    )
+    for case in json.loads((ROOT / "vectors/feed-verification.json").read_text())["cases"]:
+        checked += 1
+        outcome, reason = verify_feed(case["envelope"], case["trusted"], case["state"], case["now"], feed_validators)
+        if (outcome, reason) != (case["expect"], case.get("reason")):
+            print(f"FAIL feed verification case {case['name']!r}: got {outcome} {reason}")
+            failures += 1
+    # Generated, not checked in: a manifest at its file limit (64) and over.
+    base = json.loads((ROOT / "fixtures/v1/feed-manifest/valid.json").read_text())
+    for count, expect_valid in [(64, True), (65, False)]:
+        document = dict(base, files=[dict(base["files"][3], source="kev", name=f"k{i}.json") for i in range(count)])
+        checked += 1
+        if feed_validators[1].is_valid(document) != expect_valid:
+            print(f"FAIL generated feed-manifest with {count} files")
             failures += 1
     print(f"{checked} fixtures checked, {failures} failures")
     return 1 if failures else 0

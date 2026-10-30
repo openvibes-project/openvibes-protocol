@@ -112,6 +112,8 @@ scope.
 
 - [`spec/contracts-v1.md`](spec/contracts-v1.md): the authoritative wire
   contracts, HTTP API, and resource limits.
+- [`spec/feed-v1.md`](spec/feed-v1.md): the signed vulnerability-data feed and bundle
+  (platform side only; no agent change).
 - [`PLAN.md`](PLAN.md): every message that crosses the boundary, its status on
   each side, and the paired milestones.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md): how contract changes are made.

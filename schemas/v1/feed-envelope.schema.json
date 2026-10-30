@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/openvibes-project/openvibes-protocol/schemas/v1/feed-envelope.schema.json",
+  "title": "Feed envelope, feed.json (spec/feed-v1.md)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "feed_id",
+    "key_id",
+    "signature",
+    "manifest"
+  ],
+  "properties": {
+    "format": {
+      "const": 1
+    },
+    "feed_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "key_id": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "signature": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "description": "64-byte Ed25519 signature, unpadded base64url."
+    },
+    "manifest": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 1048576,
+      "description": "The manifest as one JSON text; signed byte for byte."
+    }
+  }
+}

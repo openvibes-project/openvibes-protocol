@@ -1,0 +1,16 @@
+{
+  "sequence": 1,
+  "created_at": 1793360000,
+  "expires_at": 1793964800,
+  "files": [
+    {
+      "source": "kev",
+      "kind": "kev",
+      "name": "known_exploited_vulnerabilities.json",
+      "sha256": "40309695f0b0d960b154c704c21901cde4d94e7e9e4852ca08aa453105ed6f5c",
+      "size": 3,
+      "fetched_at": 1793359400,
+      "upstream": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
+    }
+  ]
+}
