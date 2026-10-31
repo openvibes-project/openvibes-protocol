@@ -113,10 +113,36 @@ After gunzip, one JSON object:
 version scored (4.0, 3.1, 3.0, 2.0), within it NVD's own score over a CNA's,
 or absent. `cwe` is deduplicated. `ranges` holds the `cpeMatch` entries with
 `vulnerable: true` and an application part (`cpe:2.3:a:`); each has up to four
-of `start_including`, `start_excluding`, `end_including`, `end_excluding`, and
-a record has at most 5,000 of them. Absent keys mean "not given". This is the
-information the platform reads from NVD's `cves/2.0` API today, in about a
-fifth of the size.
+of `start_including`, `start_excluding`, `end_including`, `end_excluding`.
+`os` is optional and holds every operating system NVD lists as affected: the
+`cpeMatch` entries with `vulnerable: true` and an operating-system part
+(`cpe:2.3:o:`), each as `vendor:product:version` (lower case; a CPE update
+joins the version, so `8.5` with update `p1` is `8.5p1`; entries whose version
+is `*`, `-` or empty are left out), unique and sorted. A reader may use the
+entries it understands and ignore the rest. Absent keys mean "not given". This
+is the information the platform reads from NVD's `cves/2.0` API today, in about
+a fifth of the size.
+
+A reader refuses the whole file if any record breaks these limits, so a
+builder writes only what passes them (it cuts a bound to 64 bytes and leaves
+out a range or an `os` entry that does not fit, rather than writing it):
+
+| Field | Limit |
+|---|---|
+| `format` | `1` |
+| `id` | `CVE-` year (4 digits) `-` number (4 to 19 digits); the year equals the file's `year` |
+| `cvss.version` | one of `4.0`, `3.1`, `3.0`, `2.0` |
+| `cvss.score` | 0.0 to 10.0 |
+| `cvss.vector` | at most 512 bytes |
+| `cwe` entries | `CWE-` and 1 to 9 digits |
+| `description` | English text, at most 4096 bytes |
+| `ranges` | at most 5,000 per record |
+| `ranges[].cpe` | starts with `cpe:2.3:a:`, at most 512 bytes, no control characters |
+| range bounds | at most 64 bytes each, no control characters |
+| `os` | at most 256 entries; each exactly `vendor:product:version`, each part 1 to 64 characters from `a-z 0-9 . _ ~ + -` |
+
+`vectors/feed-slim-nvd.json` has valid and invalid files; `tools/validate.py`
+runs a reference check over them.
 
 ## Signature preimage
 
@@ -213,4 +239,6 @@ upstream sources are not signed.
 - `vectors/feed-verification.json`: whole-feed cases with trusted keys,
   state and `now`, each with the expected outcome and reason. `tools/validate.py`
   runs a reference verifier over them, and implementations run the same cases.
+- `vectors/feed-slim-nvd.json`: whole slim NVD files (the JSON after gunzip),
+  each valid or invalid by the limits above.
 - `fixtures/v1/feed-envelope/`, `fixtures/v1/feed-manifest/`: schema fixtures.

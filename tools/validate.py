@@ -205,6 +205,44 @@ def feed_preimage(fmt: int, feed_id: str, key_id: str, manifest: bytes) -> bytes
     )
 
 
+def slim_nvd_valid(file) -> bool:
+    """spec/feed-v1.md, "Slim NVD": whether a reader accepts the file. Written
+    out rather than as a schema because the limits are byte counts."""
+    import re
+
+    def clean(text, limit):
+        return isinstance(text, str) and len(text.encode()) <= limit and not any(ord(c) < 32 or 0x7F <= ord(c) < 0xA0 for c in text)
+
+    if file.get("format") != 1 or not isinstance(file.get("year"), int) or not isinstance(file.get("records"), list):
+        return False
+    for r in file["records"]:
+        m = re.fullmatch(r"CVE-(\d{4})-\d{4,19}", r.get("id", ""))
+        if not m or int(m.group(1)) != file["year"]:
+            return False
+        c = r.get("cvss")
+        if c is not None and not (
+            c["version"] in ("4.0", "3.1", "3.0", "2.0") and 0 <= c["score"] <= 10 and len(c["vector"].encode()) <= 512
+        ):
+            return False
+        if any(not re.fullmatch(r"CWE-\d{1,9}", w) for w in r.get("cwe", [])):
+            return False
+        if "description" in r and len(r["description"].encode()) > 4096:
+            return False
+        ranges = r.get("ranges", [])
+        if len(ranges) > 5000:
+            return False
+        for g in ranges:
+            if not g["cpe"].startswith("cpe:2.3:a:") or not clean(g["cpe"], 512):
+                return False
+            for k in ("start_including", "start_excluding", "end_including", "end_excluding"):
+                if k in g and not clean(g[k], 64):
+                    return False
+        osl = r.get("os", [])
+        if len(osl) > 256 or any(not re.fullmatch(r"[a-z0-9._~+-]{1,64}:[a-z0-9._~+-]{1,64}:[a-z0-9._~+-]{1,64}", o) for o in osl):
+            return False
+    return True
+
+
 def verify_feed(envelope, trusted, state, now, validators):
     """The reference verifier of spec/feed-v1.md, "Verification order".
     Returns ("accepted", None) or ("refused", reason)."""
@@ -478,6 +516,11 @@ def main() -> int:
         got = check_file(case["entry"], bytes.fromhex(case["blob_hex"]), case.get("applied_fetched_at"), case["reader_limit"])
         if got != case["expect"]:
             print(f"FAIL feed file case {case['name']!r}: got {got}")
+            failures += 1
+    for case in json.loads((ROOT / "vectors/feed-slim-nvd.json").read_text())["cases"]:
+        checked += 1
+        if slim_nvd_valid(case["file"]) != case["valid"]:
+            print(f"FAIL slim NVD case {case['name']!r}")
             failures += 1
     # Generated, not checked in: an envelope over 1 MiB is bad_format.
     good = json.loads((ROOT / "fixtures/v1/feed-envelope/valid.json").read_text())
