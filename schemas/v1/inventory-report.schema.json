@@ -20,7 +20,7 @@
     },
     "os": {
       "type": "object",
-      "description": "From os-release: ID and VERSION_ID, e.g. fedora and 44.",
+      "description": "From os-release: ID and VERSION_ID, e.g. fedora and 44; on Windows windows and the version with its build, e.g. 10.0.26100.2894 (P22).",
       "required": ["id", "version_id"],
       "properties": {
         "id": { "$ref": "common.schema.json#/$defs/identifier" },

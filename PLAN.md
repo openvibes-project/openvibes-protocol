@@ -432,3 +432,15 @@ agent messages. Spec `spec/feed-v1.md`; design
 - [ ] Platform: `feed_mirror_url` in the vulns service and console settings.
 - [ ] Console: "vulnerability data as of ..." and stale warning.
 
+# P22 — Windows programs and version in inventories (user, 2026-11-08)
+
+The Windows agent preview (openvibes-agent #116, ruling #115) reports the
+programs Apps and Features lists and the Windows version, so a Windows host
+shows its software in the console. Package `manager` `windows`; `os` id
+`windows` with version `10.0.<build>.<UBR>`. No vulnerability matching for
+Windows yet: the platform shows that it has no Windows feed.
+
+- [x] Contract: `manager` `windows` in `InventoryExport` and
+  `InventoryReport`, the Windows `os`, fixtures `valid-windows.json`.
+- [ ] Agent: registry collectors (openvibes-agent #119).
+- [ ] Platform: accept and show Windows inventories (openvibes-platform #532).

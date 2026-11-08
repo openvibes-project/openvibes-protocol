@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "agent_id": "agent.7",
+  "os": { "id": "windows", "version_id": "10.0.26100.2894" },
+  "collected_at_unix_ms": 1790000600000,
+  "packages": [
+    { "manager": "windows", "name": "7-Zip 24.08 (x64)", "version": "24.08", "arch": "x86_64", "vendor": "Igor Pavlov" },
+    { "manager": "windows", "name": "Microsoft Visual C++ 2015-2022 Redistributable (x86) - 14.40.33810", "version": "14.40.33810.0", "arch": "x86", "vendor": "Microsoft Corporation" }
+  ]
+}
