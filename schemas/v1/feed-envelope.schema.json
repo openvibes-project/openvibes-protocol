@@ -26,6 +26,11 @@
       "pattern": "^[A-Za-z0-9_-]{86}$",
       "description": "64-byte Ed25519 signature, unpadded base64url."
     },
+    "public_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$",
+      "description": "Optional. The 32-byte Ed25519 public key for key_id, unpadded base64url. Never used to verify a feed; see spec/feed-v1.md, Pinning."
+    },
     "manifest": {
       "type": "string",
       "minLength": 2,

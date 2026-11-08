@@ -45,6 +45,7 @@ computed. A bundle may omit blobs of sources the builder was told to skip
   "feed_id": "acme-dmz",
   "key_id": "k1",
   "signature": "<86 characters, unpadded base64url of the 64-byte Ed25519 signature>",
+  "public_key": "<optional: 43 characters, unpadded base64url of the 32-byte public key>",
   "manifest": "<the manifest as one JSON text>"
 }
 ```
@@ -53,6 +54,10 @@ computed. A bundle may omit blobs of sources the builder was told to skip
 identifiers as in `common.schema.json`. The `manifest` string is signed **byte
 for byte**: it is never re-serialized, so whitespace and field order are part
 of what is signed and a reader parses it only after the signature verifies.
+`public_key` is optional and is **not signed**: it only tells a reader that
+pins keys which key to pin (see Pinning). Verification never uses it. A
+builder writes it; a reader that does not pin ignores it. When present it must
+be a canonical 32-byte key (else `bad_format`).
 
 ## Manifest
 
@@ -170,7 +175,7 @@ manifest for the equal-sequence rule below.
 ## Trust
 
 A reader holds trusted keys, each scoped to a `(feed_id, key_id)` and added
-by its administrator. A key is never taken from a feed. Several keys may be
+by its administrator. A key is never taken from a feed during verification (see Pinning for the one opt-in exception). Several keys may be
 trusted at once, so a builder can rotate: trust the new key, switch the
 builder, then remove the old one as soon as the new one has been applied:
 sequence state is kept per key, so while both are trusted the last manifest
@@ -179,6 +184,22 @@ signed by the old key is still accepted again (its files are bounded by the
 A key's **fingerprint** is the SHA-256 of its 32 public-key bytes, shown as 8
 groups of 4 lowercase hex characters (the first 128 bits) wherever a key is
 displayed or compared.
+
+## Pinning
+
+A reader that pulls from a mirror address its administrator chose may pin a
+key instead of being given one. On first contact with that address, when it
+holds no key for the envelope's `(feed_id, key_id)` from that address, it may
+take `public_key` from the envelope, check that the signature verifies with
+it, and then trust that key for `(feed_id, key_id)` exactly as if the
+administrator had added it. This is the only moment a key is taken from a
+feed, and it is the reader's own choice: the administrator's act is choosing
+the address. After that the pinned key is the only one used. A later envelope
+whose `(feed_id, key_id)` is pinned but whose `public_key` differs is refused
+and reported as a changed key; it is never pinned over the old one. Moving to
+a new key means a new `key_id` that the administrator trusts deliberately.
+Verification (next section) itself is unchanged: it only ever uses keys the
+reader already trusts.
 
 ## Verification order
 
