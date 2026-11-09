@@ -422,7 +422,8 @@ inventory is sent at once). A platform gives inventory requests a longer
 deadline than other requests, so a large report arrives over a slow link; a report the agent cannot send because it is over
 the limits, or that the platform refuses with another 4xx (not 401/403), is
 not resent until the inventory changes. A host without an os-release file sends no
-report. The optional `running_kernel` is the running kernel's release
+report, except Windows, which reports its version as described for
+`InventoryExport` (P22). The optional `running_kernel` is the running kernel's release
 as `uname -r` reports it (for example `6.17.4-300.fc44.x86_64`); it counts
 as part of the report's content, so the first report after a reboot into
 another kernel is sent. With it the platform can tell a kernel fix that is
@@ -974,7 +975,7 @@ snapshot of the host's installed packages, taken at export time, beside the
 `hostname`, `scanner_version`, `collected_at_unix_ms`, and up to 50,000
 `packages`. The whole document must also fit the inventory document limit
 (8 MiB; about 134 bytes per RPM package, so 50,000 packages fit). Each package names its `manager`
-(`rpm` or `dpkg`), `name`, and upstream `version`, and optionally its
+(`rpm`, `dpkg` or `windows`), `name`, and upstream `version`, and optionally its
 distribution `release`, `epoch`, `arch`, and the `vendor` its database
 records. A package may also name its `source` package (dpkg's `Source`
 field, or the name in RPM's `SOURCERPM`; absent when the source has the
@@ -985,6 +986,20 @@ version, so RPM packages never carry it. Debian, Ubuntu and Rocky Linux
 publish vulnerabilities per source package, so the platform matches those
 hosts by source (P10). Package records are copied from the package database and are
 neither verified nor normalised to CPE names.
+
+On Windows (P22) the packages are the programs Apps and Features lists:
+each subkey of `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall`
+(the 64-bit and the 32-bit registry view) with a `DisplayName` and a
+`DisplayVersion`, leaving out system components (`SystemComponent` 1) and
+updates (a `ParentKeyName`). `manager` is `windows`, `name` the
+`DisplayName`, `version` the `DisplayVersion`, `vendor` the `Publisher`,
+and `arch` `x86_64` or `x86` for the view it was found in; there is no
+`release`, `epoch` or `source`. Programs installed for one user only are
+not listed. `os` is `windows` and the version with its build and update
+revision, e.g. `10.0.26100.2894` (`CurrentMajorVersionNumber`,
+`CurrentMinorVersionNumber`, `CurrentBuildNumber` and `UBR` under
+`HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion`), and there is no
+`running_kernel`.
 
 It also carries the host's `os` (os-release `ID` and `VERSION_ID`) and
 `running_kernel`, as in `InventoryReport`. Both are optional in the schema
