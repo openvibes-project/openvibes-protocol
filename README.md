@@ -1,141 +1,57 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/brand/openvibes-wordmark-dark.svg">
-    <img src="docs/brand/openvibes-wordmark-light.svg" alt="OpenVIBES" width="560">
+    <img src="docs/brand/openvibes-wordmark-light.svg" alt="OpenVIBES" width="520">
   </picture>
 </p>
 
 <h3 align="center">OpenVIBES Protocol</h3>
 
 <p align="center">
-  The contract between the OpenVIBES agent and platform: one spec, JSON
-  Schemas, and shared fixtures that both sides test against.
+  What the <a href="https://github.com/openvibes-project/openvibes-agent">agent</a> and the
+  <a href="https://github.com/openvibes-project/openvibes-platform">platform</a> of
+  <a href="https://github.com/openvibes-project">OpenVIBES</a> send each other: one spec,
+  JSON Schemas, and shared examples that both sides test against.
 </p>
 
----
+## What it is
 
-> **AI disclosure:** OpenVIBES is built with the help of AI coding tools
-> (Claude Code and Codex), and they will continue to be used. Every change
-> still goes through a pull request and the full CI checks before it is
-> merged. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the policy.
+OpenVIBES is a free, self-hosted security tool: an agent on every host
+reports to a platform you run yourself. This repository is the contract
+between the two. Both pin it as their `protocol/` submodule and run its
+examples in their tests, so any change that crosses the boundary is made
+here first.
 
-## What OpenVIBES is
+It covers enrollment and certificate renewal, heartbeats, findings,
+inventory, threat alarms, listening services, signed rule bundles and the
+export files of agents without a network. Every connection is mutual TLS 1.3.
+Rule-signing keys never travel over the protocol, so even a compromised
+platform cannot make agents trust new rules.
 
-OpenVIBES (Open Vulnerability Inspection &amp; Baseline Evaluation System) is
-a free, open-source, self-hosted security tool for homelabs, small
-businesses and security enthusiasts, built to stay light as it grows to
-many agents. A small, read-only agent on every host collects facts,
-evaluates signed rules against them (compliance, hardening, threat alarms),
-and reports the results over mutually authenticated TLS. The platform keeps agent
-identities, distributes rules, matches every host's packages against
-security advisories, and ranks what to fix. No vendor cloud, no telemetry,
-and air-gapped hosts are supported.
+## What's here
 
-## The repositories
-
-| Repository | What it is |
+| Path | What |
 |---|---|
-| [openvibes-agent](https://github.com/openvibes-project/openvibes-agent) | The endpoint agent (Rust; Linux, Windows, macOS): collectors, signed-rule evaluation, a durable local queue, and the mTLS client. |
-| [openvibes-platform](https://github.com/openvibes-project/openvibes-platform) | The server side: ingest (default port 18423), rule distribution (default 18424), vulnerability matching and enrichment, the admin TUI and CLI, the built-in PKI, packaging, and the web console with its AI assistant. |
-| [openvibes-rules](https://github.com/openvibes-project/openvibes-rules) | The project's signed rule sets (baseline, threat alarms, Linux hardening level 1), checked against this repository's fact catalog. |
-| **openvibes-protocol** (this one) | Everything that crosses the agent–platform boundary. Both other repositories pin it as their `protocol/` submodule and run its fixtures in their tests, so a contract change lands here first. |
+| [`spec/contracts-v1.md`](spec/contracts-v1.md) | The wire contracts, HTTP API and size limits. The authority. |
+| [`schemas/v1/`](schemas/v1) | A JSON Schema for every message. |
+| [`fixtures/v1/`](fixtures/v1) | Valid and invalid examples per message. `valid*` must pass, `invalid*` must fail. |
+| [`PLAN.md`](PLAN.md) | Every message, its status on each side, and the shared plan. |
+| [`docs/overview.md`](docs/overview.md) | All messages in a table, the routes and ports, and what is planned. |
 
-## What the protocol covers
-
-Version 1, all specified with schemas and fixtures:
-
-| Message | Direction | Endpoint | Status |
-|---|---|---|---|
-| Enrollment and renewal | agent → ingest | `/v1/enroll` (token), `/v1/renew` (mTLS) | Built on both sides |
-| Heartbeat, with enabled collectors and health (P12) | agent → ingest | `/v1/heartbeat` | Built on both sides |
-| Finding batches and per-finding acknowledgement | agent → ingest | `/v1/findings` | Built on both sides |
-| Finding changes: a match's start, change and end (P13) | agent → ingest | `/v1/findings/changes` | Built on both sides |
-| Inventory report (OS, packages, running kernel) | agent → ingest | `/v1/inventory` | Built on both sides |
-| Inventory changes, gzip (P11) | agent → ingest | `/v1/inventory/changes` | Built on both sides |
-| Threat alarms from process starts (P14) | agent → ingest | `/v1/alarms` | Built on both sides |
-| Listening ports and services (P15) | agent → ingest | `/v1/services` | Built on both sides |
-| Structured errors, including `identity_revoked` | ingest → agent | any mTLS call | Built on both sides |
-| Signed rule bundles | agent → distribution | `/v1/rule-bundle`, default port 18424; `410`: not assigned to this host (P20) | Built on both sides |
-| Finding and inventory export files | agent → file → platform | file import (`openvibes-admin import`) | Built on both sides |
-| Enrollment token, platform CA, rule-signing keys | operator → agent | out of band (install time; the project's own rule key ships in the agent package, P20) | Built |
-
-Also fixed by the spec:
-
-- **Signing:** the signing-preimage byte format and how finding IDs are
-  derived.
-- **Resource limits:** bytes, depth, strings, and collections, in V1.
-- **Identity:** a random `install_id` per installation for local-only
-  agents.
-- **Rules:** schema 1 rule sets, `process_event` alarm rules (P14), an
-  optional MITRE ATT&CK mapping per rule (P18), optional `explain` and
-  `check` text for people, the fact catalog that names every fact a rule
-  may read, hardening facts included (P19, `vectors/fact-catalog.json`),
-  and the project's own rule sets (P20, `vectors/project-rule-sets.json`).
-
-Rule-signing keys never travel over the protocol, so a compromised platform
-cannot make agents trust new rules.
-
-## Planned
-
-- **Agent-signed export files:** imported exports are stored as
-  unauthenticated today.
-- **Trust-root rotation:** rotate rule-signing keys and the platform CA
-  without reinstalling agents (open question 6 in [`PLAN.md`](PLAN.md)).
-- **Online upload of further fact families** beyond packages (open
-  question 3).
-
-## Scope and routes
-
-This repository is the single source of truth for everything exchanged
-between the [OpenVIBES Agent](https://github.com/openvibes-project/openvibes-agent)
-and the OpenVIBES Platform's **ingest** and **distribution** services, and
-the synced plan both sides build against.
-
-```
-Online:      Agent --- HTTPS + mTLS, port 18423 --->  Ingest service --> platform storage
-             Agent <-- HTTPS + mTLS, port 18424 ----  Distribution service (signed rule bundles)
-Local-only:  Agent --- export file ---- (import) --->  Ingest service --> platform storage
-```
-
-18423 and 18424 are the default ports; a platform may listen on others,
-and the agent then names them in `platform_url` and `distribution_url`.
-
-The ingest service (formerly called the collector service; the agent's
-*collectors* are something else: they read host facts) only receives data from
-agents and stores it. It does
-not process, correlate, or forward anything. Rule bundles reach agents from a separate
-**distribution service**, so the ingest service stays receive-only. The platform's other modules
-(correlation, third-party and CMDB integration, the web interface on 443) work
-from platform storage on their own and never talk to agents. Only the agent's boundaries
-with the ingest service and the distribution service are specified here; everything behind storage is out of
-scope.
-
-- [`spec/contracts-v1.md`](spec/contracts-v1.md): the authoritative wire
-  contracts, HTTP API, and resource limits.
-- [`spec/feed-v1.md`](spec/feed-v1.md): the signed vulnerability-data feed and bundle
-  (platform side only; no agent change).
-- [`PLAN.md`](PLAN.md): every message that crosses the boundary, its status on
-  each side, and the paired milestones.
-- [`CONTRIBUTING.md`](CONTRIBUTING.md): how contract changes are made.
-
-- [`schemas/v1/`](schemas/v1): JSON Schema (draft 2020-12) for every message.
-- [`fixtures/v1/`](fixtures/v1): valid and invalid examples per message, for
-  both implementations' tests. `valid*` files must pass, `invalid*` must fail.
-
-The spec is language-neutral. The agent's Rust types in `openvibes-core` are a
-reference implementation, not the definition. Schemas cannot express every
-rule: UTF-8 byte limits (`maxLength` counts characters), cross-field rules
-such as expiry after creation, unique rule IDs, digests, and signatures remain
-implementation checks defined by the spec.
-
-Check the fixtures locally:
+## Check the examples
 
 ```sh
 python3 -m venv .venv && .venv/bin/pip install --no-deps -r tools/requirements.txt
 .venv/bin/python tools/validate.py
 ```
 
-The check's packages and versions are listed in
-[`docs/dependencies.md`](docs/dependencies.md).
+## Contributing
+
+Contract changes follow [`CONTRIBUTING.md`](CONTRIBUTING.md). Security
+problems: please use private vulnerability reporting, not a public issue.
+
+**AI disclosure:** OpenVIBES is built with the help of AI coding tools
+(Claude Code and Codex). Every change goes through a pull request and the
+full CI before it is merged.
 
 Licensed under the [Apache License 2.0](LICENSE).
